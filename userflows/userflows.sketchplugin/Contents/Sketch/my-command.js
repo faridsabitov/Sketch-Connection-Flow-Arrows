@@ -107,8 +107,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var document = __webpack_require__(/*! sketch/dom */ "sketch/dom").getSelectedDocument();
 
-  var selection = document.selectedLayers;
-  log(selection);
+  var selection = document.selectedLayers; // log(selection)
+
+  var symbols = document.getSymbols();
+  log(symbols);
   sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive run watche 🙌");
 });
 
