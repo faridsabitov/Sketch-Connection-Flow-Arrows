@@ -105,7 +105,11 @@ __webpack_require__.r(__webpack_exports__);
  // documentation: https://developer.sketchapp.com/reference/api/
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alivddddnpm run watche 🙌");
+  var document = __webpack_require__(/*! sketch/dom */ "sketch/dom").getSelectedDocument();
+
+  var selection = document.selectedLayers;
+  log(selection);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive run watche 🙌");
 });
 
 /***/ }),
@@ -118,6 +122,17 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports) {
 
 module.exports = require("sketch");
+
+/***/ }),
+
+/***/ "sketch/dom":
+/*!*****************************!*\
+  !*** external "sketch/dom" ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/dom");
 
 /***/ })
 
