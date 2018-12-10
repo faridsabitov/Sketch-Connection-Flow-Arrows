@@ -64,7 +64,7 @@ export default function() {
           
           // Selecting artboard or global
           var documentData = context.document.documentData();
-          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage() //Currently this is artboard
+          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage()
           
 
           currentParentGroup.layers().forEach(

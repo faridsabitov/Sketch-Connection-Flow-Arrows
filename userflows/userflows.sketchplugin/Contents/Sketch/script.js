@@ -166,8 +166,7 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
           border.thickness = 2; // Selecting artboard or global
 
           var documentData = context.document.documentData();
-          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage(); //Currently this is artboard
-
+          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage();
           currentParentGroup.layers().forEach(function (layer) {
             return log(layer.name());
           });
