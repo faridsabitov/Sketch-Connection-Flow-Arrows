@@ -8,9 +8,16 @@ export default function() {
   var symbols = document.getSymbols()
   log(symbols)
   sketch.UI.message("It's alive run watcshe 🙌")
+
+  const page = document.selectedPage
+
+  // Now let's create a new text layer, and a traditional value...
+  // const layer = new sketch.Text({
+  //   parent: page,
+  //   alignment: sketch.Text.Alignment.center,
+  //   text: 'Hello World',
+  // })
+
+  document.centerOnLayer(selection)
 }
 
-// export default function(defineLink) {
-//   sketch.UI.message("It's alive run watcshe 🙌")
-
-// }

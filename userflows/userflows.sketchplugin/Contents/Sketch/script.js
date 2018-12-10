@@ -112,9 +112,15 @@ __webpack_require__.r(__webpack_exports__);
   var symbols = document.getSymbols();
   log(symbols);
   sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive run watcshe 🙌");
-}); // export default function(defineLink) {
-//   sketch.UI.message("It's alive run watcshe 🙌")
-// }
+  var page = document.selectedPage; // Now let's create a new text layer, and a traditional value...
+  // const layer = new sketch.Text({
+  //   parent: page,
+  //   alignment: sketch.Text.Alignment.center,
+  //   text: 'Hello World',
+  // })
+
+  document.centerOnLayer(selection);
+});
 
 /***/ }),
 
