@@ -95,12 +95,14 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateArrows */
+/*! exports provided: default, updateArrows, updateLayerNames, settings */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrows", function() { return updateArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateLayerNames", function() { return updateLayerNames; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -110,10 +112,13 @@ var _require = __webpack_require__(/*! util */ "util"),
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
+var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Predefing
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-  var page = document.selectedPage; // var selection = document.selectedLayers
+  var page = document.selectedPage;
+  var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument(); // var selection = document.selectedLayers
 
   var selection = context.selection; // log(selection[0].lastPoint().isRounded())
 
@@ -146,7 +151,8 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
           path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
           path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Paiting the line
 
-          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
+          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
+          // Providing Settings for the arrow
 
           shape.setName("Arrow"); // Styling Border Style
 
@@ -157,23 +163,37 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
             b: 0.89,
             a: 1
           });
-          border.thickness = 2;
+          border.thickness = 2; // Selecting artboard or global
+
           var documentData = context.document.documentData();
           var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage(); //Currently this is artboard
-          // TODO: Need to add to the bottom group
 
-          currentParentGroup.addLayers([shape]);
-          log(currentParentGroup);
-          currentParentGroup.setName("Arrows");
-          currentParentGroup.setIsLocked(true); // var group = new Group({
-          //   name: 'Arrows',
-          //   layers: [
-          //     {
-          //       type: sketch.Types.Text,
-          //       text: 'Hello world',
-          //     },
-          //   ],
-          // })
+          currentParentGroup.layers().forEach(function (layer) {
+            return log(layer.name());
+          });
+          currentParentGroup.layers().forEach(function () {
+            log(layer.name());
+
+            if (layer.name == "Arrows") {
+              sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All Layers are updated 🎉");
+              log("dwed");
+            }
+          }); // Creating a group
+
+          var group = new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Group({
+            parent: currentParentGroup,
+            name: 'Arrows',
+            locked: true,
+            frame: {
+              x: 0,
+              y: 0,
+              width: 0,
+              height: 0
+            },
+            layers: [shape]
+          }); // Moving this group to the bottom of the page
+
+          group.moveToBack();
         }
       } else {
         // If it's not an appropriate layer
@@ -185,27 +205,40 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select only two layers");
   }
 });
-function updateArrows(context) {} // const document = sketch.fromNative(context.document)
-// // var layerIsLocked = layer.isLocked();
-// sketch.UI.message("All unlocked arrows are updated 🚀")
-// Functions
-// var getAlertWindow = function() {
-// 	var alert = COSAlertWindow.new();
-// 	// if (iconImage) {
-// 	// 	alert.setIcon(iconImage);
-// 	// } 
-// 	return alert;
-// }
-// // Shop Popup for asking arrow type
-// var options = ['Link Arrow', 'Back Arrow']
-// var selection = UI.getSelectionFromUser(
-//   "Please choose link type", options
-// )
-// var ok = selection[2]
-// var value = options[selection[1]]
-// if (ok) {
-//   // If user specified decision
-//   log(value)
+function updateArrows(context) {
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All unlocked arrows are updated 🚀"); // TO DO: Make a function for redrawing all the points
+}
+function updateLayerNames(context) {
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All Layers are updated 🎉");
+}
+function settings(context) {
+  // Shop Popup for asking arrow type
+  var options = ['Link Arrow', 'Back Arrow'];
+  var selection = UI.getSelectionFromUser("Please choose link type", options);
+  var ok = selection[2];
+  var value = options[selection[1]];
+
+  if (ok) {
+    // If user specified decision
+    log(value);
+  }
+} // var sharedLayerStylesForContext = function(context) {
+// 	var dict = {};
+// 	if(sketchVersion < sketchVersion51) return dict;
+// 	var doc = context.document || context.actionContext.document,
+// 		localStyles = doc.documentData().layerStyles().sharedStyles(),
+// 		foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
+// 		availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
+// 		predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
+// 		borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
+// 		loop = borderStyles.objectEnumerator(),
+// 		sharedStyle;
+// 	while(sharedStyle = loop.nextObject()) {
+// 		dict[sharedStyle.objectID()] = sharedStyle;
+// 	}
+// 	return dict;
 // }
 
 /***/ }),
@@ -218,6 +251,17 @@ function updateArrows(context) {} // const document = sketch.fromNative(context.
 /***/ (function(module, exports) {
 
 module.exports = require("sketch");
+
+/***/ }),
+
+/***/ "sketch/dom":
+/*!*****************************!*\
+  !*** external "sketch/dom" ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/dom");
 
 /***/ }),
 
@@ -251,6 +295,8 @@ module.exports = require("util");
   }
 }
 that['onRun'] = __skpm_run.bind(this, 'default');
-that['updateArrows'] = __skpm_run.bind(this, 'updateArrows')
+that['updateArrows'] = __skpm_run.bind(this, 'updateArrows');
+that['updateLayerNames'] = __skpm_run.bind(this, 'updateLayerNames');
+that['settings'] = __skpm_run.bind(this, 'settings')
 
 //# sourceMappingURL=script.js.map

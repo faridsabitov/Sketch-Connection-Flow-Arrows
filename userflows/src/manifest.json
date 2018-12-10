@@ -20,12 +20,26 @@
       "identifier": "updateArrows",
       "script": "./script.js",
       "handler": "updateArrows"
+    },
+    {
+      "name": "Update Layer Names",
+      "description" : "Rename them in the same way how they named in overrides",
+      "identifier": "updateLayerNames",
+      "script": "./script.js",
+      "handler": "updateLayerNames"
+    },
+    {
+      "name": "Settings",
+      "description" : "Provide settings for the arrows",
+      "identifier": "settings",
+      "script": "./script.js",
+      "handler": "settings"
     }
   ],
   "menu": {
-    "title": "🤘Userflows",
+    "title": "👉 Userflows",
     "items": [
-      "definelink", "updateArrows"
+      "definelink", "updateArrows", "updateLayerNames","settings"
     ]
   }
 }

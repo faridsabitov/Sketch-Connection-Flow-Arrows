@@ -2,11 +2,14 @@ import sketch from 'sketch'
 const { toArray } = require('util')
 
 var UI = require('sketch/ui')
+var Group = require('sketch/dom').Group
 
 export default function() {
   // Predefing
   const document = sketch.fromNative(context.document)
   const page = document.selectedPage
+  const doc = sketch.getSelectedDocument()
+
   // var selection = document.selectedLayers
   var selection = context.selection
 
@@ -49,7 +52,7 @@ export default function() {
           path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY));
 
           // Paiting the line
-          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
           
           // Providing Settings for the arrow
           shape.setName("Arrow")
@@ -59,22 +62,35 @@ export default function() {
           border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1});
           border.thickness = 2;
           
+          // Selecting artboard or global
           var documentData = context.document.documentData();
           var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage() //Currently this is artboard
-          // TODO: Need to add to the bottom group
-          currentParentGroup.addLayers([shape])
-          log(currentParentGroup)
-          currentParentGroup.setName("Arrows")
-          currentParentGroup.setIsLocked(true)
-          // var group = new Group({
-          //   name: 'Arrows',
-          //   layers: [
-          //     {
-          //       type: sketch.Types.Text,
-          //       text: 'Hello world',
-          //     },
-          //   ],
-          // })
+          
+
+          currentParentGroup.layers().forEach(
+            layer => log(layer.name())
+          )
+
+          currentParentGroup.layers().forEach(function(){
+            log(layer.name())
+            if(layer.name == "Arrows"){
+              sketch.UI.message("All Layers are updated 🎉")
+              log("dwed")
+            }
+          })
+
+          // Creating a group
+          var group = new sketch.Group({
+            parent: currentParentGroup,
+            name: 'Arrows',
+            locked: true,
+            frame: {x: 0, y: 0, width: 0, height: 0},
+            layers: [shape]
+          })
+
+          // Moving this group to the bottom of the page
+          group.moveToBack()
+          
         }
 
       } else {
@@ -90,37 +106,52 @@ export default function() {
 }
 
 export function updateArrows(context) {
-  // const document = sketch.fromNative(context.document)
-  // // var layerIsLocked = layer.isLocked();
-  // sketch.UI.message("All unlocked arrows are updated 🚀")
-
-
-
-
+  const document = sketch.fromNative(context.document)
+  sketch.UI.message("All unlocked arrows are updated 🚀")
+  // TO DO: Make a function for redrawing all the points
 }
 
-// Functions
+export function updateLayerNames(context) {
+  const document = sketch.fromNative(context.document)
+  sketch.UI.message("All Layers are updated 🎉")
+}
 
-// var getAlertWindow = function() {
-// 	var alert = COSAlertWindow.new();
-// 	// if (iconImage) {
-// 	// 	alert.setIcon(iconImage);
-// 	// } 
-// 	return alert;
+export function settings(context) {
+  // Shop Popup for asking arrow type
+  var options = ['Link Arrow', 'Back Arrow']
+  var selection = UI.getSelectionFromUser(
+    "Please choose link type", options
+  )
+
+  var ok = selection[2]
+  var value = options[selection[1]]
+  
+  if (ok) {
+    // If user specified decision
+    log(value)
+  }
+}
+
+
+// var sharedLayerStylesForContext = function(context) {
+
+// 	var dict = {};
+
+// 	if(sketchVersion < sketchVersion51) return dict;
+
+// 	var doc = context.document || context.actionContext.document,
+// 		localStyles = doc.documentData().layerStyles().sharedStyles(),
+// 		foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
+// 		availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
+// 		predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
+// 		borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
+// 		loop = borderStyles.objectEnumerator(),
+// 		sharedStyle;
+	
+// 	while(sharedStyle = loop.nextObject()) {
+// 		dict[sharedStyle.objectID()] = sharedStyle;
+// 	}
+
+// 	return dict;
 // }
 
-
-
-        // // Shop Popup for asking arrow type
-        // var options = ['Link Arrow', 'Back Arrow']
-        // var selection = UI.getSelectionFromUser(
-        //   "Please choose link type", options
-        // )
-
-        // var ok = selection[2]
-        // var value = options[selection[1]]
-        
-        // if (ok) {
-        //   // If user specified decision
-        //   log(value)
-        // }
