@@ -12,12 +12,8 @@
       "description" : "Select two layers, then create a link between them two",
       "identifier": "definelink",
       "shortcut" : "command shift u",
-      "handlers" : {
-        "run" : "defineLink"
-      },
       "script": "./script.js"
     }
-    
   ],
   "menu": {
     "title": "🤘Userflows",

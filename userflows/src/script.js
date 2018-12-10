@@ -10,7 +10,7 @@ export default function() {
   sketch.UI.message("It's alive run watcshe 🙌")
 }
 
+// export default function(defineLink) {
+//   sketch.UI.message("It's alive run watcshe 🙌")
 
-var defineLink = function(context) {
-  sketch.UI.message("Define Link")
-}
+// }

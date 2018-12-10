@@ -112,11 +112,9 @@ __webpack_require__.r(__webpack_exports__);
   var symbols = document.getSymbols();
   log(symbols);
   sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive run watcshe 🙌");
-});
-
-var defineLink = function defineLink(context) {
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Define Link");
-};
+}); // export default function(defineLink) {
+//   sketch.UI.message("It's alive run watcshe 🙌")
+// }
 
 /***/ }),
 
@@ -149,7 +147,6 @@ module.exports = require("sketch/dom");
     exports[key](context);
   }
 }
-that['defineLink'] = __skpm_run.bind(this, 'defineLink');
 that['onRun'] = __skpm_run.bind(this, 'default')
 
 //# sourceMappingURL=script.js.map
