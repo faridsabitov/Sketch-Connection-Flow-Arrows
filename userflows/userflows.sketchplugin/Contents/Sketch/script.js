@@ -108,14 +108,14 @@ __webpack_require__.r(__webpack_exports__);
 var _require = __webpack_require__(/*! util */ "util"),
     toArray = _require.toArray;
 
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Predefing
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
   var page = document.selectedPage; // var selection = document.selectedLayers
 
-  var selection = context.selection;
-  var layer = selection[0];
-  var layerParent = layer.parentGroup();
+  var selection = context.selection; // log(selection[0].lastPoint().isRounded())
 
   if (selection.count() == 2) {
     // When user selected two layers
@@ -125,22 +125,43 @@ var _require = __webpack_require__(/*! util */ "util"),
         // If it's symbol, shape or a group
         var layer = selection[i];
 
-        if (i = 0) {
+        if (i == 0) {
           // First Layer Position Start Point Position
           var firstLayerPos = layer.frame();
           var firstLayerPosX = firstLayerPos.maxX();
           var firstLayerPosY = firstLayerPos.midY();
-        } else {
+          log(firstLayerPosX);
+        } else if (i == 1) {
           // Second Layer Position End Point Position
           var secondLayerPos = layer.frame();
-          var secondLayerPosX = secondLayerPos.maxX();
-          var secondLayerPosY = secondLayerPos.midY();
-        } // Need to get the location of the layer itself
-        // For the first one we need to find the width
-        // And then found position of the right side with y + height/2
-        // For the second one we need to find the width 
-        // And found position on the left side
+          var secondLayerPosX = secondLayerPos.minX();
+          var secondLayerPosY = secondLayerPos.midY(); // Drawing a line
 
+          var path = NSBezierPath.bezierPath(); // log(firstLayerPosX)
+          // Adding points
+
+          path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY)); // path.lineToPoint(NSMakePoint(100,10));
+
+          path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Paiting the line
+
+          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
+
+          shape.setName("Arrow");
+          shape.setIsLocked(true); // Styling Border Style
+
+          var border = shape.style().addStylePartOfType(1);
+          border.color = MSColor.colorWithRGBADictionary({
+            r: 0.89,
+            g: 0.89,
+            b: 0.89,
+            a: 1
+          });
+          border.thickness = 2;
+          var documentData = context.document.documentData();
+          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage(); // log(currentParentGroup)
+
+          currentParentGroup.addLayers([shape]);
+        }
       } else {
         // If it's not an appropriate layer
         sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Only groups, shapes and symbols are supported");
@@ -149,37 +170,30 @@ var _require = __webpack_require__(/*! util */ "util"),
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select only two layers");
-  } // const imageURL = context.plugin.urlForResourceNamed('icon.png')
-  // const group = new sketch.Group({
-  //   parent: page,
-  //   name: 'arrows',
-  //   frame: {
-  //     x: 0,
-  //     y: 0,
-  //     width: 200,
-  //     height: 200,
-  //   },
-  //   layers: [
-  //     // you can also define nested layers directly
-  //     {
-  //       type: sketch.Types.Image,
-  //       frame: {
-  //         x: 50,
-  //         y: 50,
-  //         width: 100,
-  //         height: 100,
-  //       },
-  //       image: imageURL,
-  //     },
-  //   ],
-  // })
-
+  }
 });
-function updateArrows(context) {
-  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document); // var layerIsLocked = layer.isLocked();
-
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All unlocked arrows are updated 🚀");
-}
+function updateArrows(context) {} // const document = sketch.fromNative(context.document)
+// // var layerIsLocked = layer.isLocked();
+// sketch.UI.message("All unlocked arrows are updated 🚀")
+// Functions
+// var getAlertWindow = function() {
+// 	var alert = COSAlertWindow.new();
+// 	// if (iconImage) {
+// 	// 	alert.setIcon(iconImage);
+// 	// } 
+// 	return alert;
+// }
+// // Shop Popup for asking arrow type
+// var options = ['Link Arrow', 'Back Arrow']
+// var selection = UI.getSelectionFromUser(
+//   "Please choose link type", options
+// )
+// var ok = selection[2]
+// var value = options[selection[1]]
+// if (ok) {
+//   // If user specified decision
+//   log(value)
+// }
 
 /***/ }),
 
@@ -191,6 +205,17 @@ function updateArrows(context) {
 /***/ (function(module, exports) {
 
 module.exports = require("sketch");
+
+/***/ }),
+
+/***/ "sketch/ui":
+/*!****************************!*\
+  !*** external "sketch/ui" ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/ui");
 
 /***/ }),
 
