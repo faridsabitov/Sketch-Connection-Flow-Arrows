@@ -86,15 +86,15 @@ var exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/my-command.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/script.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/my-command.js":
-/*!***************************!*\
-  !*** ./src/my-command.js ***!
-  \***************************/
+/***/ "./src/script.js":
+/*!***********************!*\
+  !*** ./src/script.js ***!
+  \***********************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -111,8 +111,12 @@ __webpack_require__.r(__webpack_exports__);
 
   var symbols = document.getSymbols();
   log(symbols);
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive russn watche 🙌");
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive run watcshe 🙌");
 });
+
+var defineLink = function defineLink(context) {
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Define Link");
+};
 
 /***/ }),
 
@@ -145,6 +149,7 @@ module.exports = require("sketch/dom");
     exports[key](context);
   }
 }
+that['defineLink'] = __skpm_run.bind(this, 'defineLink');
 that['onRun'] = __skpm_run.bind(this, 'default')
 
-//# sourceMappingURL=my-command.js.map
+//# sourceMappingURL=script.js.map

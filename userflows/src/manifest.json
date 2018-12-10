@@ -2,17 +2,27 @@
   "compatibleVersion": 3,
   "bundleVersion": 1,
   "icon": "icon.png",
+  "authorEmail" : "farid.sabitov.design@gmail.com",
+  "author" : "Farid Sabitov",
+  "description" : "Create auto connected user flows",
+  "homepage" : "https://sabitov.me",
   "commands": [
     {
-      "name": "my-command",
-      "identifier": "my-command-identifier",
-      "script": "./my-command.js"
+      "name": "Define Link",
+      "description" : "Select two layers, then create a link between them two",
+      "identifier": "definelink",
+      "shortcut" : "command shift u",
+      "handlers" : {
+        "run" : "defineLink"
+      },
+      "script": "./script.js"
     }
+    
   ],
   "menu": {
     "title": "🤘Userflows",
     "items": [
-      "my-command-identifier"
+      "definelink"
     ]
   }
 }

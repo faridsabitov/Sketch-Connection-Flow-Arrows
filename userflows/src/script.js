@@ -7,5 +7,10 @@ export default function() {
   // log(selection)
   var symbols = document.getSymbols()
   log(symbols)
-  sketch.UI.message("It's alive run watche 🙌")
+  sketch.UI.message("It's alive run watcshe 🙌")
+}
+
+
+var defineLink = function(context) {
+  sketch.UI.message("Define Link")
 }
