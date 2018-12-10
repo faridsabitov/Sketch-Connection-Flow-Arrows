@@ -95,32 +95,51 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default */
+/*! exports provided: default, updateArrows */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrows", function() { return updateArrows; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
- // documentation: https://developer.sketchapp.com/reference/api/
+
+
+var _require = __webpack_require__(/*! util */ "util"),
+    toArray = _require.toArray;
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  var document = __webpack_require__(/*! sketch/dom */ "sketch/dom").getSelectedDocument();
-
-  var selection = document.selectedLayers; // log(selection)
-
-  var symbols = document.getSymbols();
-  log(symbols);
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("It's alive run watcshe 🙌");
-  var page = document.selectedPage; // Now let's create a new text layer, and a traditional value...
-  // const layer = new sketch.Text({
-  //   parent: page,
-  //   alignment: sketch.Text.Alignment.center,
-  //   text: 'Hello World',
-  // })
-
-  document.centerOnLayer(selection);
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  var page = document.selectedPage;
+  var selection = document.selectedLayers;
+  log(selection);
+  var imageURL = context.plugin.urlForResourceNamed('icon.png');
+  var group = new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Group({
+    parent: page,
+    name: 'arrows',
+    frame: {
+      x: 0,
+      y: 0,
+      width: 200,
+      height: 200
+    },
+    layers: [// you can also define nested layers directly
+    {
+      type: sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Types.Image,
+      frame: {
+        x: 50,
+        y: 50,
+        width: 100,
+        height: 100
+      },
+      image: imageURL
+    }]
+  });
 });
+function updateArrows(context) {
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All unlocked arrows are updated 🚀");
+}
 
 /***/ }),
 
@@ -135,14 +154,14 @@ module.exports = require("sketch");
 
 /***/ }),
 
-/***/ "sketch/dom":
-/*!*****************************!*\
-  !*** external "sketch/dom" ***!
-  \*****************************/
+/***/ "util":
+/*!***********************!*\
+  !*** external "util" ***!
+  \***********************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("sketch/dom");
+module.exports = require("util");
 
 /***/ })
 
@@ -153,6 +172,7 @@ module.exports = require("sketch/dom");
     exports[key](context);
   }
 }
-that['onRun'] = __skpm_run.bind(this, 'default')
+that['onRun'] = __skpm_run.bind(this, 'default');
+that['updateArrows'] = __skpm_run.bind(this, 'updateArrows')
 
 //# sourceMappingURL=script.js.map

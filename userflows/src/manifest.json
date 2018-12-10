@@ -13,12 +13,19 @@
       "identifier": "definelink",
       "shortcut" : "command shift u",
       "script": "./script.js"
+    },
+    {
+      "name": "Update Arrows",
+      "description" : "Update all the arrows on selected group",
+      "identifier": "updateArrows",
+      "script": "./script.js",
+      "handler": "updateArrows"
     }
   ],
   "menu": {
     "title": "🤘Userflows",
     "items": [
-      "definelink"
+      "definelink", "updateArrows"
     ]
   }
 }
