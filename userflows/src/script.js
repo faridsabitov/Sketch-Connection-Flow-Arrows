@@ -28,21 +28,24 @@ export default function() {
           var firstLayerPos = layer.frame()
           var firstLayerPosX = firstLayerPos.maxX()
           var firstLayerPosY = firstLayerPos.midY()
-          log(firstLayerPosX)
+
         } else if (i == 1) {
           // Second Layer Position End Point Position
           var secondLayerPos = layer.frame()
           var secondLayerPosX = secondLayerPos.minX()
           var secondLayerPosY = secondLayerPos.midY()
 
+          // Middle Points
+          var middlePosX = (firstLayerPosX + secondLayerPosX)/2
+          var middlePosY = (firstLayerPosY + secondLayerPosY)/2
+
           // Drawing a line
           var path = NSBezierPath.bezierPath();
-
-          // log(firstLayerPosX)
-          
+        
           // Adding points
           path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY));
-          // path.lineToPoint(NSMakePoint(100,10));
+          path.lineToPoint(NSMakePoint(middlePosX,firstLayerPosY));
+          path.lineToPoint(NSMakePoint(middlePosX,secondLayerPosY));
           path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY));
 
           // Paiting the line
@@ -50,7 +53,6 @@ export default function() {
           
           // Providing Settings for the arrow
           shape.setName("Arrow")
-          shape.setIsLocked(true);
 
           // Styling Border Style
           var border = shape.style().addStylePartOfType(1);
@@ -58,9 +60,21 @@ export default function() {
           border.thickness = 2;
           
           var documentData = context.document.documentData();
-          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage()
-          // log(currentParentGroup)
-          currentParentGroup.addLayers([shape]);
+          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage() //Currently this is artboard
+          // TODO: Need to add to the bottom group
+          currentParentGroup.addLayers([shape])
+          log(currentParentGroup)
+          currentParentGroup.setName("Arrows")
+          currentParentGroup.setIsLocked(true)
+          // var group = new Group({
+          //   name: 'Arrows',
+          //   layers: [
+          //     {
+          //       type: sketch.Types.Text,
+          //       text: 'Hello world',
+          //     },
+          //   ],
+          // })
         }
 
       } else {

@@ -130,24 +130,25 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
           var firstLayerPos = layer.frame();
           var firstLayerPosX = firstLayerPos.maxX();
           var firstLayerPosY = firstLayerPos.midY();
-          log(firstLayerPosX);
         } else if (i == 1) {
           // Second Layer Position End Point Position
           var secondLayerPos = layer.frame();
           var secondLayerPosX = secondLayerPos.minX();
-          var secondLayerPosY = secondLayerPos.midY(); // Drawing a line
+          var secondLayerPosY = secondLayerPos.midY(); // Middle Points
 
-          var path = NSBezierPath.bezierPath(); // log(firstLayerPosX)
-          // Adding points
+          var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+          var middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Drawing a line
 
-          path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY)); // path.lineToPoint(NSMakePoint(100,10));
+          var path = NSBezierPath.bezierPath(); // Adding points
 
+          path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+          path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+          path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
           path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Paiting the line
 
           var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
 
-          shape.setName("Arrow");
-          shape.setIsLocked(true); // Styling Border Style
+          shape.setName("Arrow"); // Styling Border Style
 
           var border = shape.style().addStylePartOfType(1);
           border.color = MSColor.colorWithRGBADictionary({
@@ -158,9 +159,21 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
           });
           border.thickness = 2;
           var documentData = context.document.documentData();
-          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage(); // log(currentParentGroup)
+          var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage(); //Currently this is artboard
+          // TODO: Need to add to the bottom group
 
           currentParentGroup.addLayers([shape]);
+          log(currentParentGroup);
+          currentParentGroup.setName("Arrows");
+          currentParentGroup.setIsLocked(true); // var group = new Group({
+          //   name: 'Arrows',
+          //   layers: [
+          //     {
+          //       type: sketch.Types.Text,
+          //       text: 'Hello world',
+          //     },
+          //   ],
+          // })
         }
       } else {
         // If it's not an appropriate layer
