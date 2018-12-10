@@ -114,13 +114,37 @@ var _require = __webpack_require__(/*! util */ "util"),
   var page = document.selectedPage; // var selection = document.selectedLayers
 
   var selection = context.selection;
+  var layer = selection[0];
+  var layerParent = layer.parentGroup();
 
   if (selection.count() == 2) {
     // When user selected two layers
-    if (selection[1].class() == "MSSymbolInstance") {
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Do something");
-    } else {
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Not symbols");
+    for (var i = 0; i < selection.count(); i++) {
+      // Checking through all selected layers
+      if (selection[i].class() == "MSSymbolInstance" || selection[i].class() == "MSRectangleShape" || selection[i].class() == "MSLayerGroup") {
+        // If it's symbol, shape or a group
+        var layer = selection[i];
+
+        if (i = 0) {
+          // First Layer Position Start Point Position
+          var firstLayerPos = layer.frame();
+          var firstLayerPosX = firstLayerPos.maxX();
+          var firstLayerPosY = firstLayerPos.midY();
+        } else {
+          // Second Layer Position End Point Position
+          var secondLayerPos = layer.frame();
+          var secondLayerPosX = secondLayerPos.maxX();
+          var secondLayerPosY = secondLayerPos.midY();
+        } // Need to get the location of the layer itself
+        // For the first one we need to find the width
+        // And then found position of the right side with y + height/2
+        // For the second one we need to find the width 
+        // And found position on the left side
+
+      } else {
+        // If it's not an appropriate layer
+        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Only groups, shapes and symbols are supported");
+      }
     }
   } else {
     // When user didn't select anything
@@ -152,7 +176,8 @@ var _require = __webpack_require__(/*! util */ "util"),
 
 });
 function updateArrows(context) {
-  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document); // var layerIsLocked = layer.isLocked();
+
   sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All unlocked arrows are updated 🚀");
 }
 
