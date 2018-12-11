@@ -112,14 +112,16 @@ var _require = __webpack_require__(/*! util */ "util"),
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
-var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group; // var Shape = require('sketch/dom').Shape
+var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
-
+var pluginKey = "me.sabitov.userflows";
+var connections = [];
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Predefing
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
   var page = document.selectedPage;
-  var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument(); // var selection = document.selectedLayers
+  var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
+  var command = context.command; // var selection = document.selectedLayers
 
   var selection = context.selection;
 
@@ -135,12 +137,16 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group; // var Sh
           // First Layer Position Start Point Position
           var firstLayerPos = layer.frame();
           var firstLayerPosX = firstLayerPos.maxX();
-          var firstLayerPosY = firstLayerPos.midY();
+          var firstLayerPosY = firstLayerPos.midY(); // Saving object ID for not recreating new arrows
+
+          var firstObject = layer.objectID();
         } else if (i == 1) {
           // Second Layer Position End Point Position
           var secondLayerPos = layer.frame();
           var secondLayerPosX = secondLayerPos.minX();
-          var secondLayerPosY = secondLayerPos.midY(); // Middle Points
+          var secondLayerPosY = secondLayerPos.midY(); // Saving object ID for not recreating new arrows
+
+          var secondObject = layer.objectID(); // Middle Points
 
           var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
           var middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Drawing a line
@@ -152,23 +158,33 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group; // var Sh
           path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
           path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
-          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
+          var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
           // Making middle points rounded
 
-          var points = shape.layers().firstObject().points();
+          var points = line.layers().firstObject().points();
           points[1].cornerRadius = 20;
           points[2].cornerRadius = 20; // Providing Settings for the arrow
 
-          shape.setName("Arrow"); // Styling Border Style
+          line.setName("Arrow"); // Styling Border Style
 
-          var border = shape.style().addStylePartOfType(1);
+          var border = line.style().addStylePartOfType(1);
           border.color = MSColor.colorWithRGBADictionary({
             r: 0.89,
             g: 0.89,
             b: 0.89,
             a: 1
           });
-          border.thickness = 2; // TODO: Need to have arrow style at the end
+          border.thickness = 2; // Saving Connection Info
+          // command.setValue_forKey_onLayer_forPluginIdentifier('chips!','test', secondObject, pluginKey);
+          // log(command.valueForKey_onLayer_forPluginIdentifier('test', secondObject, pluginKey));
+
+          var connection = {
+            firstObject: firstObject,
+            secondObject: secondObject,
+            line: line.objectID()
+          };
+          log(connection);
+          connections.push(connection); // TODO: Need to have arrow style at the end
           // Selecting artboard or global
 
           var documentData = context.document.documentData();
@@ -184,7 +200,7 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group; // var Sh
 
           if (currentGroup) {
             // If we already have group
-            currentGroup.addLayers([shape]);
+            currentGroup.addLayers([line]);
           } else {
             // If we don't have a group
             // Creating a group
@@ -192,7 +208,7 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group; // var Sh
               parent: currentParentGroup,
               name: 'Arrows',
               locked: true,
-              layers: [shape]
+              layers: [line]
             }); // Moving this group to the bottom of the page
 
             group.moveToBack();

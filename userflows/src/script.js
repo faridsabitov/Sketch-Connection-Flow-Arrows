@@ -3,13 +3,16 @@ const { toArray } = require('util')
 
 var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
-// var Shape = require('sketch/dom').Shape
+
+var pluginKey = "me.sabitov.userflows"
+var connections = []
 
 export default function() {
   // Predefing
   const document = sketch.fromNative(context.document)
   const page = document.selectedPage
   const doc = sketch.getSelectedDocument()
+  var command = context.command
 
   // var selection = document.selectedLayers
   var selection = context.selection
@@ -30,13 +33,18 @@ export default function() {
           var firstLayerPos = layer.frame()
           var firstLayerPosX = firstLayerPos.maxX()
           var firstLayerPosY = firstLayerPos.midY()
+          // Saving object ID for not recreating new arrows
+          var firstObject = layer.objectID()
+          
 
         } else if (i == 1) {
           // Second Layer Position End Point Position
           var secondLayerPos = layer.frame()
           var secondLayerPosX = secondLayerPos.minX()
           var secondLayerPosY = secondLayerPos.midY()
-
+          // Saving object ID for not recreating new arrows
+          var secondObject = layer.objectID()
+        
           // Middle Points
           var middlePosX = (firstLayerPosX + secondLayerPosX)/2
           var middlePosY = (firstLayerPosY + secondLayerPosY)/2
@@ -51,20 +59,33 @@ export default function() {
           path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY));
 
           // Painting the line
-          var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
+          var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
           
           // Making middle points rounded
-          var points = shape.layers().firstObject().points()
+          var points = line.layers().firstObject().points()
           points[1].cornerRadius = 20;
           points[2].cornerRadius = 20;
 
           // Providing Settings for the arrow
-          shape.setName("Arrow")
+          line.setName("Arrow")
 
           // Styling Border Style
-          var border = shape.style().addStylePartOfType(1)
+          var border = line.style().addStylePartOfType(1)
           border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
           border.thickness = 2
+
+          // Saving Connection Info
+          // command.setValue_forKey_onLayer_forPluginIdentifier('chips!','test', secondObject, pluginKey);
+          // log(command.valueForKey_onLayer_forPluginIdentifier('test', secondObject, pluginKey));
+
+          var connection = {
+            firstObject : firstObject,
+            secondObject : secondObject,
+            line : line.objectID()
+          }
+          log(connection)
+          connections.push(connection);
+
           // TODO: Need to have arrow style at the end
           
           // Selecting artboard or global
@@ -82,8 +103,8 @@ export default function() {
 
           if(currentGroup){
             // If we already have group
-            currentGroup.addLayers([shape])
-            
+            currentGroup.addLayers([line])
+
           } else {
             // If we don't have a group
             // Creating a group
@@ -91,18 +112,13 @@ export default function() {
               parent: currentParentGroup,
               name: 'Arrows',
               locked: true,
-              layers: [shape]
+              layers: [line]
             })
 
             // Moving this group to the bottom of the page
             group.moveToBack()
           }
-          
-
-  
-          
-          
-          
+        
         }
 
       } else {
