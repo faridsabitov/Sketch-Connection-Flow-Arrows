@@ -3,6 +3,7 @@ const { toArray } = require('util')
 
 var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
+// var Shape = require('sketch/dom').Shape
 
 export default function() {
   // Predefing
@@ -12,8 +13,6 @@ export default function() {
 
   // var selection = document.selectedLayers
   var selection = context.selection
-
-  // log(selection[0].lastPoint().isRounded())
 
   if(selection.count() == 2){
     
@@ -51,45 +50,58 @@ export default function() {
           path.lineToPoint(NSMakePoint(middlePosX,secondLayerPosY));
           path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY));
 
-          // Paiting the line
+          // Painting the line
           var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
           
+          // Making middle points rounded
+          var points = shape.layers().firstObject().points()
+          points[1].cornerRadius = 20;
+          points[2].cornerRadius = 20;
+
           // Providing Settings for the arrow
           shape.setName("Arrow")
 
           // Styling Border Style
-          var border = shape.style().addStylePartOfType(1);
-          border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1});
-          border.thickness = 2;
+          var border = shape.style().addStylePartOfType(1)
+          border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+          border.thickness = 2
+          // TODO: Need to have arrow style at the end
           
           // Selecting artboard or global
           var documentData = context.document.documentData();
           var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage()
+          var currentGroup
+          
+          // Checking all the groups that we have
+          for(var i = 0; i < currentParentGroup.layers().count(); i++){
+            if(currentParentGroup.layers()[i].name() == "Arrows") {
+              // If we already have "Arrow" group we need to save it's folder
+              currentGroup = currentParentGroup.layers()[i]
+            } 
+          }
+
+          if(currentGroup){
+            // If we already have group
+            currentGroup.addLayers([shape])
+            
+          } else {
+            // If we don't have a group
+            // Creating a group
+            var group = new Group({
+              parent: currentParentGroup,
+              name: 'Arrows',
+              locked: true,
+              layers: [shape]
+            })
+
+            // Moving this group to the bottom of the page
+            group.moveToBack()
+          }
           
 
-          currentParentGroup.layers().forEach(
-            layer => log(layer.name())
-          )
-
-          currentParentGroup.layers().forEach(function(){
-            log(layer.name())
-            if(layer.name == "Arrows"){
-              sketch.UI.message("All Layers are updated 🎉")
-              log("dwed")
-            }
-          })
-
-          // Creating a group
-          var group = new sketch.Group({
-            parent: currentParentGroup,
-            name: 'Arrows',
-            locked: true,
-            frame: {x: 0, y: 0, width: 0, height: 0},
-            layers: [shape]
-          })
-
-          // Moving this group to the bottom of the page
-          group.moveToBack()
+  
+          
+          
           
         }
 

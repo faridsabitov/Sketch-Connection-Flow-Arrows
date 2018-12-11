@@ -112,7 +112,8 @@ var _require = __webpack_require__(/*! util */ "util"),
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
-var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group; // var Shape = require('sketch/dom').Shape
+
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Predefing
@@ -120,7 +121,7 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
   var page = document.selectedPage;
   var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument(); // var selection = document.selectedLayers
 
-  var selection = context.selection; // log(selection[0].lastPoint().isRounded())
+  var selection = context.selection;
 
   if (selection.count() == 2) {
     // When user selected two layers
@@ -149,10 +150,14 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
           path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
           path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
           path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
-          path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Paiting the line
+          path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
           var shape = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
-          // Providing Settings for the arrow
+          // Making middle points rounded
+
+          var points = shape.layers().firstObject().points();
+          points[1].cornerRadius = 20;
+          points[2].cornerRadius = 20; // Providing Settings for the arrow
 
           shape.setName("Arrow"); // Styling Border Style
 
@@ -163,36 +168,35 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
             b: 0.89,
             a: 1
           });
-          border.thickness = 2; // Selecting artboard or global
+          border.thickness = 2; // TODO: Need to have arrow style at the end
+          // Selecting artboard or global
 
           var documentData = context.document.documentData();
           var currentParentGroup = documentData.currentPage().currentArtboard() || documentData.currentPage();
-          currentParentGroup.layers().forEach(function (layer) {
-            return log(layer.name());
-          });
-          currentParentGroup.layers().forEach(function () {
-            log(layer.name());
+          var currentGroup; // Checking all the groups that we have
 
-            if (layer.name == "Arrows") {
-              sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All Layers are updated 🎉");
-              log("dwed");
+          for (var i = 0; i < currentParentGroup.layers().count(); i++) {
+            if (currentParentGroup.layers()[i].name() == "Arrows") {
+              // If we already have "Arrow" group we need to save it's folder
+              currentGroup = currentParentGroup.layers()[i];
             }
-          }); // Creating a group
+          }
 
-          var group = new sketch__WEBPACK_IMPORTED_MODULE_0___default.a.Group({
-            parent: currentParentGroup,
-            name: 'Arrows',
-            locked: true,
-            frame: {
-              x: 0,
-              y: 0,
-              width: 0,
-              height: 0
-            },
-            layers: [shape]
-          }); // Moving this group to the bottom of the page
+          if (currentGroup) {
+            // If we already have group
+            currentGroup.addLayers([shape]);
+          } else {
+            // If we don't have a group
+            // Creating a group
+            var group = new Group({
+              parent: currentParentGroup,
+              name: 'Arrows',
+              locked: true,
+              layers: [shape]
+            }); // Moving this group to the bottom of the page
 
-          group.moveToBack();
+            group.moveToBack();
+          }
         }
       } else {
         // If it's not an appropriate layer
