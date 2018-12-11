@@ -7,6 +7,8 @@
   "authorEmail": "farid.sabitov.design@gmail.com",
   "author": "Farid Sabitov",
   "description": "Create auto connected user flows",
+  "download-url": "https://github.com/faridsabitov/Sketch-user-flows/releases",
+  "repo-url": "https://github.com/faridsabitov/Sketch-user-flows",
   "homepage": "https://sabitov.me",
   "commands": [
     {

@@ -1,6 +1,6 @@
 {
   "name": "userflows",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "engines": {
     "sketch": ">=3.0"
   },
@@ -11,6 +11,10 @@
     "assets": [
       "assets/**/*"
     ]
+  },
+  "repository" : {
+    "type": "git",
+    "url": "git+https://github.com/faridsabitov/Sketch-user-flows.git"
   },
   "scripts": {
     "build": "skpm-build",
