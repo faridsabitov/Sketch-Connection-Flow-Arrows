@@ -1,6 +1,8 @@
 {
   "compatibleVersion": 3,
-  "bundleVersion": 1.1,
+  "bundleVersion": 1,
+  "identifier": "me.sabitov.userflows",
+  "version": "0.1.3",
   "icon": "icon.png",
   "authorEmail": "farid.sabitov.design@gmail.com",
   "author": "Farid Sabitov",
@@ -45,9 +47,7 @@
       "settings"
     ]
   },
-  "version": "0.1.0",
   "name": "Userflows",
-  "identifier": "Userflows",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com//master/.appcast.xml"
 }
