@@ -189,6 +189,7 @@ var connections = [];
             // need to specify new size and location for the arrow shape
             lineObject.frame().x = firstLayerPos.maxX();
             lineObject.frame().width = secondLayerPos.minX() - firstLayerPos.maxX();
+            lineObject.style().endMarkerType = 2;
 
             if (firstLayerPos.midY() < secondLayerPos.midY()) {
               // second object is higher
