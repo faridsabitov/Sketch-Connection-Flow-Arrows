@@ -185,29 +185,18 @@ var connections = [];
 
           if (lineAvailable) {
             // if line is available
-            log("we have this line");
-            var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-            var middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
-            var linePoints = lineObject.layers()[0];
+            // need to specify new size and location for the arrow shape
+            lineObject.frame().x = firstLayerPos.maxX();
+            lineObject.frame().width = secondLayerPos.minX() - firstLayerPos.maxX();
 
-            for (var f = 0; f < linePoints.points().count(); f++) {
-              if (f == 0) {
-                // first point
-                linePoints.points()[f].point().x = firstLayerPosX;
-                linePoints.points()[f].point().y = firstLayerPosY;
-              } else if (f == 1) {
-                // second point
-                linePoints.points()[f].point().x = middlePosX;
-                linePoints.points()[f].point().y = firstLayerPosY;
-              } else if (f == 2) {
-                // third point
-                linePoints.points()[f].point().x = middlePosX;
-                linePoints.points()[f].point().y = secondLayerPosY;
-              } else if (f == 3) {
-                // fourth point
-                linePoints.points()[f].point().x = secondLayerPosX;
-                linePoints.points()[f].point().y = secondLayerPosY;
-              }
+            if (firstLayerPos.midY() < secondLayerPos.midY()) {
+              // second object is higher
+              lineObject.frame().y = firstLayerPos.midY();
+              lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY();
+            } else {
+              // second object is lower
+              lineObject.frame().y = secondLayerPos.midY();
+              lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY();
             }
           } else {
             // if we don't have a line, need to create a new one
