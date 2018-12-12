@@ -115,6 +115,7 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
 var pluginKey = "me.sabitov.userflows";
+var connection = [];
 var connections = [];
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Predefing
@@ -231,15 +232,17 @@ var connections = [];
             });
             border.thickness = 2; // Storage for current connection
 
-            var connection = {
+            connection = {
               firstObject: firstObject,
               secondObject: secondObject,
-              line: line.objectID() // Adding current connection to the all connections
+              line: line.objectID() // connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin')
+              // Adding current connection to the all connections
 
             };
-            connections.push(connection); // Saving Connection Info to Sketch Plugin
+            connections.push(connection); // log(connections)
+            // Saving Connection Info to Sketch Plugin
 
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, connections, docData, 'myplugin');
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, 'myplugin'); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
 
             if (currentGroup) {
               // If we already have group

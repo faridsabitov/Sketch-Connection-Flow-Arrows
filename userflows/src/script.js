@@ -5,6 +5,7 @@ var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
 
 var pluginKey = "me.sabitov.userflows"
+var connection = []
 var connections = []
 
 export default function() {
@@ -138,17 +139,21 @@ export default function() {
             border.thickness = 2
 
             // Storage for current connection
-            var connection = {
+            connection = {
               firstObject : firstObject,
               secondObject : secondObject,
               line : line.objectID()
             }
-            
+
+            // connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin')
             // Adding current connection to the all connections
             connections.push(connection)
 
+            // log(connections)
+
             // Saving Connection Info to Sketch Plugin
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, connections,docData,'myplugin')
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections,"connections",docData,'myplugin')
+            // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
 
 
             if(currentGroup){
