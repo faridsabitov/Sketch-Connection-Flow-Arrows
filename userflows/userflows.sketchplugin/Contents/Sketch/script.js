@@ -191,10 +191,12 @@ var connections = [];
 
             if (firstLayerPos.midY() < secondLayerPos.midY()) {
               // second object is higher
+              lineObject.setIsFlippedVertical(false);
               lineObject.frame().y = firstLayerPos.midY();
               lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY();
             } else {
               // second object is lower
+              lineObject.setIsFlippedVertical(true);
               lineObject.frame().y = secondLayerPos.midY();
               lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY();
             }
@@ -237,7 +239,7 @@ var connections = [];
             };
             connections.push(connection); // Saving Connection Info to Sketch Plugin
 
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, 'myplugin');
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, connections, docData, 'myplugin');
 
             if (currentGroup) {
               // If we already have group
@@ -301,6 +303,20 @@ function settings(context) {
 // 	}
 // 	return dict;
 // }
+
+function multiplyLayerByXY(layer, xScale, yScale) {
+  var scaledRect = {
+    origin: {
+      x: layer.rect().origin.x,
+      y: layer.rect().origin.y
+    },
+    size: {
+      width: layer.rect().size.width * xScale,
+      height: layer.rect().size.height * yScale
+    }
+  };
+  layer.rect = scaledRect;
+}
 
 /***/ }),
 
