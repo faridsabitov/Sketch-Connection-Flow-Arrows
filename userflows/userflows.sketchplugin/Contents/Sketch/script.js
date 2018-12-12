@@ -231,7 +231,8 @@ var connections = [];
               b: 0.89,
               a: 1
             });
-            border.thickness = 2; // Storage for current connection
+            border.thickness = 2;
+            line.style().endMarkerType = 2; // Storage for current connection
 
             connection = {
               firstObject: firstObject,

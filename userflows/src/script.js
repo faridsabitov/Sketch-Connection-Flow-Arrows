@@ -138,6 +138,7 @@ export default function() {
             var border = line.style().addStylePartOfType(1)
             border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
             border.thickness = 2
+            line.style().endMarkerType = 2
 
             // Storage for current connection
             connection = {
