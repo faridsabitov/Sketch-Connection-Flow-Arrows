@@ -4,21 +4,21 @@ const { toArray } = require('util')
 var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
 
-var pluginKey = "me.sabitov.userflows"
-var connection = []
+var pluginKey = "userflows"
+// var connection = []
 var connections = []
 
 export default function() {
-  // Predefing
   const document = sketch.fromNative(context.document)
   const page = document.selectedPage
   const doc = sketch.getSelectedDocument()
   var docData = context.document.documentData()
-  var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin')
+  var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
   var command = context.command
   var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage()
   var currentGroup
   var selection = context.selection
+  print("Hi");
 
   // Checking all the groups that we have
   for(var i = 0; i < currentParentGroup.layers().count(); i++){
@@ -63,20 +63,27 @@ export default function() {
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
             for(var y = 0; y < connectionsDatabase.count(); y++){
+
+              log("we have database")
               
               if(firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject){
                 // if we found that we have this object in connection database already
+                log("we found one of the objects")
                 
                 if(secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject){
                   // if we found that we have this object in connection database already
 
+                  log("we found the second one too")
+
                   for(var z = 0; z < currentGroup.layers().count(); z++){
                     if(currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {                      
                       // we have this line
+                      log("we have this line")
                       lineAvailable = true
                       lineObject = currentGroup.layers()[z]
                     } else {
                       // we we don't have this line
+                      log("we don;t have it")
                       lineAvailable = false
 
                     }
@@ -140,22 +147,34 @@ export default function() {
             border.thickness = 2
             line.style().endMarkerType = 2
 
+            if(connectionsDatabase){
+              connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
+              log(connections)
+
+            }
+            // Adding current connection to the all connections
+            
+
             // Storage for current connection
-            connection = {
+            var connection = {
               firstObject : firstObject,
               secondObject : secondObject,
               line : line.objectID()
             }
 
-            // connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin')
-            // Adding current connection to the all connections
             connections.push(connection)
+            connections.push(connection)
+            connections.push(connection)
+            log(connections)
 
-            // log(connections)
+            
+
+            log(connection)
 
             // Saving Connection Info to Sketch Plugin
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections,"connections",docData,'myplugin')
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, pluginKey)
             // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
+            log(connections)
 
 
             if(currentGroup){

@@ -114,20 +114,20 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
-var pluginKey = "me.sabitov.userflows";
-var connection = [];
+var pluginKey = "userflows"; // var connection = []
+
 var connections = [];
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  // Predefing
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
   var page = document.selectedPage;
   var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
   var docData = context.document.documentData();
-  var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, 'myplugin');
+  var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
   var command = context.command;
   var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   var currentGroup;
-  var selection = context.selection; // Checking all the groups that we have
+  var selection = context.selection;
+  print("Hi"); // Checking all the groups that we have
 
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
     if (currentParentGroup.layers()[i].name() == "Arrows") {
@@ -165,17 +165,25 @@ var connections = [];
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
             for (var y = 0; y < connectionsDatabase.count(); y++) {
+              log("we have database");
+
               if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
                 // if we found that we have this object in connection database already
+                log("we found one of the objects");
+
                 if (secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject) {
                   // if we found that we have this object in connection database already
+                  log("we found the second one too");
+
                   for (var z = 0; z < currentGroup.layers().count(); z++) {
                     if (currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {
                       // we have this line
+                      log("we have this line");
                       lineAvailable = true;
                       lineObject = currentGroup.layers()[z];
                     } else {
                       // we we don't have this line
+                      log("we don;t have it");
                       lineAvailable = false;
                     }
                   }
@@ -232,19 +240,29 @@ var connections = [];
               a: 1
             });
             border.thickness = 2;
-            line.style().endMarkerType = 2; // Storage for current connection
+            line.style().endMarkerType = 2;
 
-            connection = {
+            if (connectionsDatabase) {
+              connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
+              log(connections);
+            } // Adding current connection to the all connections
+            // Storage for current connection
+
+
+            var connection = {
               firstObject: firstObject,
               secondObject: secondObject,
-              line: line.objectID() // connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin')
-              // Adding current connection to the all connections
-
+              line: line.objectID()
             };
-            connections.push(connection); // log(connections)
-            // Saving Connection Info to Sketch Plugin
+            connections.push(connection);
+            connections.push(connection);
+            connections.push(connection);
+            log(connections);
+            log(connection); // Saving Connection Info to Sketch Plugin
 
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, 'myplugin'); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
+
+            log(connections);
 
             if (currentGroup) {
               // If we already have group
