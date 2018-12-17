@@ -1,0 +1,18 @@
+{
+  "compatibleVersion": 3,
+  "bundleVersion": 1,
+  "icon": "icon.png",
+  "commands": [
+    {
+      "name": "my-command",
+      "identifier": "my-command-identifier",
+      "script": "./my-command.js"
+    }
+  ],
+  "menu": {
+    "title": "userflows",
+    "items": [
+      "my-command-identifier"
+    ]
+  }
+}

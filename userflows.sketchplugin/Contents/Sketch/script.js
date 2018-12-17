@@ -117,17 +117,17 @@ var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 var pluginKey = "userflows"; // var connection = []
 
 var connections = [];
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var page = document.selectedPage;
+var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
+var docData = context.document.documentData();
+var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
+var command = context.command;
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+var currentGroup;
+var selection = context.selection;
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-  var page = document.selectedPage;
-  var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
-  var docData = context.document.documentData();
-  var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
-  var command = context.command;
-  var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-  var currentGroup;
-  var selection = context.selection;
-  print("Hi"); // Checking all the groups that we have
+  log(test); // Checking all the groups that we have
 
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
     if (currentParentGroup.layers()[i].name() == "Arrows") {
