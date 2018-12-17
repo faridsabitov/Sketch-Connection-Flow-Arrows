@@ -7,20 +7,17 @@ var Group = require('sketch/dom').Group
 var pluginKey = "userflows"
 // var connection = []
 var connections = []
+const document = sketch.fromNative(context.document)
+const page = document.selectedPage
+const doc = sketch.getSelectedDocument()
+var docData = context.document.documentData()
+var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
+var command = context.command
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage()
+var currentGroup
+var selection = context.selection
 
 export default function() {
-  const document = sketch.fromNative(context.document)
-  const page = document.selectedPage
-  const doc = sketch.getSelectedDocument()
-  var docData = context.document.documentData()
-  var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
-  var command = context.command
-  var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage()
-  var currentGroup
-  var selection = context.selection
-
-  log("test")
-
 
   // Checking all the groups that we have
   for(var i = 0; i < currentParentGroup.layers().count(); i++){
