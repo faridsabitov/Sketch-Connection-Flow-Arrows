@@ -18,7 +18,6 @@ var currentGroup
 var selection = context.selection
 
 export default function() {
-  log(test)
 
   // Checking all the groups that we have
   for(var i = 0; i < currentParentGroup.layers().count(); i++){

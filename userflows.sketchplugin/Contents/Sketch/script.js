@@ -127,8 +127,7 @@ var currentParentGroup = docData.currentPage().currentArtboard() || docData.curr
 var currentGroup;
 var selection = context.selection;
 /* harmony default export */ __webpack_exports__["default"] = (function () {
-  log(test); // Checking all the groups that we have
-
+  // Checking all the groups that we have
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
     if (currentParentGroup.layers()[i].name() == "Arrows") {
       // If we already have "Arrow" group we need to save it's folder
