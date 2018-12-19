@@ -120,6 +120,8 @@ export default function() {
             var middlePosX = (firstLayerPosX + secondLayerPosX)/2
             var middlePosY = (firstLayerPosY + secondLayerPosY)/2
 
+            log("Hi")
+
             // Drawing a line
             var path = NSBezierPath.bezierPath();
           

@@ -213,7 +213,8 @@ var selection = context.selection;
             // if we don't have a line, need to create a new one
             // Middle Points
             var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-            var middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Drawing a line
+            var middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+            log("Hi"); // Drawing a line
 
             var path = NSBezierPath.bezierPath(); // Adding points
 
