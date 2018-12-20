@@ -126,6 +126,8 @@ var command = context.command;
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 var currentGroup;
 var selection = context.selection;
+var array = [];
+var dictionary;
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Checking all the groups that we have
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
@@ -164,15 +166,11 @@ var selection = context.selection;
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
             for (var y = 0; y < connectionsDatabase.count(); y++) {
-              log("we have database");
-
               if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
                 // if we found that we have this object in connection database already
-                log("we found one of the objects");
-
                 if (secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject) {
                   // if we found that we have this object in connection database already
-                  log("we found the second one too");
+                  log("we are here");
 
                   for (var z = 0; z < currentGroup.layers().count(); z++) {
                     if (currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {
@@ -213,8 +211,7 @@ var selection = context.selection;
             // if we don't have a line, need to create a new one
             // Middle Points
             var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-            var middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
-            log("Hi"); // Drawing a line
+            var middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Drawing a line
 
             var path = NSBezierPath.bezierPath(); // Adding points
 
@@ -249,16 +246,12 @@ var selection = context.selection;
             // Storage for current connection
 
 
-            var connection = {
+            var connection = [{
               firstObject: firstObject,
               secondObject: secondObject,
               line: line.objectID()
-            };
-            connections.push(connection);
-            connections.push(connection);
-            connections.push(connection);
-            log(connections);
-            log(connection); // Saving Connection Info to Sketch Plugin
+            }];
+            connections.push(connection); // Saving Connection Info to Sketch Plugin
 
             context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
 

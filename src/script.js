@@ -17,6 +17,9 @@ var currentParentGroup = docData.currentPage().currentArtboard() || docData.curr
 var currentGroup
 var selection = context.selection
 
+var array = []
+var dictionary 
+
 export default function() {
 
   // Checking all the groups that we have
@@ -62,17 +65,14 @@ export default function() {
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
             for(var y = 0; y < connectionsDatabase.count(); y++){
-
-              log("we have database")
               
               if(firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject){
                 // if we found that we have this object in connection database already
-                log("we found one of the objects")
                 
                 if(secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject){
                   // if we found that we have this object in connection database already
 
-                  log("we found the second one too")
+                  log("we are here")
 
                   for(var z = 0; z < currentGroup.layers().count(); z++){
                     if(currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {                      
@@ -120,8 +120,6 @@ export default function() {
             var middlePosX = (firstLayerPosX + secondLayerPosX)/2
             var middlePosY = (firstLayerPosY + secondLayerPosY)/2
 
-            log("Hi")
-
             // Drawing a line
             var path = NSBezierPath.bezierPath();
           
@@ -157,20 +155,13 @@ export default function() {
             
 
             // Storage for current connection
-            var connection = {
+            var connection = [{
               firstObject : firstObject,
               secondObject : secondObject,
               line : line.objectID()
-            }
+            }]
 
             connections.push(connection)
-            connections.push(connection)
-            connections.push(connection)
-            log(connections)
-
-            
-
-            log(connection)
 
             // Saving Connection Info to Sketch Plugin
             context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, pluginKey)
