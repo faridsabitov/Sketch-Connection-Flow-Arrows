@@ -114,19 +114,15 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
-var pluginKey = "userflows";
+var pluginKey = "flowArrows";
 var connections = [];
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 var page = document.selectedPage;
-var doc = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getSelectedDocument();
 var docData = context.document.documentData();
 var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
-var command = context.command;
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-var currentGroup;
 var selection = context.selection;
-var array = [];
-var dictionary;
+var currentGroup;
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Checking all the groups that we have
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
@@ -164,8 +160,6 @@ var dictionary;
           if (connectionsDatabase) {
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
-            log("Initial" + connectionsDatabase);
-
             for (var y = 0; y < connectionsDatabase.count(); y++) {
               if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
                 // if we found that we have this object in connection database already
@@ -221,8 +215,7 @@ var dictionary;
             path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
             path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
-            var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
-            // Making middle points rounded
+            var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
 
             var points = line.layers().firstObject().points();
             points[1].cornerRadius = 20;
@@ -242,7 +235,6 @@ var dictionary;
 
             if (connectionsDatabase) {
               connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
-              log('awdawd' + connections.__proto__);
             } // Adding current connection to the all connections
             // log(connections[0])
             // log("First:" + firstObject)
@@ -263,14 +255,11 @@ var dictionary;
             // log(connectionsArray);
 
 
-            connectionsArray.push(connection);
-            log("AFTER " + connectionsArray); // log("Connection: " + connections)
+            connectionsArray.push(connection); // log("Connection: " + connections)
             // Saving Connection Info to Sketch Plugin
 
             context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey);
             connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
-
-            log("FINA; " + connections);
 
             if (currentGroup) {
               // If we already have group
