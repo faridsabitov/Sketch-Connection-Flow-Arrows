@@ -114,8 +114,7 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
-var pluginKey = "userflows"; // var connection = []
-
+var pluginKey = "userflows";
 var connections = [];
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 var page = document.selectedPage;

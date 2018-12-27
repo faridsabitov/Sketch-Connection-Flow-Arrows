@@ -5,7 +5,6 @@ var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
 
 var pluginKey = "userflows"
-// var connection = []
 var connections = []
 const document = sketch.fromNative(context.document)
 const page = document.selectedPage
