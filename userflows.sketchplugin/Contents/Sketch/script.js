@@ -1,21 +1,384 @@
-var that=this;function __skpm_run(e,t){that.context=t;var r=function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}};return e[n].call(o.exports,o,o.exports,r),o.l=!0,o.exports}return r.m=e,r.c=t,r.d=function(e,t,n){r.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:n})},r.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.t=function(e,t){if(1&t&&(e=r(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var n=Object.create(null);if(r.r(n),Object.defineProperty(n,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)r.d(n,o,function(t){return e[t]}.bind(null,o));return n},r.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(t,"a",t),t},r.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},r.p="",r(r.s="./src/script.js")}({"./src/script.js":
+var that = this;
+function __skpm_run (key, context) {
+  that.context = context;
+
+var exports =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/script.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./src/script.js":
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateArrows, updateLayerNames, settings */function(e,r,n){"use strict";n.r(r),n.d(r,"updateArrows",function(){return p}),n.d(r,"updateLayerNames",function(){return y}),n.d(r,"settings",function(){return h});var o,a=n(/*! sketch */"sketch"),i=n.n(a),s=(n(/*! util */"util").toArray,n(/*! sketch/ui */"sketch/ui")),u=n(/*! sketch/dom */"sketch/dom").Group,c=[],l=(i.a.fromNative(t.document).selectedPage,t.document.documentData()),d=t.command.valueForKey_onLayer_forPluginIdentifier("connections",l,"flowArrows"),f=l.currentPage().currentArtboard()||l.currentPage(),m=t.selection;function p(e){i.a.fromNative(e.document);i.a.UI.message("All unlocked arrows are updated 🚀")}function y(e){i.a.fromNative(e.document);i.a.UI.message("All Layers are updated 🎉")}function h(e){var t=["Link Arrow","Back Arrow"],r=s.getSelectionFromUser("Please choose link type",t),n=r[2],o=t[r[1]];n&&log(o)}r.default=function(){for(var e=0;e<f.layers().count();e++)"Arrows"==f.layers()[e].name()&&(o=f.layers()[e]);if(2==m.count())for(e=0;e<m.count();e++)if("MSSymbolInstance"==m[e].class()||"MSRectangleShape"==m[e].class()||"MSLayerGroup"==m[e].class())var r=m[0].frame(),n=r.maxX(),a=r.midY(),s=m[0].objectID(),p=m[1].frame(),y=p.minX(),h=p.midY(),b=m[1].objectID();else i.a.UI.message("Only groups, shapes and symbols are supported");else i.a.UI.message("Please select only two layers");var v,_=!1;if(d)for(var g=0;g<d.count();g++)if(!(s!=d[g].firstObject&&s!=d[g].secondObject||b!=d[g].firstObject&&b!=d[g].secondObject))for(var k=0;k<o.layers().count();k++)o.layers()[k].objectID()==d[g].line&&(_=!0,v=o.layers()[k]);if(_)v.frame().x=r.maxX(),v.frame().width=p.minX()-r.maxX(),v.style().endMarkerType=2,r.midY()<p.midY()?(v.setIsFlippedVertical(!1),v.frame().y=r.midY(),v.frame().height=p.midY()-r.midY()):(v.setIsFlippedVertical(!0),v.frame().y=p.midY(),v.frame().height=r.midY()-p.midY());else{var P=(n+y)/2,S=NSBezierPath.bezierPath();S.moveToPoint(NSMakePoint(n,a)),S.lineToPoint(NSMakePoint(P,a)),S.lineToPoint(NSMakePoint(P,h)),S.lineToPoint(NSMakePoint(y,h));var j=MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(S)),w=j.layers().firstObject().points();w[1].cornerRadius=20,w[2].cornerRadius=20,j.setName("Arrow");var A=j.style().addStylePartOfType(1);A.color=MSColor.colorWithRGBADictionary({r:.89,g:.89,b:.89,a:1}),A.thickness=2,j.style().endMarkerType=2,d&&(c=t.command.valueForKey_onLayer_forPluginIdentifier("connections",l,"flowArrows"));for(var M={firstObject:s,secondObject:b,line:j.objectID()},O=[],x=0;x<c.length;x++)O.push(c[x]);if(O.push(M),t.command.setValue_forKey_onLayer_forPluginIdentifier(O,"connections",l,"flowArrows"),o)o.addLayers([j]);else new u({parent:f,name:"Arrows",locked:!0,layers:[j]}).moveToBack()}}},sketch:
+/*! exports provided: default, updateArrows, updateLayerNames, settings */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrows", function() { return updateArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateLayerNames", function() { return updateLayerNames; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var _require = __webpack_require__(/*! util */ "util"),
+    toArray = _require.toArray;
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+
+var pluginKey = "flowArrows";
+var connections = [];
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var page = document.selectedPage;
+var docData = context.document.documentData();
+var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+var selection = context.selection;
+var currentGroup;
+/* harmony default export */ __webpack_exports__["default"] = (function () {
+  // Checking all the groups that we have
+  for (var i = 0; i < currentParentGroup.layers().count(); i++) {
+    if (currentParentGroup.layers()[i].name() == "Arrows") {
+      // If we already have "Arrow" group we need to save it's folder
+      currentGroup = currentParentGroup.layers()[i];
+    }
+  }
+
+  if (selection.count() == 2) {
+    // When user selected two layers
+    for (var i = 0; i < selection.count(); i++) {
+      // Checking through all selected layers
+      if (selection[i].class() == "MSSymbolInstance" || selection[i].class() == "MSRectangleShape" || selection[i].class() == "MSLayerGroup") {
+        // If it's symbol, shape or a group
+        // First Layer Position Start Point Position
+        var firstLayerPos = selection[0].frame();
+        var firstLayerPosX = firstLayerPos.maxX();
+        var firstLayerPosY = firstLayerPos.midY(); // Saving object ID for not recreating new arrows
+
+        var firstObject = selection[0].objectID(); // Second Layer Position End Point Position
+
+        var secondLayerPos = selection[1].frame();
+        var secondLayerPosX = secondLayerPos.minX();
+        var secondLayerPosY = secondLayerPos.midY(); // Saving object ID for not recreating new arrows
+
+        var secondObject = selection[1].objectID();
+      } else {
+        // If it's not an appropriate layer
+        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Only groups, shapes and symbols are supported");
+      }
+    }
+  } else {
+    // When user didn't select anything
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select only two layers");
+  } // Saying that there is no line
+
+
+  var lineAvailable = false;
+  var lineObject; // Need to check if we have this information already
+
+  if (connectionsDatabase) {
+    // if we have connectionDatabase for this document
+    // Need to check if we have this connection already
+    for (var y = 0; y < connectionsDatabase.count(); y++) {
+      if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
+        // if we found that we have this object in connection database already
+        if (secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject) {
+          // if we found that we have this object in connection database already
+          // Do we have a line inside "Arrows" group?
+          // TODO: Need to add check system if we don't have group
+          for (var z = 0; z < currentGroup.layers().count(); z++) {
+            if (currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {
+              // we have this line
+              lineAvailable = true;
+              lineObject = currentGroup.layers()[z];
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (lineAvailable) {
+    // if line is available
+    // need to specify new size and location for the arrow shape
+    lineObject.frame().x = firstLayerPos.maxX();
+    lineObject.frame().width = secondLayerPos.minX() - firstLayerPos.maxX();
+    lineObject.style().endMarkerType = 2;
+
+    if (firstLayerPos.midY() < secondLayerPos.midY()) {
+      // second object is higher
+      lineObject.setIsFlippedVertical(false);
+      lineObject.frame().y = firstLayerPos.midY();
+      lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY();
+    } else {
+      // second object is lower
+      lineObject.setIsFlippedVertical(true);
+      lineObject.frame().y = secondLayerPos.midY();
+      lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY();
+    }
+  } else {
+    // if we don't have a line, need to create a new one
+    // Middle Points
+    var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    var middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Drawing a line
+
+    var path = NSBezierPath.bezierPath(); // Adding points
+
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+    var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
+
+    var points = line.layers().firstObject().points();
+    points[1].cornerRadius = 20;
+    points[2].cornerRadius = 20; // Providing Settings for the arrow
+
+    line.setName("Arrow"); // Styling Border Style
+
+    var border = line.style().addStylePartOfType(1);
+    border.color = MSColor.colorWithRGBADictionary({
+      r: 0.89,
+      g: 0.89,
+      b: 0.89,
+      a: 1
+    });
+    border.thickness = 2;
+    line.style().endMarkerType = 2;
+
+    if (connectionsDatabase) {
+      connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
+    } // Adding current connection to the all connections
+    // Storage for current connection
+
+
+    var connection = {
+      firstObject: firstObject,
+      secondObject: secondObject,
+      line: line.objectID()
+    };
+    var connectionsArray = [];
+
+    for (var _i = 0; _i < connections.length; _i++) {
+      connectionsArray.push(connections[_i]);
+    }
+
+    connectionsArray.push(connection); // Saving Connection Info to Sketch Plugin
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey))
+
+    if (currentGroup) {
+      // If we already have group
+      currentGroup.addLayers([line]);
+    } else {
+      // If we don't have a group
+      // Creating a group
+      var group = new Group({
+        parent: currentParentGroup,
+        name: 'Arrows',
+        locked: true,
+        layers: [line]
+      }); // Moving this group to the bottom of the page
+
+      group.moveToBack();
+    }
+  }
+});
+function updateArrows(context) {
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All unlocked arrows are updated 🚀"); // TO DO: Make a function for redrawing all the points
+}
+function updateLayerNames(context) {
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All Layers are updated 🎉");
+}
+function settings(context) {
+  // Shop Popup for asking arrow type
+  var options = ['Link Arrow', 'Back Arrow'];
+  var selection = UI.getSelectionFromUser("Please choose link type", options);
+  var ok = selection[2];
+  var value = options[selection[1]];
+
+  if (ok) {
+    // If user specified decision
+    log(value);
+  }
+} // var sharedLayerStylesForContext = function(context) {
+// 	var dict = {};
+// 	if(sketchVersion < sketchVersion51) return dict;
+// 	var doc = context.document || context.actionContext.document,
+// 		localStyles = doc.documentData().layerStyles().sharedStyles(),
+// 		foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
+// 		availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
+// 		predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
+// 		borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
+// 		loop = borderStyles.objectEnumerator(),
+// 		sharedStyle;
+// 	while(sharedStyle = loop.nextObject()) {
+// 		dict[sharedStyle.objectID()] = sharedStyle;
+// 	}
+// 	return dict;
+// }
+
+function multiplyLayerByXY(layer, xScale, yScale) {
+  var scaledRect = {
+    origin: {
+      x: layer.rect().origin.x,
+      y: layer.rect().origin.y
+    },
+    size: {
+      width: layer.rect().size.width * xScale,
+      height: layer.rect().size.height * yScale
+    }
+  };
+  layer.rect = scaledRect;
+}
+
+/***/ }),
+
+/***/ "sketch":
 /*!*************************!*\
   !*** external "sketch" ***!
   \*************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch")},"sketch/dom":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch");
+
+/***/ }),
+
+/***/ "sketch/dom":
 /*!*****************************!*\
   !*** external "sketch/dom" ***!
   \*****************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/dom")},"sketch/ui":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/dom");
+
+/***/ }),
+
+/***/ "sketch/ui":
 /*!****************************!*\
   !*** external "sketch/ui" ***!
   \****************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/ui")},util:
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/ui");
+
+/***/ }),
+
+/***/ "util":
 /*!***********************!*\
   !*** external "util" ***!
   \***********************/
-/*! no static exports found */function(e,t){e.exports=require("util")}});"default"===e&&"function"==typeof r?r(t):r[e](t)}that.onRun=__skpm_run.bind(this,"default"),that.updateArrows=__skpm_run.bind(this,"updateArrows"),that.updateLayerNames=__skpm_run.bind(this,"updateLayerNames"),that.settings=__skpm_run.bind(this,"settings");
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("util");
+
+/***/ })
+
+/******/ });
+  if (key === 'default' && typeof exports === 'function') {
+    exports(context);
+  } else {
+    exports[key](context);
+  }
+}
+that['onRun'] = __skpm_run.bind(this, 'default');
+that['updateArrows'] = __skpm_run.bind(this, 'updateArrows');
+that['updateLayerNames'] = __skpm_run.bind(this, 'updateLayerNames');
+that['settings'] = __skpm_run.bind(this, 'settings')
+
+//# sourceMappingURL=script.js.map
