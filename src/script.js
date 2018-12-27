@@ -4,20 +4,16 @@ const { toArray } = require('util')
 var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
 
-var pluginKey = "userflows"
+var pluginKey = "flowArrows"
 var connections = []
 const document = sketch.fromNative(context.document)
 const page = document.selectedPage
-const doc = sketch.getSelectedDocument()
 var docData = context.document.documentData()
 var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
-var command = context.command
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage()
-var currentGroup
 var selection = context.selection
+var currentGroup
 
-var array = []
-var dictionary 
 
 export default function() {
 
@@ -56,6 +52,7 @@ export default function() {
           var secondLayerPosY = secondLayerPos.midY()
           // Saving object ID for not recreating new arrows
           var secondObject = layer.objectID()
+
           var lineAvailable = false
           var lineObject
 
@@ -63,7 +60,6 @@ export default function() {
           if(connectionsDatabase) {
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
-            log("Initial"+connectionsDatabase)
             for(var y = 0; y < connectionsDatabase.count(); y++){
               
               if(firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject){
@@ -121,21 +117,21 @@ export default function() {
             var middlePosY = (firstLayerPosY + secondLayerPosY)/2
 
             // Drawing a line
-            var path = NSBezierPath.bezierPath();
+            var path = NSBezierPath.bezierPath()
           
             // Adding points
-            path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY));
-            path.lineToPoint(NSMakePoint(middlePosX,firstLayerPosY));
-            path.lineToPoint(NSMakePoint(middlePosX,secondLayerPosY));
-            path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY));
+            path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+            path.lineToPoint(NSMakePoint(middlePosX,firstLayerPosY))
+            path.lineToPoint(NSMakePoint(middlePosX,secondLayerPosY))
+            path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
 
             // Painting the line
-            var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // TODO: Need to find a way, how to make corners rounded 
+            var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
             
             // Making middle points rounded
             var points = line.layers().firstObject().points()
-            points[1].cornerRadius = 20;
-            points[2].cornerRadius = 20;
+            points[1].cornerRadius = 20
+            points[2].cornerRadius = 20
 
             // Providing Settings for the arrow
             line.setName("Arrow")
@@ -148,7 +144,6 @@ export default function() {
 
             if(connectionsDatabase){
               connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
-              log('awdawd'+connections.__proto__)
             }
             // Adding current connection to the all connections
             // log(connections[0])
@@ -169,7 +164,7 @@ export default function() {
             // const connectionsArray = [connections[0]];
             // log(connectionsArray);
             connectionsArray.push(connection)
-            log("AFTER "+connectionsArray);
+  
 
             // log("Connection: " + connections)
 
@@ -177,7 +172,7 @@ export default function() {
             context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey)
             connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
             // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
-            log("FINA; "+connections)
+  
 
 
             if(currentGroup){
@@ -198,9 +193,6 @@ export default function() {
               group.moveToBack()
             }
           }
-        
-
-          
         
         }
 
