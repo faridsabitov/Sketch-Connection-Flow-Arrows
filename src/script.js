@@ -64,6 +64,7 @@ export default function() {
           if(connectionsDatabase) {
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
+            log("Initial"+connectionsDatabase)
             for(var y = 0; y < connectionsDatabase.count(); y++){
               
               if(firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject){
@@ -148,25 +149,36 @@ export default function() {
 
             if(connectionsDatabase){
               connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
-              log(connections)
-
+              log('awdawd'+connections.__proto__)
             }
             // Adding current connection to the all connections
-            
+            // log(connections[0])
+            // log("First:" + firstObject)
+            // log("Second" + secondObject)
 
             // Storage for current connection
-            var connection = [{
+            var connection = {
               firstObject : firstObject,
               secondObject : secondObject,
               line : line.objectID()
-            }]
+            }
 
-            connections.push(connection)
+            let connectionsArray = []
+            for (let i = 0; i < connections.length; i ++) {
+              connectionsArray.push(connections[i])
+            }
+            // const connectionsArray = [connections[0]];
+            // log(connectionsArray);
+            connectionsArray.push(connection)
+            log("AFTER "+connectionsArray);
+
+            // log("Connection: " + connections)
 
             // Saving Connection Info to Sketch Plugin
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, pluginKey)
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey)
+            connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey)
             // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
-            log(connections)
+            log("FINA; "+connections)
 
 
             if(currentGroup){

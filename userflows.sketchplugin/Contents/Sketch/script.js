@@ -165,6 +165,8 @@ var dictionary;
           if (connectionsDatabase) {
             // if we have connectionDatabase for this document
             // Need to check if we have this connection already
+            log("Initial" + connectionsDatabase);
+
             for (var y = 0; y < connectionsDatabase.count(); y++) {
               if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
                 // if we found that we have this object in connection database already
@@ -241,21 +243,35 @@ var dictionary;
 
             if (connectionsDatabase) {
               connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
-              log(connections);
+              log('awdawd' + connections.__proto__);
             } // Adding current connection to the all connections
+            // log(connections[0])
+            // log("First:" + firstObject)
+            // log("Second" + secondObject)
             // Storage for current connection
 
 
-            var connection = [{
+            var connection = {
               firstObject: firstObject,
               secondObject: secondObject,
               line: line.objectID()
-            }];
-            connections.push(connection); // Saving Connection Info to Sketch Plugin
+            };
+            var connectionsArray = [];
 
-            context.command.setValue_forKey_onLayer_forPluginIdentifier(connections, "connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
+            for (var _i = 0; _i < connections.length; _i++) {
+              connectionsArray.push(connections[_i]);
+            } // const connectionsArray = [connections[0]];
+            // log(connectionsArray);
 
-            log(connections);
+
+            connectionsArray.push(connection);
+            log("AFTER " + connectionsArray); // log("Connection: " + connections)
+            // Saving Connection Info to Sketch Plugin
+
+            context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey);
+            connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData,'myplugin'))
+
+            log("FINA; " + connections);
 
             if (currentGroup) {
               // If we already have group
