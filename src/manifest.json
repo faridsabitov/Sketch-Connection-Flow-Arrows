@@ -23,6 +23,7 @@
       "description" : "Update all the arrows on selected group",
       "identifier": "updateArrows",
       "script": "./script.js",
+      "shortcut" : "command shift r",
       "handler": "updateArrows"
     },
     {
