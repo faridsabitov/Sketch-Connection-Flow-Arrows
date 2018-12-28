@@ -108,7 +108,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var _require = __webpack_require__(/*! util */ "util"),
-    toArray = _require.toArray;
+    toArray = _require.toArray; //
+//  Variables
+//
+
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
@@ -122,7 +125,13 @@ var docData = context.document.documentData();
 var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 var selection = context.selection;
-var currentGroup;
+var currentGroup; // Saying that there is no line
+
+var lineAvailable = false;
+var lineObject; //
+//  Default Function
+//
+
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   // Checking all the groups that we have
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
@@ -158,33 +167,10 @@ var currentGroup;
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select only two layers");
-  } // Saying that there is no line
+  } // if there is a line in Plugin Database, we are showing it
 
 
-  var lineAvailable = false;
-  var lineObject; // Need to check if we have this information already
-
-  if (connectionsDatabase) {
-    // if we have connectionDatabase for this document
-    // Need to check if we have this connection already
-    for (var y = 0; y < connectionsDatabase.count(); y++) {
-      if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
-        // if we found that we have this object in connection database already
-        if (secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject) {
-          // if we found that we have this object in connection database already
-          // Do we have a line inside "Arrows" group?
-          // TODO: Need to add check system if we don't have group
-          for (var z = 0; z < currentGroup.layers().count(); z++) {
-            if (currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {
-              // we have this line
-              lineAvailable = true;
-              lineObject = currentGroup.layers()[z];
-            }
-          }
-        }
-      }
-    }
-  }
+  lineObject = checkConnections(firstObject, secondObject);
 
   if (lineAvailable) {
     // if line is available
@@ -272,10 +258,15 @@ var currentGroup;
       group.moveToBack();
     }
   }
-});
+}); //
+// Functions
+//
+
 function updateArrows(context) {
-  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All unlocked arrows are updated 🚀"); // TO DO: Make a function for redrawing all the points
+  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document); // TODO: Need to show amount of updated arrows and deleted ones
+  // TODO: Need to make a function that will delete arrows and connection itself, if there is no object
+
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀"); // TO DO: Make a function for redrawing all the points
 }
 function updateLayerNames(context) {
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
@@ -292,22 +283,26 @@ function settings(context) {
     // If user specified decision
     log(value);
   }
-} // var sharedLayerStylesForContext = function(context) {
-// 	var dict = {};
-// 	if(sketchVersion < sketchVersion51) return dict;
-// 	var doc = context.document || context.actionContext.document,
-// 		localStyles = doc.documentData().layerStyles().sharedStyles(),
-// 		foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
-// 		availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
-// 		predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
-// 		borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
-// 		loop = borderStyles.objectEnumerator(),
-// 		sharedStyle;
-// 	while(sharedStyle = loop.nextObject()) {
-// 		dict[sharedStyle.objectID()] = sharedStyle;
-// 	}
-// 	return dict;
-// }
+}
+
+var sharedLayerStylesForContext = function sharedLayerStylesForContext(context) {
+  var dict = {};
+  if (sketchVersion < sketchVersion51) return dict;
+  var doc = context.document || context.actionContext.document,
+      localStyles = doc.documentData().layerStyles().sharedStyles(),
+      foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
+      availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
+      predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
+      borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
+      loop = borderStyles.objectEnumerator(),
+      sharedStyle;
+
+  while (sharedStyle = loop.nextObject()) {
+    dict[sharedStyle.objectID()] = sharedStyle;
+  }
+
+  return dict;
+};
 
 function multiplyLayerByXY(layer, xScale, yScale) {
   var scaledRect = {
@@ -321,6 +316,34 @@ function multiplyLayerByXY(layer, xScale, yScale) {
     }
   };
   layer.rect = scaledRect;
+}
+
+function checkConnections(firstObject, secondObject) {
+  var lineObject; // Need to check if we have this information already
+
+  if (connectionsDatabase) {
+    // if we have connectionDatabase for this document
+    // Need to check if we have this connection already
+    for (var y = 0; y < connectionsDatabase.count(); y++) {
+      if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
+        // if we found that we have this object in connection database already
+        if (secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject) {
+          // if we found that we have this object in connection database already
+          // Do we have a line inside "Arrows" group?
+          // TODO: Need to add check system if we don't have group
+          for (var z = 0; z < currentGroup.layers().count(); z++) {
+            if (currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {
+              // we have this line
+              lineAvailable = true;
+              lineObject = currentGroup.layers()[z];
+            }
+          }
+        }
+      }
+    }
+
+    return lineObject;
+  }
 }
 
 /***/ }),

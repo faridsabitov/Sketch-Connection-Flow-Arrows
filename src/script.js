@@ -1,9 +1,12 @@
 import sketch from 'sketch'
 const { toArray } = require('util')
 
+//
+//  Variables
+//
+
 var UI = require('sketch/ui')
 var Group = require('sketch/dom').Group
-
 var pluginKey = "flowArrows"
 var connections = []
 const document = sketch.fromNative(context.document)
@@ -14,6 +17,14 @@ var currentParentGroup = docData.currentPage().currentArtboard() || docData.curr
 var selection = context.selection
 var currentGroup
 
+// Saying that there is no line
+var lineAvailable = false
+var lineObject
+
+
+//
+//  Default Function
+//
 
 export default function() {
 
@@ -62,36 +73,9 @@ export default function() {
     sketch.UI.message("Please select only two layers")
   }
 
-  // Saying that there is no line
-  var lineAvailable = false
-  var lineObject
-
-  // Need to check if we have this information already
-  if(connectionsDatabase) {
-    // if we have connectionDatabase for this document
-    // Need to check if we have this connection already
-    for(var y = 0; y < connectionsDatabase.count(); y++){
-      
-      if(firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject){
-        // if we found that we have this object in connection database already
-        
-        if(secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject){
-          // if we found that we have this object in connection database already
-
-          // Do we have a line inside "Arrows" group?
-          // TODO: Need to add check system if we don't have group
-          for(var z = 0; z < currentGroup.layers().count(); z++){
-            if(currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {                      
-              // we have this line
-              lineAvailable = true
-              lineObject = currentGroup.layers()[z]
-            } 
-          }
-        }
-      }
-    }
-  }
-
+  // if there is a line in Plugin Database, we are showing it
+  lineObject = checkConnections(firstObject,secondObject)
+  
   if(lineAvailable) {
     // if line is available
 
@@ -168,6 +152,8 @@ export default function() {
     context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey)
     // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey))
 
+    
+
     if(currentGroup){
       // If we already have group
       currentGroup.addLayers([line])
@@ -188,9 +174,15 @@ export default function() {
   }
 }
 
+//
+// Functions
+//
+
 export function updateArrows(context) {
   const document = sketch.fromNative(context.document)
-  sketch.UI.message("All unlocked arrows are updated 🚀")
+  // TODO: Need to show amount of updated arrows and deleted ones
+  // TODO: Need to make a function that will delete arrows and connection itself, if there is no object
+  sketch.UI.message("All arrows are updated 🚀")
   // TO DO: Make a function for redrawing all the points
 }
 
@@ -216,27 +208,27 @@ export function settings(context) {
 }
 
 
-// var sharedLayerStylesForContext = function(context) {
+var sharedLayerStylesForContext = function(context) {
 
-// 	var dict = {};
+	var dict = {};
 
-// 	if(sketchVersion < sketchVersion51) return dict;
+	if(sketchVersion < sketchVersion51) return dict;
 
-// 	var doc = context.document || context.actionContext.document,
-// 		localStyles = doc.documentData().layerStyles().sharedStyles(),
-// 		foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
-// 		availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
-// 		predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
-// 		borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
-// 		loop = borderStyles.objectEnumerator(),
-// 		sharedStyle;
+	var doc = context.document || context.actionContext.document,
+		localStyles = doc.documentData().layerStyles().sharedStyles(),
+		foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
+		availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
+		predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
+		borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
+		loop = borderStyles.objectEnumerator(),
+		sharedStyle;
 	
-// 	while(sharedStyle = loop.nextObject()) {
-// 		dict[sharedStyle.objectID()] = sharedStyle;
-// 	}
+	while(sharedStyle = loop.nextObject()) {
+		dict[sharedStyle.objectID()] = sharedStyle;
+	}
 
-// 	return dict;
-// }
+	return dict;
+}
 
 function multiplyLayerByXY(layer,xScale,yScale) {
   const scaledRect = {
@@ -250,4 +242,34 @@ function multiplyLayerByXY(layer,xScale,yScale) {
     }
   }
   layer.rect = scaledRect;
+}
+
+function checkConnections(firstObject,secondObject) {
+  var lineObject
+  // Need to check if we have this information already
+  if(connectionsDatabase) {
+    // if we have connectionDatabase for this document
+    // Need to check if we have this connection already
+    for(var y = 0; y < connectionsDatabase.count(); y++){
+      
+      if(firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject){
+        // if we found that we have this object in connection database already
+        
+        if(secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject){
+          // if we found that we have this object in connection database already
+
+          // Do we have a line inside "Arrows" group?
+          // TODO: Need to add check system if we don't have group
+          for(var z = 0; z < currentGroup.layers().count(); z++){
+            if(currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {                      
+              // we have this line
+              lineAvailable = true
+              lineObject = currentGroup.layers()[z]
+            } 
+          }
+        }
+      }
+    }
+    return lineObject
+  }
 }
