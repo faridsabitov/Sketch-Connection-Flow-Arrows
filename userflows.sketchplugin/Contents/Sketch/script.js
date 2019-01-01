@@ -376,46 +376,66 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
 
     var _lineObject = document.getLayerWithID(lineID);
 
-    var directionString = String(direction);
+    _lineObject.remove(); // const directionString = String(direction)
 
-    if (firstObject && secondObject && _lineObject) {
-      // If we have all the objects
-      // need to specify new size and location for the arrow shape
-      switch (directionString) {
-        case "right":
-          if (firstObject.frame.y + firstObject.frame.height / 2 < secondObject.frame.y + secondObject.frame.height / 2) {
-            // second object is higher
-            _lineObject.frame.x = firstObject.frame.x + firstObject.frame.width;
-            _lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width);
-            _lineObject.frame.y = firstObject.frame.y + secondObject.frame.height / 2;
-            _lineObject.frame.height = secondObject.frame.y + secondObject.frame.height / 2 - (firstObject.frame.y + firstObject.frame.height / 2); // lineObject.setIsFlippedVertical(false)
-            // lineObject.frame().y = firstLayerPos.midY()
-            // lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY()
-          } else {
-            // second object is lower
-            _lineObject.frame.x = firstObject.frame.x + firstObject.frame.width;
-            _lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width);
-            _lineObject.frame.y = secondObject.frame.y + secondObject.frame.height / 2;
-            _lineObject.frame.height = firstObject.frame.y + firstObject.frame.height / 2 - (secondObject.frame.y + secondObject.frame.height / 2); // lineObject.setIsFlippedVertical(true)
-            // lineObject.frame().y = secondLayerPos.midY()
-            // lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY()
-          }
 
-          break;
+    var _direction = getDirection(firstObjectID, secondObjectID);
 
-        case "left":
-          log("no");
-          line.frame.x = firstObject.frame.x + firstObject.frame.width;
-          line.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width);
-          line.frame.y = firstObject.frame.y + secondObject.frame.height / 2;
-          line.frame.height = secondObject.frame.y + secondObject.frame.height / 2 - (firstObject.frame.y + firstObject.frame.height / 2);
-          break;
+    var line = drawLine(firstObjectID, secondObjectID, _direction);
+    addToArrowsGroup(line); // Storage for current connection
 
-        default:
-          log("dwedw");
-      }
-    } else {} // log(firstObject)
+    var connection = {
+      firstObject: firstObjectID,
+      secondObject: secondObjectID,
+      direction: _direction,
+      line: line.objectID()
+    };
+    connectionsArray.push(connection); // Saving Connection Info to Sketch Plugin
 
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "arrowConnections", docData, pluginKey); // if(firstObject && secondObject && lineObject){
+    //   // If we have all the objects
+    //   // need to specify new size and location for the arrow shape
+    //   switch(directionString) {
+    //     case "right":
+    //       log(lineObject)
+    //       if(firstObject.frame.y+firstObject.frame.height/2 < secondObject.frame.y+secondObject.frame.height/2){
+    //         // second object is lower
+    //         if(lineObject.frame.y == (firstObject.frame.y+firstObject.frame.height/2)){
+    //           // just reposition, don't need to reverse
+    //           lineObject.frame.x = firstObject.frame.x + firstObject.frame.width
+    //           lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width)
+    //           lineObject.frame.y = firstObject.frame.y + (firstObject.frame.height/2)
+    //           lineObject.frame.height = (secondObject.frame.y + (secondObject.frame.height / 2)) - (firstObject.frame.y + (firstObject.frame.height/2))
+    //         } else {
+    //           // lineObject.setIsFlippedVertical(true)
+    //         }
+    //         // lineObject.setIsFlippedVertical(false)
+    //         // lineObject.frame().y = firstLayerPos.midY()
+    //         // lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY()
+    //       } else {
+    //         // second object is higher
+    //         lineObject.frame.x = firstObject.frame.x + firstObject.frame.width
+    //         lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width)
+    //         lineObject.frame.y = secondObject.frame.y + (secondObject.frame.height/2)
+    //         lineObject.frame.height = (firstObject.frame.y + (firstObject.frame.height/2)-(secondObject.frame.y + (secondObject.frame.height / 2)))
+    //         // lineObject.setIsFlippedVertical(true)
+    //         // lineObject.frame().y = secondLayerPos.midY()
+    //         // lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY()
+    //       }
+    //       break;
+    //     case "left":
+    //       log("no")
+    //       line.frame.x = firstObject.frame.x + firstObject.frame.width
+    //       line.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width)
+    //       line.frame.y = firstObject.frame.y + (secondObject.frame.height/2)
+    //       line.frame.height = (secondObject.frame.y + (secondObject.frame.height / 2)) - (firstObject.frame.y + (firstObject.frame.height/2))
+    //       break;   
+    //     default:
+    //       log("dwedw")
+    //   }
+    // } else {
+    // }
+    // // log(firstObject)
   } else {} // If we don't have "Arrows" group 
     // TODO: We need to check if we have a group for "Arrows"
     // If yes,
@@ -431,8 +451,8 @@ function createArrow(firstObject, secondObject) {
   var secondObjectID = secondObject.objectID(); // Need to understand the direction
   // TODO: Because Sketch is not allowing to get order of selected elements, we will select elements based on it's ID (creation order)
 
-  var direction = getDirection(firstObject, secondObject);
-  var line = drawLine(firstObject, secondObject, direction);
+  var direction = getDirection(firstObjectID, secondObjectID);
+  var line = drawLine(firstObjectID, secondObjectID, direction);
   addToArrowsGroup(line); // Storage for current connection
 
   var connection = {
@@ -446,17 +466,23 @@ function createArrow(firstObject, secondObject) {
   context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "arrowConnections", docData, pluginKey);
 }
 
-function getDirection(firstObject, secondObject) {
+function getDirection(firstObjectID, secondObjectID) {
   // Get direction from the source object
-  var diffX = firstObject.frame().midX() - secondObject.frame().midX();
-  var diffY = firstObject.frame().midY() - secondObject.frame().midY();
+  var firstObjectByID = document.getLayerWithID(firstObjectID);
+  var secondObjectByID = document.getLayerWithID(secondObjectID);
+  var firstObjectByIDMidX = firstObjectByID.frame.x + firstObjectByID.frame.width / 2;
+  var firstObjectByIDMidY = firstObjectByID.frame.y + firstObjectByID.frame.height / 2;
+  var secondObjectByIDMidX = secondObjectByID.frame.x + secondObjectByID.frame.width / 2;
+  var secondObjectByIDMidY = secondObjectByID.frame.y + secondObjectByID.frame.height / 2;
+  var diffX = firstObjectByIDMidX - secondObjectByIDMidX;
+  var diffY = firstObjectByIDMidY - secondObjectByIDMidY;
   var absDiffX = Math.abs(diffX);
   var absDiffY = Math.abs(diffY);
   var direction;
 
-  if (secondObject.frame().midX() > firstObject.frame().midX()) {
+  if (secondObjectByIDMidX > firstObjectByIDMidX) {
     // Right Half
-    if (secondObject.frame().midY() > firstObject.frame().midY()) {
+    if (secondObjectByIDMidY > firstObjectByIDMidY) {
       // Bottom quarter
       if (diffX > diffY) {
         direction = "bottom";
@@ -473,7 +499,7 @@ function getDirection(firstObject, secondObject) {
     }
   } else {
     // Left Half
-    if (secondObject.frame().midY() > firstObject.frame().midY()) {
+    if (secondObjectByIDMidY > firstObjectByIDMidY) {
       // Bottom quarter
       if (absDiffX > absDiffY) {
         direction = "left";
@@ -493,19 +519,21 @@ function getDirection(firstObject, secondObject) {
   return direction;
 }
 
-function drawLine(firstObject, secondObject, direction) {
-  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY; // Drawing a line
+function drawLine(firstObjectID, secondObjectID, direction) {
+  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY;
+  var firstObjectByID = document.getLayerWithID(firstObjectID);
+  var secondObjectByID = document.getLayerWithID(secondObjectID); // Drawing a line
 
   var path = NSBezierPath.bezierPath(); // Based on direction, we need to specify connection points
 
   switch (direction) {
     case "top":
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame().midX();
-      firstLayerPosY = firstObject.frame().minY(); // Second Layer Position End Point Position
+      firstLayerPosX = firstObjectByID.frame.x + firstObjectByID.frame.width / 2;
+      firstLayerPosY = firstObjectByID.frame.y; // Second Layer Position End Point Position
 
-      secondLayerPosX = secondObject.frame().midX();
-      secondLayerPosY = secondObject.frame().maxY(); // Middle Points
+      secondLayerPosX = secondObjectByID.frame.x + secondObjectByID.frame.width / 2;
+      secondLayerPosY = secondObjectByID.frame.y + secondObjectByID.frame.height; // Middle Points
 
       middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
       middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -518,11 +546,11 @@ function drawLine(firstObject, secondObject, direction) {
 
     case "right":
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame().maxX();
-      firstLayerPosY = firstObject.frame().midY(); // Second Layer Position End Point Position
+      firstLayerPosX = firstObjectByID.frame.x + firstObjectByID.frame.width;
+      firstLayerPosY = firstObjectByID.frame.y + firstObjectByID.frame.height / 2; // Second Layer Position End Point Position
 
-      secondLayerPosX = secondObject.frame().minX();
-      secondLayerPosY = secondObject.frame().midY(); // Middle Points
+      secondLayerPosX = secondObjectByID.frame.x;
+      secondLayerPosY = secondObjectByID.frame.y + secondObjectByID.frame.height / 2; // Middle Points
 
       middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
       middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -535,14 +563,14 @@ function drawLine(firstObject, secondObject, direction) {
 
     case "bottom":
       // First Layer Position Start Point Position
-      log(firstLayerPosX = firstObject.frame().midX());
-      log(firstLayerPosY = firstObject.frame().maxY()); // Second Layer Position End Point Position
+      firstLayerPosX = firstObjectByID.frame.x + firstObjectByID.frame.width / 2;
+      firstLayerPosY = firstObjectByID.frame.y + firstObjectByID.frame.height; // Second Layer Position End Point Position
 
-      log(secondLayerPosX = secondObject.frame().midX());
-      log(secondLayerPosY = secondObject.frame().minY()); // Middle Points
+      secondLayerPosX = secondObjectByID.frame.x + secondObjectByID.frame.width / 2;
+      secondLayerPosY = secondObjectByID.frame.y; // Middle Points
 
-      log(middlePosX = (firstLayerPosX + secondLayerPosX) / 2);
-      log(middlePosY = (firstLayerPosY + secondLayerPosY) / 2); // Connecting points
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
 
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
@@ -552,11 +580,11 @@ function drawLine(firstObject, secondObject, direction) {
 
     case "left":
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame().minX();
-      firstLayerPosY = firstObject.frame().midY(); // Second Layer Position End Point Position
+      firstLayerPosX = firstObjectByID.frame.x;
+      firstLayerPosY = firstObjectByID.frame.y + firstObjectByID.frame.height / 2; // Second Layer Position End Point Position
 
-      secondLayerPosX = secondObject.frame().maxX();
-      secondLayerPosY = secondObject.frame().midY(); // Middle Points
+      secondLayerPosX = secondObjectByID.frame.x + secondObjectByID.frame.width;
+      secondLayerPosY = secondObjectByID.frame.y + secondObjectByID.frame.height / 2; // Middle Points
 
       middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
       middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
