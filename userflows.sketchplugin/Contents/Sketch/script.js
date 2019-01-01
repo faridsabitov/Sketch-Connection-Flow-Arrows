@@ -95,13 +95,13 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateArrows, updateLayerNames, settings */
+/*! exports provided: default, updateArrows, cleanArrows, settings */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrows", function() { return updateArrows; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateLayerNames", function() { return updateLayerNames; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "cleanArrows", function() { return cleanArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
@@ -118,159 +118,67 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
 var pluginKey = "flowArrows";
-var connections = [];
+var arrowConnections = [];
+var connectionsArray = [];
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 var page = document.selectedPage;
 var docData = context.document.documentData();
-var connectionsDatabase = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
+var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 var selection = context.selection;
-var currentGroup; // Saying that there is no line
-
-var lineAvailable = false;
-var lineObject; //
+var currentGroup;
+var lineObject;
+var sourceObject; // currently Sketch can't provide really firsrt selection
+//
 //  Default Function
 //
 
-/* harmony default export */ __webpack_exports__["default"] = (function () {
-  // Checking all the groups that we have
-  for (var i = 0; i < currentParentGroup.layers().count(); i++) {
-    if (currentParentGroup.layers()[i].name() == "Arrows") {
-      // If we already have "Arrow" group we need to save it's folder
-      currentGroup = currentParentGroup.layers()[i];
-    }
-  }
+/* harmony default export */ __webpack_exports__["default"] = (function (context) {
+  // Check if we have "Arrows" group
+  currentGroup = checkForArrowGroup(); //Check if we have more than one selection
 
-  if (selection.count() == 2) {
-    // When user selected two layers
-    for (var i = 0; i < selection.count(); i++) {
-      // Checking through all selected layers
-      if (selection[i].class() == "MSSymbolInstance" || selection[i].class() == "MSRectangleShape" || selection[i].class() == "MSLayerGroup") {
-        // If it's symbol, shape or a group
-        // First Layer Position Start Point Position
-        var firstLayerPos = selection[0].frame();
-        var firstLayerPosX = firstLayerPos.maxX();
-        var firstLayerPosY = firstLayerPos.midY(); // Saving object ID for not recreating new arrows
+  if (selection.count() > 1) {
+    // When user selected more than one layer
+    // Need to define source object first
+    sourceObject = selection.firstObject(); // if there is a line in Plugin Database, we are showing it
+    // lineObject = checkConnections(firstObject,secondObject)
+    // Fresh Start
 
-        var firstObject = selection[0].objectID(); // Second Layer Position End Point Position
-
-        var secondLayerPos = selection[1].frame();
-        var secondLayerPosX = secondLayerPos.minX();
-        var secondLayerPosY = secondLayerPos.midY(); // Saving object ID for not recreating new arrows
-
-        var secondObject = selection[1].objectID();
-      } else {
-        // If it's not an appropriate layer
-        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Only groups, shapes and symbols are supported");
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != sourceObject.objectID()) {
+        createArrow(sourceObject, selection[g]);
       }
     }
   } else {
     // When user didn't select anything
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select only two layers");
-  } // if there is a line in Plugin Database, we are showing it
-
-
-  lineObject = checkConnections(firstObject, secondObject);
-
-  if (lineAvailable) {
-    // if line is available
-    // need to specify new size and location for the arrow shape
-    lineObject.frame().x = firstLayerPos.maxX();
-    lineObject.frame().width = secondLayerPos.minX() - firstLayerPos.maxX();
-    lineObject.style().endMarkerType = 2;
-
-    if (firstLayerPos.midY() < secondLayerPos.midY()) {
-      // second object is higher
-      lineObject.setIsFlippedVertical(false);
-      lineObject.frame().y = firstLayerPos.midY();
-      lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY();
-    } else {
-      // second object is lower
-      lineObject.setIsFlippedVertical(true);
-      lineObject.frame().y = secondLayerPos.midY();
-      lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY();
-    }
-  } else {
-    // if we don't have a line, need to create a new one
-    // Middle Points
-    var middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    var middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Drawing a line
-
-    var path = NSBezierPath.bezierPath(); // Adding points
-
-    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
-    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
-    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
-
-    var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
-
-    var points = line.layers().firstObject().points();
-    points[1].cornerRadius = 20;
-    points[2].cornerRadius = 20; // Providing Settings for the arrow
-
-    line.setName("Arrow"); // Styling Border Style
-
-    var border = line.style().addStylePartOfType(1);
-    border.color = MSColor.colorWithRGBADictionary({
-      r: 0.89,
-      g: 0.89,
-      b: 0.89,
-      a: 1
-    });
-    border.thickness = 2;
-    line.style().endMarkerType = 2;
-
-    if (connectionsDatabase) {
-      connections = context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey);
-    } // Adding current connection to the all connections
-    // Storage for current connection
-
-
-    var connection = {
-      firstObject: firstObject,
-      secondObject: secondObject,
-      line: line.objectID()
-    };
-    var connectionsArray = [];
-
-    for (var _i = 0; _i < connections.length; _i++) {
-      connectionsArray.push(connections[_i]);
-    }
-
-    connectionsArray.push(connection); // Saving Connection Info to Sketch Plugin
-
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "connections", docData, pluginKey); // log(context.command.valueForKey_onLayer_forPluginIdentifier("connections", docData, pluginKey))
-
-    if (currentGroup) {
-      // If we already have group
-      currentGroup.addLayers([line]);
-    } else {
-      // If we don't have a group
-      // Creating a group
-      var group = new Group({
-        parent: currentParentGroup,
-        name: 'Arrows',
-        locked: true,
-        layers: [line]
-      }); // Moving this group to the bottom of the page
-
-      group.moveToBack();
-    }
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
   }
 }); //
-// Functions
+// Plugin Commands
 //
 
 function updateArrows(context) {
-  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document); // TODO: Need to show amount of updated arrows and deleted ones
+  // TODO: Need to show amount of updated arrows and deleted ones
   // TODO: Need to make a function that will delete arrows and connection itself, if there is no object
+  // TODO: Need to go through all the connections and check if we have all the object
+  getConnectionsFromPluginData(); // TODO: If there is no database, we need to clean everything. Don't forget about active artboard
 
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀"); // TO DO: Make a function for redrawing all the points
+  log(connectionsArray);
+  var updateArrowsCounter = connectionsArray.length;
+
+  for (var i = 0; i < updateArrowsCounter; i++) {
+    // Need to go through each connection and update arrow position
+    updateArrow(connectionsArray[i].firstObject, connectionsArray[i].secondObject, connectionsArray[i].direction, connectionsArray[i].line);
+  }
+
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
 }
-function updateLayerNames(context) {
+function cleanArrows(context) {
   var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All Layers are updated 🎉");
+  checkForArrowGroup();
+  currentGroup.ungroup();
+  context.command.setValue_forKey_onLayer_forPluginIdentifier(null, "arrowConnections", docData, pluginKey);
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All Connections are deleted 🎉");
 }
 function settings(context) {
   // Shop Popup for asking arrow type
@@ -283,66 +191,258 @@ function settings(context) {
     // If user specified decision
     log(value);
   }
+} //
+// Functions
+//
+
+function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
+  currentGroup = checkForArrowGroup();
+
+  if (currentGroup) {
+    // If we have already created group before
+    var firstObject = document.getLayerWithID(firstObjectID);
+    var secondObject = document.getLayerWithID(secondObjectID);
+
+    var _lineObject = document.getLayerWithID(lineID);
+
+    if (firstObject && secondObject && _lineObject) {
+      _lineObject.remove(); // TODO When we are removing the line, need to remove this info from Sketch Plugin too
+
+
+      var _direction = getDirection(firstObjectID, secondObjectID);
+
+      var line = drawLine(firstObjectID, secondObjectID, _direction);
+      addToArrowsGroup(line);
+      getConnectionsFromPluginData(); // Storage for current connection
+
+      var connection = {
+        firstObject: firstObjectID,
+        secondObject: secondObjectID,
+        direction: _direction,
+        line: line.objectID()
+      };
+      connectionsArray.push(connection); // Saving Connection Info to Sketch Plugin
+
+      context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "arrowConnections", docData, pluginKey);
+    } else {// We don't have some of the object. Need to delete line if there is and connection from database
+    }
+  } else {
+    log("Else"); // If we don't have "Arrows" group 
+  }
 }
 
-var sharedLayerStylesForContext = function sharedLayerStylesForContext(context) {
-  var dict = {};
-  if (sketchVersion < sketchVersion51) return dict;
-  var doc = context.document || context.actionContext.document,
-      localStyles = doc.documentData().layerStyles().sharedStyles(),
-      foreignStyles = doc.documentData().valueForKeyPath("foreignLayerStyles.@unionOfObjects.localSharedStyle"),
-      availableStyles = localStyles.arrayByAddingObjectsFromArray(foreignStyles),
-      predicate = NSPredicate.predicateWithFormat("style.firstEnabledFill == nil"),
-      borderStyles = availableStyles.filteredArrayUsingPredicate(predicate),
-      loop = borderStyles.objectEnumerator(),
-      sharedStyle;
+function createArrow(firstObject, secondObject) {
+  // Process of creating new connection
+  var firstObjectID = firstObject.objectID();
+  var secondObjectID = secondObject.objectID(); // Need to understand the direction
+  // TODO: Because Sketch is not allowing to get order of selected elements, we will select elements based on it's ID (creation order)
 
-  while (sharedStyle = loop.nextObject()) {
-    dict[sharedStyle.objectID()] = sharedStyle;
+  var direction = getDirection(firstObjectID, secondObjectID);
+  var line = drawLine(firstObjectID, secondObjectID, direction);
+  addToArrowsGroup(line);
+  getConnectionsFromPluginData(); // Storage for current connection
+
+  var connection = {
+    firstObject: firstObjectID,
+    secondObject: secondObjectID,
+    direction: direction,
+    line: line.objectID()
+  };
+  connectionsArray.push(connection); // Saving Connection Info to Sketch Plugin
+
+  context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsArray, "arrowConnections", docData, pluginKey);
+}
+
+function checkForArrowGroup() {
+  // Checking all the groups that we have
+  for (var i = 0; i < currentParentGroup.layers().count(); i++) {
+    if (currentParentGroup.layers()[i].name() == "Arrows") {
+      // If we already have "Arrow" group we need to save it's folder
+      currentGroup = currentParentGroup.layers()[i];
+    }
   }
 
-  return dict;
-};
-
-function multiplyLayerByXY(layer, xScale, yScale) {
-  var scaledRect = {
-    origin: {
-      x: layer.rect().origin.x,
-      y: layer.rect().origin.y
-    },
-    size: {
-      width: layer.rect().size.width * xScale,
-      height: layer.rect().size.height * yScale
-    }
-  };
-  layer.rect = scaledRect;
+  return currentGroup;
 }
 
-function checkConnections(firstObject, secondObject) {
-  var lineObject; // Need to check if we have this information already
+function getDirection(firstObjectID, secondObjectID) {
+  // Get direction from the source object
+  var firstObjectByID = document.getLayerWithID(firstObjectID);
+  var secondObjectByID = document.getLayerWithID(secondObjectID);
+  var firstObjectByIDMidX = firstObjectByID.frame.x + firstObjectByID.frame.width / 2;
+  var firstObjectByIDMidY = firstObjectByID.frame.y + firstObjectByID.frame.height / 2;
+  var secondObjectByIDMidX = secondObjectByID.frame.x + secondObjectByID.frame.width / 2;
+  var secondObjectByIDMidY = secondObjectByID.frame.y + secondObjectByID.frame.height / 2;
+  var diffX = firstObjectByIDMidX - secondObjectByIDMidX;
+  var diffY = firstObjectByIDMidY - secondObjectByIDMidY;
+  var absDiffX = Math.abs(diffX);
+  var absDiffY = Math.abs(diffY);
+  var direction;
 
-  if (connectionsDatabase) {
-    // if we have connectionDatabase for this document
-    // Need to check if we have this connection already
-    for (var y = 0; y < connectionsDatabase.count(); y++) {
-      if (firstObject == connectionsDatabase[y].firstObject || firstObject == connectionsDatabase[y].secondObject) {
-        // if we found that we have this object in connection database already
-        if (secondObject == connectionsDatabase[y].firstObject || secondObject == connectionsDatabase[y].secondObject) {
-          // if we found that we have this object in connection database already
-          // Do we have a line inside "Arrows" group?
-          // TODO: Need to add check system if we don't have group
-          for (var z = 0; z < currentGroup.layers().count(); z++) {
-            if (currentGroup.layers()[z].objectID() == connectionsDatabase[y].line) {
-              // we have this line
-              lineAvailable = true;
-              lineObject = currentGroup.layers()[z];
-            }
-          }
-        }
+  if (secondObjectByIDMidX > firstObjectByIDMidX) {
+    // Right Half
+    if (secondObjectByIDMidY > firstObjectByIDMidY) {
+      // Bottom quarter
+      if (diffX > diffY) {
+        direction = "bottom";
+      } else {
+        direction = "right";
+      }
+    } else {
+      // Top quarter
+      if (absDiffX > absDiffY) {
+        direction = "right";
+      } else {
+        direction = "top";
       }
     }
+  } else {
+    // Left Half
+    if (secondObjectByIDMidY > firstObjectByIDMidY) {
+      // Bottom quarter
+      if (absDiffX > absDiffY) {
+        direction = "left";
+      } else {
+        direction = "bottom";
+      }
+    } else {
+      // Top quarter
+      if (diffX > diffY) {
+        direction = "left";
+      } else {
+        direction = "top";
+      }
+    }
+  }
 
-    return lineObject;
+  return direction;
+}
+
+function drawLine(firstObjectID, secondObjectID, direction) {
+  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY;
+  var firstObjectByID = document.getLayerWithID(firstObjectID);
+  var secondObjectByID = document.getLayerWithID(secondObjectID); // Drawing a line
+
+  var path = NSBezierPath.bezierPath(); // Based on direction, we need to specify connection points
+
+  switch (direction) {
+    case "top":
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObjectByID.frame.x + firstObjectByID.frame.width / 2;
+      firstLayerPosY = firstObjectByID.frame.y; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObjectByID.frame.x + secondObjectByID.frame.width / 2;
+      secondLayerPosY = secondObjectByID.frame.y + secondObjectByID.frame.height; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+      break;
+
+    case "right":
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObjectByID.frame.x + firstObjectByID.frame.width;
+      firstLayerPosY = firstObjectByID.frame.y + firstObjectByID.frame.height / 2; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObjectByID.frame.x;
+      secondLayerPosY = secondObjectByID.frame.y + secondObjectByID.frame.height / 2; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+      break;
+
+    case "bottom":
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObjectByID.frame.x + firstObjectByID.frame.width / 2;
+      firstLayerPosY = firstObjectByID.frame.y + firstObjectByID.frame.height; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObjectByID.frame.x + secondObjectByID.frame.width / 2;
+      secondLayerPosY = secondObjectByID.frame.y; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+      break;
+
+    case "left":
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObjectByID.frame.x;
+      firstLayerPosY = firstObjectByID.frame.y + firstObjectByID.frame.height / 2; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObjectByID.frame.x + secondObjectByID.frame.width;
+      secondLayerPosY = secondObjectByID.frame.y + secondObjectByID.frame.height / 2; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+      break;
+  } //TODO: Provide a separate file with all the stylings
+  // Painting the line
+
+
+  var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
+
+  var points = line.layers().firstObject().points();
+  points[1].cornerRadius = 20;
+  points[2].cornerRadius = 20; // Providing Settings for the arrow
+
+  line.setName("Arrow"); // Styling Border Style
+
+  var border = line.style().addStylePartOfType(1);
+  border.color = MSColor.colorWithRGBADictionary({
+    r: 0.89,
+    g: 0.89,
+    b: 0.89,
+    a: 1
+  });
+  border.thickness = 2;
+  line.style().endMarkerType = 2;
+  return line;
+}
+
+function addToArrowsGroup(line) {
+  if (currentGroup) {
+    // If we already have group
+    currentGroup.addLayers([line]);
+  } else {
+    // If we don't have a group
+    // Creating a group
+    var group = new Group({
+      parent: currentParentGroup,
+      name: 'Arrows',
+      locked: true,
+      layers: [line]
+    }); // Moving this group to the bottom of the page
+
+    group.moveToBack();
+  }
+}
+
+function getConnectionsFromPluginData() {
+  if (pluginData) {
+    // If we have database, need to get all previous arrowConnections
+    arrowConnections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+
+    for (var i = 0; i < arrowConnections.length; i++) {
+      connectionsArray.push(arrowConnections[i]);
+    }
   }
 }
 
@@ -401,7 +501,7 @@ module.exports = require("util");
 }
 that['onRun'] = __skpm_run.bind(this, 'default');
 that['updateArrows'] = __skpm_run.bind(this, 'updateArrows');
-that['updateLayerNames'] = __skpm_run.bind(this, 'updateLayerNames');
+that['cleanArrows'] = __skpm_run.bind(this, 'cleanArrows');
 that['settings'] = __skpm_run.bind(this, 'settings')
 
 //# sourceMappingURL=script.js.map
