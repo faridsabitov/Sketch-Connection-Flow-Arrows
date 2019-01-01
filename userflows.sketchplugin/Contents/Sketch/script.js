@@ -177,48 +177,48 @@ var sourceObject; // currently Sketch can't provide really firsrt selection
     // Need to define source object first
     sourceObject = selection.firstObject(); // if there is a line in Plugin Database, we are showing it
     // lineObject = checkConnections(firstObject,secondObject)
+    // if(pluginData) {
+    // if we have connectionDatabase for this document
+    // Need to check if we have this connection already
+    // for(var g = 0; g < selection.count(); g++) {
+    //   if(selection[g].objectID() != sourceObject.objectID()){
+    //     createArrow(sourceObject, selection[g])
+    //   }
+    // }
+    // for(var y = 0; y < pluginData.count(); y++){
+    //   if(selection[g].objectID() != sourceObject.objectID()){
+    //     createArrow(sourceObject, selection[g])
+    //   }
+    //   if(firstObject == pluginData[y].firstObject || firstObject == pluginData[y].secondObject){
+    //     // if we found that we have this object in connection database already
+    //     if(secondObject == pluginData[y].firstObject || secondObject == pluginData[y].secondObject){
+    //       // if we found that we have this object in connection database already
+    //       // Here we found connection and here we need to update position
+    //       // Do we have a line inside "Arrows" group?
+    //       // TODO: Need to add check system if we don't have group
+    //       for(var z = 0; z < currentGroup.layers().count(); z++){
+    //         if(currentGroup.layers()[z].objectID() == pluginData[y].line) {                      
+    //           // we have this line
+    //           lineAvailable = true
+    //           lineObject = currentGroup.layers()[z]
+    //         } 
+    //       }
+    //     }
+    //   } else {
+    //     // no such object
+    //   }
+    // }
+    // } else {
+    // Fresh Start
+    // log(selection.count()-1)
 
-    if (pluginData) {
-      // if we have connectionDatabase for this document
-      // Need to check if we have this connection already
-      for (var g = 0; g < selection.count(); g++) {
-        if (selection[g].objectID() != sourceObject.objectID()) {
-          createArrow(sourceObject, selection[g]);
-        }
-      } // for(var y = 0; y < pluginData.count(); y++){
-      //   if(selection[g].objectID() != sourceObject.objectID()){
-      //     createArrow(sourceObject, selection[g])
-      //   }
-      //   if(firstObject == pluginData[y].firstObject || firstObject == pluginData[y].secondObject){
-      //     // if we found that we have this object in connection database already
-      //     if(secondObject == pluginData[y].firstObject || secondObject == pluginData[y].secondObject){
-      //       // if we found that we have this object in connection database already
-      //       // Here we found connection and here we need to update position
-      //       // Do we have a line inside "Arrows" group?
-      //       // TODO: Need to add check system if we don't have group
-      //       for(var z = 0; z < currentGroup.layers().count(); z++){
-      //         if(currentGroup.layers()[z].objectID() == pluginData[y].line) {                      
-      //           // we have this line
-      //           lineAvailable = true
-      //           lineObject = currentGroup.layers()[z]
-      //         } 
-      //       }
-      //     }
-      //   } else {
-      //     // no such object
-      //   }
-      // }
-
-    } else {
-      // Fresh Start
-      // log(selection.count()-1)
-      for (var g = 0; g < selection.count(); g++) {
-        if (selection[g].objectID() != sourceObject.objectID()) {
-          createArrow(sourceObject, selection[g]);
-        }
-      } // 
-
-    } // if(lineAvailable) {
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != sourceObject.objectID()) {
+        createArrow(sourceObject, selection[g]);
+      }
+    } // 
+    // }
+    // if(lineAvailable) {
     //   // if line is available we need to update it's position
     //   updateArrow(firstObject, secondObject, direction, line) 
     // } else {
@@ -295,6 +295,7 @@ function updateArrows(context) {
   // TODO: Need to make a function that will delete arrows and connection itself, if there is no object
   // TODO: Need to go through all the connections and check if we have all the object
   getConnectionsFromPluginData();
+  log(connectionsArray);
 
   for (var i = 0; i < connectionsArray.length; i++) {
     // Need to go through each connection and update arrow position
@@ -372,19 +373,34 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
   if (currentGroup) {
     var firstObject = document.getLayerWithID(firstObjectID);
     var secondObject = document.getLayerWithID(secondObjectID);
-    var line = document.getLayerWithID(lineID);
 
-    if (firstObject && secondObject && line) {
+    var _lineObject = document.getLayerWithID(lineID);
+
+    var directionString = String(direction);
+
+    if (firstObject && secondObject && _lineObject) {
+      // If we have all the objects
       // need to specify new size and location for the arrow shape
-      log(direction);
-
-      switch (direction) {
+      switch (directionString) {
         case "right":
-          log("yes");
-          line.frame.x = firstObject.frame.x + firstObject.frame.width;
-          line.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width);
-          line.frame.y = firstObject.frame.y + secondObject.frame.height / 2;
-          line.frame.height = secondObject.frame.y + secondObject.frame.height / 2 - (firstObject.frame.y + firstObject.frame.height / 2);
+          if (firstObject.frame.y + firstObject.frame.height / 2 < secondObject.frame.y + secondObject.frame.height / 2) {
+            // second object is higher
+            _lineObject.frame.x = firstObject.frame.x + firstObject.frame.width;
+            _lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width);
+            _lineObject.frame.y = firstObject.frame.y + secondObject.frame.height / 2;
+            _lineObject.frame.height = secondObject.frame.y + secondObject.frame.height / 2 - (firstObject.frame.y + firstObject.frame.height / 2); // lineObject.setIsFlippedVertical(false)
+            // lineObject.frame().y = firstLayerPos.midY()
+            // lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY()
+          } else {
+            // second object is lower
+            _lineObject.frame.x = firstObject.frame.x + firstObject.frame.width;
+            _lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width);
+            _lineObject.frame.y = secondObject.frame.y + secondObject.frame.height / 2;
+            _lineObject.frame.height = firstObject.frame.y + firstObject.frame.height / 2 - (secondObject.frame.y + secondObject.frame.height / 2); // lineObject.setIsFlippedVertical(true)
+            // lineObject.frame().y = secondLayerPos.midY()
+            // lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY()
+          }
+
           break;
 
         case "left":
@@ -406,17 +422,6 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
     // // Need to check each object. If we don't have, need to delete this data from plugin data
     // // // Then we need to update line 
     // 
-    // if(firstLayerPos.midY() < secondLayerPos.midY()){
-    //   // second object is higher
-    //   lineObject.setIsFlippedVertical(false)
-    //   lineObject.frame().y = firstLayerPos.midY()
-    //   lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY()
-    // } else {
-    //   // second object is lower
-    //   lineObject.setIsFlippedVertical(true)
-    //   lineObject.frame().y = secondLayerPos.midY()
-    //   lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY()
-    // }
 
 }
 

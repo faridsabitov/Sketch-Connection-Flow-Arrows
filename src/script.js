@@ -81,15 +81,15 @@ export default function(context) {
     // lineObject = checkConnections(firstObject,secondObject)
 
 
-    if(pluginData) {
+    // if(pluginData) {
       // if we have connectionDatabase for this document
       // Need to check if we have this connection already
       
-      for(var g = 0; g < selection.count(); g++) {
-        if(selection[g].objectID() != sourceObject.objectID()){
-          createArrow(sourceObject, selection[g])
-        }
-      }
+      // for(var g = 0; g < selection.count(); g++) {
+      //   if(selection[g].objectID() != sourceObject.objectID()){
+      //     createArrow(sourceObject, selection[g])
+      //   }
+      // }
 
       // for(var y = 0; y < pluginData.count(); y++){
         
@@ -122,7 +122,7 @@ export default function(context) {
       //     // no such object
       //   }
       // }
-    } else {
+    // } else {
       // Fresh Start
       // log(selection.count()-1)
       for(var g = 0; g < selection.count(); g++) {
@@ -135,7 +135,7 @@ export default function(context) {
 
 
 
-    }
+    // }
     
     
     // if(lineAvailable) {
@@ -234,6 +234,7 @@ export function updateArrows(context) {
   // TODO: Need to make a function that will delete arrows and connection itself, if there is no object
   // TODO: Need to go through all the connections and check if we have all the object
   getConnectionsFromPluginData()
+  log(connectionsArray)
   for (let i = 0; i < connectionsArray.length; i ++) {
     // Need to go through each connection and update arrow position
     updateArrow(connectionsArray[i].firstObject, connectionsArray[i].secondObject, connectionsArray[i].direction, connectionsArray[i].line)
@@ -322,20 +323,38 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
   if(currentGroup){
     let firstObject = document.getLayerWithID(firstObjectID)
     let secondObject = document.getLayerWithID(secondObjectID)
-    let line = document.getLayerWithID(lineID)
-    if(firstObject && secondObject && line){
+    let lineObject = document.getLayerWithID(lineID)
+    const directionString = String(direction)
+    if(firstObject && secondObject && lineObject){
+      // If we have all the objects
       // need to specify new size and location for the arrow shape
 
-      log(direction)
-      switch(direction) {
+      switch(directionString) {
         case "right":
-          log("yes")
-          line.frame.x = firstObject.frame.x + firstObject.frame.width
-          line.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width)
-    
-          line.frame.y = firstObject.frame.y + (secondObject.frame.height/2)
-          line.frame.height = (secondObject.frame.y + (secondObject.frame.height / 2)) - (firstObject.frame.y + (firstObject.frame.height/2))
-    
+          if(firstObject.frame.y+firstObject.frame.height/2 < secondObject.frame.y+secondObject.frame.height/2){
+            // second object is higher
+            lineObject.frame.x = firstObject.frame.x + firstObject.frame.width
+            lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width)
+      
+            lineObject.frame.y = firstObject.frame.y + (secondObject.frame.height/2)
+            lineObject.frame.height = (secondObject.frame.y + (secondObject.frame.height / 2)) - (firstObject.frame.y + (firstObject.frame.height/2))
+            // lineObject.setIsFlippedVertical(false)
+            // lineObject.frame().y = firstLayerPos.midY()
+            // lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY()
+            
+          } else {
+            // second object is lower
+            lineObject.frame.x = firstObject.frame.x + firstObject.frame.width
+            lineObject.frame.width = secondObject.frame.x - (firstObject.frame.x + firstObject.frame.width)
+      
+            lineObject.frame.y = secondObject.frame.y + (secondObject.frame.height/2)
+            lineObject.frame.height = (firstObject.frame.y + (firstObject.frame.height/2)-(secondObject.frame.y + (secondObject.frame.height / 2)))
+            
+            // lineObject.setIsFlippedVertical(true)
+            // lineObject.frame().y = secondLayerPos.midY()
+            // lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY()
+          }
+
           break;
         case "left":
           log("no")
@@ -364,19 +383,7 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
   // 
 
 
-  
-  // if(firstLayerPos.midY() < secondLayerPos.midY()){
-  //   // second object is higher
-  //   lineObject.setIsFlippedVertical(false)
-  //   lineObject.frame().y = firstLayerPos.midY()
-  //   lineObject.frame().height = secondLayerPos.midY() - firstLayerPos.midY()
-    
-  // } else {
-  //   // second object is lower
-  //   lineObject.setIsFlippedVertical(true)
-  //   lineObject.frame().y = secondLayerPos.midY()
-  //   lineObject.frame().height = firstLayerPos.midY() - secondLayerPos.midY()
-  // }
+
 }
 
 function createArrow(firstObject, secondObject) {
