@@ -27,14 +27,7 @@
       "handler": "updateArrows"
     },
     {
-      "name": "Update Layer Names",
-      "description" : "Rename them in the same way how they named in overrides",
-      "identifier": "updateLayerNames",
-      "script": "./script.js",
-      "handler": "updateLayerNames"
-    },
-    {
-      "name": "Delete All Arrows",
+      "name": "(WIP) Delete All Arrows",
       "description" : "Cleaning all the layers and removing all connections from database",
       "identifier": "cleanArrows",
       "script": "./script.js",
@@ -42,7 +35,7 @@
       "handler": "cleanArrows"
     },
     {
-      "name": "Settings",
+      "name": "(WIP) Settings",
       "description" : "Provide settings for the arrows",
       "identifier": "settings",
       "script": "./script.js",
@@ -52,7 +45,7 @@
   "menu": {
     "title": "👉 Arrows",
     "items": [
-      "definelink", "updateArrows", "updateLayerNames","cleanArrows","settings"
+      "definelink", "updateArrows","cleanArrows","settings"
     ]
   }
 }
