@@ -12,8 +12,8 @@
   "homepage" : "https://sabitov.me",
   "commands": [
     {
-      "name": "Define Link",
-      "description" : "Select two layers, then create a link between them two",
+      "name": "Define Links",
+      "description" : "Select more than one layer, to create a link between first object and others",
       "identifier": "definelink",
       "shortcut" : "command shift u",
       "script": "./script.js"
@@ -23,7 +23,7 @@
       "description" : "Update all the arrows on selected group",
       "identifier": "updateArrows",
       "script": "./script.js",
-      "shortcut" : "command shift r",
+      "shortcut" : "command option shift r",
       "handler": "updateArrows"
     },
     {
@@ -32,6 +32,14 @@
       "identifier": "updateLayerNames",
       "script": "./script.js",
       "handler": "updateLayerNames"
+    },
+    {
+      "name": "Delete All Arrows",
+      "description" : "Cleaning all the layers and removing all connections from database",
+      "identifier": "cleanArrows",
+      "script": "./script.js",
+      "shortcut" : "command option shift u",
+      "handler": "cleanArrows"
     },
     {
       "name": "Settings",
@@ -44,7 +52,7 @@
   "menu": {
     "title": "👉 Arrows",
     "items": [
-      "definelink", "updateArrows", "updateLayerNames","settings"
+      "definelink", "updateArrows", "updateLayerNames","cleanArrows","settings"
     ]
   }
 }
