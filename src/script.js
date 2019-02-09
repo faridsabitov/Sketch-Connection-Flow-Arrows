@@ -5,7 +5,7 @@ const { toArray } = require('util')
 //  Variables
 //
 
-let UI = require('sketch/ui')
+let UI = require('sketch/ui') 
 let Group = require('sketch/dom').Group
 const pluginKey = "flowArrows"
 let arrowConnections = []
@@ -20,6 +20,10 @@ let currentGroup
 
 let lineObject
 let sourceObject // currently Sketch can't provide really firsrt selection
+
+// Settings
+var Settings = require('sketch/settings')
+let arrowDirectionSetting = Settings.settingForKey('arrowDirection')
 
 
 //
@@ -41,7 +45,7 @@ export default function(context) {
     // if there is a line in Plugin Database, we are showing it
     // lineObject = checkConnections(firstObject,secondObject)
 
-    // Fresh Start
+    // Start
     for(var g = 0; g < selection.count(); g++) {
       if(selection[g].objectID() != sourceObject.objectID()){
         createArrow(sourceObject, selection[g])
@@ -82,21 +86,65 @@ export function cleanArrows(context) {
 }
 
 export function settings(context) {
-  // Shop Popup for asking arrow type
-  var options = ['Link Arrow', 'Back Arrow']
-  var selection = UI.getSelectionFromUser(
-    "Please choose link type", options
-  )
+  let alert = COSAlertWindow.new()
 
-  var ok = selection[2]
-  var value = options[selection[1]]
+  // TODO: Need to specify plugin icon
+  // alert.setIcon(NSImage.alloc().initByReferencingFile(plugin.urlForResourceNamed("icon.png").path()))
+
+  // Title
+  alert.setMessageText("Arrow Plugin Settings")
   
-  if (ok) {
-    // If user specified decision
-    log(value)
+  // Creating dialog buttons
+  alert.addButtonWithTitle("Update Settings")
+  alert.addButtonWithTitle("Cancel")
+  
+  // Creating the view
+  const viewWidth = 300;
+  const viewHeight = 140;
+  
+  let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
+  alert.addAccessoryView(view);
+  
+  // Label: Arrow Direction
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 17, 330, 20));
+
+  infoLabel.setStringValue("Arrow Direction")
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+
+  view.addSubview(infoLabel);
+
+
+  // Select: Arrow Direction
+  let arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
+
+  // Add select options and mark selected the active one
+  setActiveDirectionSetting(arrowDirectionField)
+
+  view.addSubview(arrowDirectionField);
+
+
+  // Label: Auto Direction Desctiption
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-84, 280, 40));
+
+  infoLabel.setStringValue("ℹ️ Auto mode will draw arrow based on location of the second object")
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+
+  view.addSubview(infoLabel);
+
+  // Show modal and get the results
+  let modalResponse = alert.runModal()
+
+  if(modalResponse == NSAlertFirstButtonReturn){
+    // When user clicks on "Update Settings"
+    // Need to save all this results into the Plugin Settings
+    Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
+    UI.message("Settings are updated 🚀")
   }
 }
-
 
 //
 // Functions
@@ -146,13 +194,22 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID) {
 
 function createArrow(firstObject, secondObject) {
   // Process of creating new connection
-  
+
   const firstObjectID = firstObject.objectID()
   const secondObjectID = secondObject.objectID()
+  let direction
 
   // Need to understand the direction
   // TODO: Because Sketch is not allowing to get order of selected elements, we will select elements based on it's ID (creation order)
-  let direction = getDirection(firstObjectID, secondObjectID)
+
+  if(Settings.settingForKey("arrowDirection")){
+    // if there is data in settings
+    log("we have the settings")
+    direction = Settings.settingForKey("arrowDirection")  
+  } else {
+    direction = getDirection(firstObjectID, secondObjectID)
+  }
+    
   let line = drawLine(firstObjectID, secondObjectID, direction)
   addToArrowsGroup(line)
   getConnectionsFromPluginData()
@@ -380,5 +437,87 @@ function getConnectionsFromPluginData(){
     for (let i = 0; i < arrowConnections.length; i ++) {
       connectionsArray.push(arrowConnections[i])
     }
+  }
+}
+
+function  setActiveDirectionSetting (arrowDirectionField){
+  let currentDirection = "Auto"
+
+  if(Settings.settingForKey("arrowDirection")){
+    // if there is data in settings
+    currentDirection = Settings.settingForKey("arrowDirection")  
+    
+    if(currentDirection == "Auto"){
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+    
+    if(currentDirection == "Right"){
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+    if(currentDirection == "Down"){
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+    if(currentDirection == "Left"){
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+    if(currentDirection == "Up"){
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+  } else {
+    // Show default
+    arrowDirectionField.addItemWithTitle("Auto")
+    arrowDirectionField.addItemWithTitle("Right")
+    arrowDirectionField.addItemWithTitle("Down")
+    arrowDirectionField.addItemWithTitle("Left")
+    arrowDirectionField.addItemWithTitle("Up")
   }
 }
