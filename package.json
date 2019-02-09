@@ -5,7 +5,7 @@
     "sketch": ">=3.0"
   },
   "skpm": {
-    "name": "Arrows",
+    "name": "arrows",
     "manifest": "src/manifest.json",
     "main": "arrows.sketchplugin",
     "assets": [

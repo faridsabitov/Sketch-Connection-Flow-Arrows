@@ -275,12 +275,12 @@ function createArrow(firstObject, secondObject) {
 
   if (Settings.settingForKey("arrowDirection")) {
     // if there is data in settings
-    log("we have the settings");
     direction = Settings.settingForKey("arrowDirection");
   } else {
     direction = getDirection(firstObjectID, secondObjectID);
   }
 
+  log(direction);
   var line = drawLine(firstObjectID, secondObjectID, direction);
   addToArrowsGroup(line);
   getConnectionsFromPluginData(); // Storage for current connection

@@ -35,7 +35,7 @@
       "handler": "cleanArrows"
     },
     {
-      "name": "(WIP) Settings",
+      "name": "Settings",
       "description": "Provide settings for the arrows",
       "identifier": "settings",
       "script": "script.js",
@@ -51,7 +51,7 @@
       "settings"
     ]
   },
-  "name": "Arrows",
+  "name": "arrows",
   "disableCocoaScriptPreprocessor": true,
   "appcast": "https://raw.githubusercontent.com/faridsabitov/Sketch-Connection-Flow-Arrows/master/.appcast.xml"
 }
