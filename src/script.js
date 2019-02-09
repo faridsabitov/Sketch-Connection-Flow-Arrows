@@ -24,8 +24,6 @@ let sourceObject // currently Sketch can't provide really firsrt selection
 // Settings
 var Settings = require('sketch/settings')
 let arrowDirectionSetting = Settings.settingForKey('arrowDirection')
-
-
 //
 //  Default Function
 //
