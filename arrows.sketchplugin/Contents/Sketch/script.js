@@ -192,6 +192,8 @@ function updateArrows(context) {
     // We don't have any connections to update
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to update");
   }
+
+  log(newConnectionsData);
 }
 function cleanArrows(context) {
   var alert = COSAlertWindow.new(); // Title
@@ -314,15 +316,10 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
   // There might be a situation, when user deleted current group or current group stays on another artboard => In that case need to create another group
   // Need to check if we have the layers with such IDs
   var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID);
-  var lineObject = document.getLayerWithID(lineID); // Need to delete data first, because we will have a new line
+  var secondObject = document.getLayerWithID(secondObjectID); // Need to delete data first, because we will have a new line
 
+  deleteLine(lineID);
   newConnectionsData = deleteConnectionFromData(connectionIndex);
-
-  if (lineObject) {
-    // If we have a line, need to delete it, because it will be recreated
-    lineObject.remove();
-  }
 
   if (firstObject && secondObject) {
     // If we have all the objects, we can recreate the line
@@ -517,6 +514,8 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 }
 
 function addToArrowsGroup(line) {
+  currentGroup = checkForArrowGroup();
+
   if (currentGroup) {
     // If we already have group
     currentGroup.addLayers([line]);

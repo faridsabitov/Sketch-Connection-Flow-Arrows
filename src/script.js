@@ -83,6 +83,8 @@ export function updateArrows(context) {
     // We don't have any connections to update
     sketch.UI.message("There is nothing to update")
   }
+
+  log(newConnectionsData)
 }
 
 
@@ -232,14 +234,10 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
   // Need to check if we have the layers with such IDs
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
-  let lineObject = document.getLayerWithID(lineID)
 
   // Need to delete data first, because we will have a new line
+  deleteLine(lineID)
   newConnectionsData = deleteConnectionFromData(connectionIndex)
-  if(lineObject){
-    // If we have a line, need to delete it, because it will be recreated
-    lineObject.remove()
-  }
 
   if(firstObject && secondObject){
     // If we have all the objects, we can recreate the line
@@ -450,7 +448,7 @@ function drawLine(firstObjectID, secondObjectID, direction){
 }
 
 function addToArrowsGroup(line){
-  
+  currentGroup = checkForArrowGroup()
   if(currentGroup){
     // If we already have group
     currentGroup.addLayers([line])
