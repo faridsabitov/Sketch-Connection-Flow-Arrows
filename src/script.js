@@ -107,7 +107,7 @@ export function cleanArrows(context) {
   // Label
   var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40))
 
-  infoLabel.setStringValue("ℹ️ You can select an artboard to delet all the arrows only from selected one")
+  infoLabel.setStringValue("ℹ️ You can select an artboard to delete all the arrows from selected one")
   infoLabel.setSelectable(false)
   infoLabel.setDrawsBackground(false)
   infoLabel.setBezeled(false)
