@@ -2,7 +2,7 @@
   "compatibleVersion": 3,
   "bundleVersion": 1,
   "identifier" : "me.sabitov.sketch.connectionFlowArrows",
-  "version" : "2.3.0",
+  "version" : "2.3.2",
   "icon": "icon.png",
   "authorEmail" : "farid.sabitov.design@gmail.com",
   "author" : "Farid Sabitov",
@@ -19,7 +19,7 @@
       "script": "./script.js"
     },
     {
-      "name": "Update Arrows",
+      "name": "(WIP)Update Arrows",
       "description" : "Update all the arrows on selected group",
       "identifier": "updateArrows",
       "script": "./script.js",
@@ -27,7 +27,7 @@
       "handler": "updateArrows"
     },
     {
-      "name": "(WIP) Delete All Arrows",
+      "name": "Delete All Arrows",
       "description" : "Cleaning all the layers and removing all connections from database",
       "identifier": "cleanArrows",
       "script": "./script.js",
@@ -35,7 +35,7 @@
       "handler": "cleanArrows"
     },
     {
-      "name": "(WIP) Settings",
+      "name": "Settings",
       "description" : "Provide settings for the arrows",
       "identifier": "settings",
       "script": "./script.js",
