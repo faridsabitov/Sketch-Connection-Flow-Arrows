@@ -1,7 +1,7 @@
 # (WIP) 👉 Arrows
 
 ![preview](assets/preview.jpg)
-Plugin for Sketch to create connection flow arrows for creating user flows, sitemaps and many more. Just select two objects and click on "Plugins" → "👉 Arrows" → "Define a Link" and voilà! It will create a connection with arrow
+Plugin for Sketch to create connection flow arrows for creating user flows, sitemaps and many more. Just select two objects and click on "Plugins" → "👉 Arrows" → "Define a Link" and voilà! It will create a connection with arrow 🚀
 
 
 **Table of contents**
@@ -13,12 +13,10 @@ Plugin for Sketch to create connection flow arrows for creating user flows, site
 
 
 ## Motivation
-After understanding of full potential of user flows we understood, that we are spending more time for updating and cleaning all {Need to provide more text}
+In our day to day activities, we are creating a lot of diagrams in [EPAM](https://www.epam.com). We understood that most of our time we are spending on connecting and drawing arrows for our user flows and to automate that, I created this plugin
 
 
-You can download [**ready to use User Flows Library**](#Bonus) if you want to have full experience
-
-## Download
+## Download Plugin
 The most recent version you can find here:
 [**Download the Latest Arrows Sketch Plugin**](https://github.com/faridsabitov/Sketch-user-flows/releases)
 
