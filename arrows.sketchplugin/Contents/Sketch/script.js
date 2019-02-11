@@ -175,15 +175,39 @@ var arrowDirectionSetting = Settings.settingForKey('arrowDirection'); //
 
 function updateArrows(context) {
   // TODO: Need to show amount of updated arrows and deleted ones
+  var selection = context.selection;
   var connections = getConnectionsData();
+  var firstObjectArtboard;
+  var secondObjectArtboard;
 
   if (connections.length > 0) {
     // We have connections in database
     var updateArrowsCounter = connections.length;
 
     for (var i = 0; i < updateArrowsCounter; i++) {
-      // Need to go through each connection and update arrow position
-      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i);
+      // Need to check if the element is selected globally or from the artboard
+      firstObjectArtboard = document.getLayerWithID(connections[i].firstObject);
+      firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
+      secondObjectArtboard = document.getLayerWithID(connections[i].secondObject);
+      secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
+
+      if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+        // Need to go through each connection and update arrow position for specific artboard
+        if (firstObjectArtboard == selection[0].objectID()) {
+          if (secondObjectArtboard == selection[0].objectID()) {
+            updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i);
+          } else {
+            newConnectionsData.push(connections[i]);
+          }
+        } else {
+          // If not just saving it
+          newConnectionsData.push(connections[i]);
+        }
+      } else {
+        // Need to go through each connection and update arrow position without artboards
+        // Need to check if current object don't have the parrent
+        updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i);
+      }
     }
 
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
@@ -191,9 +215,8 @@ function updateArrows(context) {
   } else {
     // We don't have any connections to update
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to update");
-  }
+  } // log(newConnectionsData)
 
-  log(newConnectionsData);
 }
 function cleanArrows(context) {
   var alert = COSAlertWindow.new(); // Title
@@ -277,7 +300,7 @@ function settings(context) {
   alert.addButtonWithTitle("Cancel"); // Creating the view
 
   var viewWidth = 300;
-  var viewHeight = 140;
+  var viewHeight = 200;
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
   alert.addAccessoryView(view); // Label: Arrow Direction
 
@@ -298,6 +321,26 @@ function settings(context) {
   infoLabel.setSelectable(false);
   infoLabel.setDrawsBackground(false);
   infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Label: Arrow Spacing
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 120, 330, 20));
+  infoLabel.setStringValue("Arrow Spacing");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Select: Arrow Spacing
+
+  var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20)); // Add select options and mark selected the active one
+
+  setActiveSpacingSetting(arrowSpacingField); //Made with <3 by Farid Sabitov and with the support from Epam.com. If you have any suggestions, please write on farid_sabitov@epam.com
+
+  view.addSubview(arrowSpacingField); // Label: Arrow Spacing Desctiption
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 187, 280, 40));
+  infoLabel.setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
   view.addSubview(infoLabel); // Show modal and get the results
 
   var modalResponse = alert.runModal();
@@ -306,6 +349,7 @@ function settings(context) {
     // When user clicks on "Update Settings"
     // Need to save all this results into the Plugin Settings
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title());
+    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
     UI.message("Settings are updated 🚀");
   }
 } //
@@ -329,7 +373,7 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
 
 function createArrow(firstObjectID, secondObjectID, direction) {
   // Process of creating new connection
-  var localDirection;
+  var localDirection, sourceObjectID, childObjectID;
 
   if (direction == "Auto") {
     // If direction is auto, we need to specify direction ourselves
@@ -338,12 +382,22 @@ function createArrow(firstObjectID, secondObjectID, direction) {
     localDirection = direction;
   }
 
-  var line = drawLine(firstObjectID, secondObjectID, localDirection);
+  sourceObjectID = defineSourceObject(firstObjectID, secondObjectID, localDirection);
+
+  if (sourceObjectID == firstObjectID) {
+    childObjectID = secondObjectID;
+  } else {
+    childObjectID = firstObjectID;
+  } // TODO: Need to send real object
+
+
+  updateSpacing(sourceObjectID, childObjectID, localDirection);
+  var line = drawLine(sourceObjectID, childObjectID, localDirection);
   addToArrowsGroup(line); // Storage for current connection
 
   var connection = {
-    firstObject: firstObjectID,
-    secondObject: secondObjectID,
+    firstObject: sourceObjectID,
+    secondObject: childObjectID,
     direction: localDirection,
     line: line.objectID() // Need to save this data to the global array
 
@@ -650,6 +704,47 @@ function setActiveDirectionSetting(arrowDirectionField) {
   }
 }
 
+function setActiveSpacingSetting(arrowSpacingField) {
+  var currentSpacing = "Not selected";
+
+  if (Settings.settingForKey("arrowSpacing")) {
+    // if there is data in settings
+    currentSpacing = Settings.settingForKey("arrowSpacing");
+
+    if (currentSpacing == "Not selected") {
+      arrowSpacingField.addItemWithTitle("Not selected");
+      arrowSpacingField.lastItem().setState(1);
+      arrowSpacingField.addItemWithTitle("30px");
+      arrowSpacingField.lastItem().setState(0);
+      arrowSpacingField.addItemWithTitle("70px");
+      arrowSpacingField.lastItem().setState(0);
+    }
+
+    if (currentSpacing == "30px") {
+      arrowSpacingField.addItemWithTitle("30px");
+      arrowSpacingField.lastItem().setState(1);
+      arrowSpacingField.addItemWithTitle("70px");
+      arrowSpacingField.lastItem().setState(0);
+      arrowSpacingField.addItemWithTitle("Not selected");
+      arrowSpacingField.lastItem().setState(0);
+    }
+
+    if (currentSpacing == "70px") {
+      arrowSpacingField.addItemWithTitle("70px");
+      arrowSpacingField.lastItem().setState(1);
+      arrowSpacingField.addItemWithTitle("Not selected");
+      arrowSpacingField.lastItem().setState(0);
+      arrowSpacingField.addItemWithTitle("30px");
+      arrowSpacingField.lastItem().setState(0);
+    }
+  } else {
+    // Show default
+    arrowSpacingField.addItemWithTitle("Not Selected");
+    arrowSpacingField.addItemWithTitle("30px");
+    arrowSpacingField.addItemWithTitle("70px");
+  }
+}
+
 function deleteConnectionFromData(arrayNumber) {
   var newConnections = [];
 
@@ -680,6 +775,95 @@ function deleteLine(lineID) {
       selectedGroup.remove();
     }
   }
+}
+
+function updateSpacing(sourceObjectID, childObjectID, direction) {
+  var sourceObject = document.getLayerWithID(sourceObjectID);
+  var childObject = document.getLayerWithID(childObjectID);
+
+  if (Settings.settingForKey("arrowSpacing")) {
+    var currentSpacing = Settings.settingForKey("arrowSpacing");
+
+    if (direction == "Right") {
+      if (currentSpacing == "30px") {
+        childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 70;
+      }
+    }
+
+    if (direction == "Down") {
+      if (currentSpacing == "30px") {
+        childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 70;
+      }
+    }
+
+    if (direction == "Left") {
+      if (currentSpacing == "30px") {
+        childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 70;
+      }
+    }
+
+    if (direction == "Up") {
+      if (currentSpacing == "30px") {
+        childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 70;
+      }
+    }
+  }
+}
+
+function defineSourceObject(firstObjectID, secondObjectID, direction) {
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var sourceObjectID;
+
+  if (direction == "Right") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Down") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Left") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  if (direction == "Up") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  return sourceObjectID;
 }
 
 /***/ }),

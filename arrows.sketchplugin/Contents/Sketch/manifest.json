@@ -19,7 +19,7 @@
       "script": "script.js"
     },
     {
-      "name": "(WIP)Update Arrows",
+      "name": "(WIP) Update Arrows",
       "description": "Update all the arrows on selected group",
       "identifier": "updateArrows",
       "script": "script.js",
