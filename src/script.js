@@ -68,14 +68,38 @@ export default function(context) {
 
 export function updateArrows(context) {
   // TODO: Need to show amount of updated arrows and deleted ones
+  let selection = context.selection
   let connections = getConnectionsData()
+  let firstObjectArtboard
+  let secondObjectArtboard
   
   if(connections.length > 0){
     // We have connections in database
     const updateArrowsCounter = connections.length
     for (let i = 0; i < updateArrowsCounter; i ++) {
-      // Need to go through each connection and update arrow position
-      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i)
+      // Need to check if the element is selected globally or from the artboard
+      firstObjectArtboard = document.getLayerWithID(connections[i].firstObject)
+      firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID()
+
+      secondObjectArtboard = document.getLayerWithID(connections[i].secondObject)
+      secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID()
+
+      if(selection.count() == 1 && selection[0].class() == "MSArtboardGroup"){
+        // Need to go through each connection and update arrow position for specific artboard
+        
+        if (firstObjectArtboard == selection[0].objectID()){
+          if (secondObjectArtboard == selection[0].objectID()){
+            updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i)
+          } else {newConnectionsData.push(connections[i])}
+        } else {
+          // If not just saving it
+          newConnectionsData.push(connections[i])
+        }
+      } else {
+        // Need to go through each connection and update arrow position without artboards
+        // Need to check if current object don't have the parrent
+        updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i)
+      }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
     sketch.UI.message("All arrows are updated 🚀")
@@ -177,7 +201,7 @@ export function settings(context) {
   
   // Creating the view
   const viewWidth = 300;
-  const viewHeight = 140;
+  const viewHeight = 200;
   
   let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
   alert.addAccessoryView(view);
@@ -207,29 +231,44 @@ export function settings(context) {
 
   infoLabel.setStringValue("ℹ️ Auto mode will draw arrow based on location of the second object")
   infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
+  infoLabel.setDrawsBackground(false)
+  infoLabel.setBezeled(false)
 
   view.addSubview(infoLabel);
 
 
   // Label: Arrow Spacing
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 100, 330, 20));
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 120, 330, 20))
 
   infoLabel.setStringValue("Arrow Spacing")
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
+  infoLabel.setSelectable(false)
+  infoLabel.setDrawsBackground(false)
+  infoLabel.setBezeled(false)
 
-  view.addSubview(infoLabel);
+  view.addSubview(infoLabel)
 
   // Select: Arrow Spacing
-  let arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
+  let arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20));
 
   // Add select options and mark selected the active one
   setActiveSpacingSetting(arrowSpacingField)
 
-  view.addSubview(arrowSpacingField);
+  //Made with <3 by Farid Sabitov and with the support from Epam.com. If you have any suggestions, please write on farid_sabitov@epam.com
+
+  view.addSubview(arrowSpacingField)
+  
+
+  // Label: Arrow Spacing Desctiption
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-187, 280, 40));
+
+  infoLabel.setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer")
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false)
+  infoLabel.setBezeled(false)
+
+  view.addSubview(infoLabel)
+
+
 
   // Show modal and get the results
   let modalResponse = alert.runModal()
@@ -238,6 +277,7 @@ export function settings(context) {
     // When user clicks on "Update Settings"
     // Need to save all this results into the Plugin Settings
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
+    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title())
     UI.message("Settings are updated 🚀")
   }
 }
@@ -273,6 +313,8 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   } else {
     localDirection = direction
   }
+
+  updateSpacing(localDirection)
 
   let line = drawLine(firstObjectID, secondObjectID, localDirection)
   addToArrowsGroup(line)
@@ -605,84 +647,43 @@ function setActiveDirectionSetting (arrowDirectionField){
 }
 
 function setActiveSpacingSetting (arrowSpacingField){
-  let currentDirection = "Auto"
+  let currentSpacing = "Not selected"
 
-  if(Settings.settingForKey("arrowDirection")){
+  if(Settings.settingForKey("arrowSpacing")){
     // if there is data in settings
-    currentDirection = Settings.settingForKey("arrowDirection")  
+    currentSpacing = Settings.settingForKey("arrowSpacing")  
     
-    if(currentDirection == "Auto"){
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
+    if(currentSpacing == "Not selected"){
+      arrowSpacingField.addItemWithTitle("Not selected")
+      arrowSpacingField.lastItem().setState(1)
+      arrowSpacingField.addItemWithTitle("30px")
+      arrowSpacingField.lastItem().setState(0)
+      arrowSpacingField.addItemWithTitle("70px")
+      arrowSpacingField.lastItem().setState(0)
     } 
     
-    if(currentDirection == "Right"){
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
+    if(currentSpacing == "30px"){
+      arrowSpacingField.addItemWithTitle("30px")
+      arrowSpacingField.lastItem().setState(1)
+      arrowSpacingField.addItemWithTitle("70px")
+      arrowSpacingField.lastItem().setState(0)
+      arrowSpacingField.addItemWithTitle("Not selected")
+      arrowSpacingField.lastItem().setState(0)
     } 
 
-    if(currentDirection == "Down"){
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
+    if(currentSpacing == "70px"){
+      arrowSpacingField.addItemWithTitle("70px")
+      arrowSpacingField.lastItem().setState(1)
+      arrowSpacingField.addItemWithTitle("Not selected")
+      arrowSpacingField.lastItem().setState(0)
+      arrowSpacingField.addItemWithTitle("30px")
+      arrowSpacingField.lastItem().setState(0)
     } 
-
-    if(currentDirection == "Left"){
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-
-    if(currentDirection == "Up"){
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-
   } else {
     // Show default
-    arrowDirectionField.addItemWithTitle("Auto")
-    arrowDirectionField.addItemWithTitle("Right")
-    arrowDirectionField.addItemWithTitle("Down")
-    arrowDirectionField.addItemWithTitle("Left")
-    arrowDirectionField.addItemWithTitle("Up")
+    arrowSpacingField.addItemWithTitle("Not Selected")
+    arrowSpacingField.addItemWithTitle("30px")
+    arrowSpacingField.addItemWithTitle("70px")
   }
 }
 
@@ -712,5 +713,13 @@ function deleteLine(lineID){
     if(selectedGroup.layers.length == 0){
       selectedGroup.remove()
     }
+  }
+}
+
+function updateSpacing(direction){
+  if(Settings.settingForKey("arrowSpacing")){
+    let currentSpacing = Settings.settingForKey("arrowSpacing")
+    if(currentSpacing == "30px"){}
+    if(currentSpacing == "70px"){}
   }
 }
