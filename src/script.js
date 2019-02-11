@@ -87,7 +87,6 @@ export function updateArrows(context) {
   log(newConnectionsData)
 }
 
-
 export function cleanArrows(context) {
   let alert = COSAlertWindow.new()
   // Title
@@ -212,6 +211,25 @@ export function settings(context) {
   infoLabel.setBezeled(false);
 
   view.addSubview(infoLabel);
+
+
+  // Label: Arrow Spacing
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 100, 330, 20));
+
+  infoLabel.setStringValue("Arrow Spacing")
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+
+  view.addSubview(infoLabel);
+
+  // Select: Arrow Spacing
+  let arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
+
+  // Add select options and mark selected the active one
+  setActiveSpacingSetting(arrowSpacingField)
+
+  view.addSubview(arrowSpacingField);
 
   // Show modal and get the results
   let modalResponse = alert.runModal()
@@ -505,6 +523,88 @@ function findConnectionData(firstObjectID, secondObjectID){
 }
 
 function setActiveDirectionSetting (arrowDirectionField){
+  let currentDirection = "Auto"
+
+  if(Settings.settingForKey("arrowDirection")){
+    // if there is data in settings
+    currentDirection = Settings.settingForKey("arrowDirection")  
+    
+    if(currentDirection == "Auto"){
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+    
+    if(currentDirection == "Right"){
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+    if(currentDirection == "Down"){
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+    if(currentDirection == "Left"){
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+    if(currentDirection == "Up"){
+      arrowDirectionField.addItemWithTitle("Up")
+      arrowDirectionField.lastItem().setState(1)
+      arrowDirectionField.addItemWithTitle("Auto")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Right")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Down")
+      arrowDirectionField.lastItem().setState(0)
+      arrowDirectionField.addItemWithTitle("Left")
+      arrowDirectionField.lastItem().setState(0)
+    } 
+
+  } else {
+    // Show default
+    arrowDirectionField.addItemWithTitle("Auto")
+    arrowDirectionField.addItemWithTitle("Right")
+    arrowDirectionField.addItemWithTitle("Down")
+    arrowDirectionField.addItemWithTitle("Left")
+    arrowDirectionField.addItemWithTitle("Up")
+  }
+}
+
+function setActiveSpacingSetting (arrowSpacingField){
   let currentDirection = "Auto"
 
   if(Settings.settingForKey("arrowDirection")){
