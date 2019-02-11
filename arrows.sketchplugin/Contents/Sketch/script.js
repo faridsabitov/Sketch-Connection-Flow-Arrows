@@ -215,9 +215,8 @@ function updateArrows(context) {
   } else {
     // We don't have any connections to update
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to update");
-  }
+  } // log(newConnectionsData)
 
-  log(newConnectionsData);
 }
 function cleanArrows(context) {
   var alert = COSAlertWindow.new(); // Title
@@ -374,7 +373,7 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
 
 function createArrow(firstObjectID, secondObjectID, direction) {
   // Process of creating new connection
-  var localDirection;
+  var localDirection, sourceObjectID, childObjectID;
 
   if (direction == "Auto") {
     // If direction is auto, we need to specify direction ourselves
@@ -383,13 +382,22 @@ function createArrow(firstObjectID, secondObjectID, direction) {
     localDirection = direction;
   }
 
-  updateSpacing(localDirection);
-  var line = drawLine(firstObjectID, secondObjectID, localDirection);
+  sourceObjectID = defineSourceObject(firstObjectID, secondObjectID, localDirection);
+
+  if (sourceObjectID == firstObjectID) {
+    childObjectID = secondObjectID;
+  } else {
+    childObjectID = firstObjectID;
+  } // TODO: Need to send real object
+
+
+  updateSpacing(sourceObjectID, childObjectID, localDirection);
+  var line = drawLine(sourceObjectID, childObjectID, localDirection);
   addToArrowsGroup(line); // Storage for current connection
 
   var connection = {
-    firstObject: firstObjectID,
-    secondObject: secondObjectID,
+    firstObject: sourceObjectID,
+    secondObject: childObjectID,
     direction: localDirection,
     line: line.objectID() // Need to save this data to the global array
 
@@ -769,14 +777,93 @@ function deleteLine(lineID) {
   }
 }
 
-function updateSpacing(direction) {
+function updateSpacing(sourceObjectID, childObjectID, direction) {
+  var sourceObject = document.getLayerWithID(sourceObjectID);
+  var childObject = document.getLayerWithID(childObjectID);
+
   if (Settings.settingForKey("arrowSpacing")) {
     var currentSpacing = Settings.settingForKey("arrowSpacing");
 
-    if (currentSpacing == "30px") {}
+    if (direction == "Right") {
+      if (currentSpacing == "30px") {
+        childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 30;
+      }
 
-    if (currentSpacing == "70px") {}
+      if (currentSpacing == "70px") {
+        childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 70;
+      }
+    }
+
+    if (direction == "Down") {
+      if (currentSpacing == "30px") {
+        childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 70;
+      }
+    }
+
+    if (direction == "Left") {
+      if (currentSpacing == "30px") {
+        childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 70;
+      }
+    }
+
+    if (direction == "Up") {
+      if (currentSpacing == "30px") {
+        childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 70;
+      }
+    }
   }
+}
+
+function defineSourceObject(firstObjectID, secondObjectID, direction) {
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var sourceObjectID;
+
+  if (direction == "Right") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Down") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Left") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  if (direction == "Up") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  return sourceObjectID;
 }
 
 /***/ }),
