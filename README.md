@@ -1,4 +1,4 @@
-# (WIP) 👉 Arrows
+# 👉 Arrows
 
 ![preview](assets/preview.jpg)
 Plugin for Sketch to create connection flow arrows for creating user flows, sitemaps and many more. Just select two objects and click on "Plugins" → "👉 Arrows" → "Define a Link" and voilà! It will create a connection with arrow 🚀
