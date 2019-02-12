@@ -189,9 +189,6 @@ export function cleanArrows(context) {
 export function settings(context) {
   let alert = COSAlertWindow.new()
 
-  // TODO: Need to specify plugin icon
-  // alert.setIcon(NSImage.alloc().initByReferencingFile(plugin.urlForResourceNamed("icon.png").path()))
-
   // Title
   alert.setMessageText("Arrow Plugin Settings")
   
@@ -201,7 +198,7 @@ export function settings(context) {
   
   // Creating the view
   const viewWidth = 300;
-  const viewHeight = 200;
+  const viewHeight = 260;
   
   let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
   alert.addAccessoryView(view);
@@ -215,7 +212,6 @@ export function settings(context) {
   infoLabel.setBezeled(false);
 
   view.addSubview(infoLabel);
-
 
   // Select: Arrow Direction
   let arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
@@ -253,7 +249,7 @@ export function settings(context) {
   // Add select options and mark selected the active one
   setActiveSpacingSetting(arrowSpacingField)
 
-  //Made with <3 by Farid Sabitov and with the support from Epam.com. If you have any suggestions, please write on farid_sabitov@epam.com
+  
 
   view.addSubview(arrowSpacingField)
   
@@ -268,7 +264,15 @@ export function settings(context) {
 
   view.addSubview(infoLabel)
 
+  // Label: Arrow Description
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-240, 280, 40));
 
+  infoLabel.setStringValue("Made by Farid Sabitov and with the support of EPAM.com ❤️")
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false)
+  infoLabel.setBezeled(false)
+
+  view.addSubview(infoLabel)
 
   // Show modal and get the results
   let modalResponse = alert.runModal()

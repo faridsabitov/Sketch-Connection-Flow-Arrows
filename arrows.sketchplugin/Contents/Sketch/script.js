@@ -290,9 +290,7 @@ function cleanArrows(context) {
   }
 }
 function settings(context) {
-  var alert = COSAlertWindow.new(); // TODO: Need to specify plugin icon
-  // alert.setIcon(NSImage.alloc().initByReferencingFile(plugin.urlForResourceNamed("icon.png").path()))
-  // Title
+  var alert = COSAlertWindow.new(); // Title
 
   alert.setMessageText("Arrow Plugin Settings"); // Creating dialog buttons
 
@@ -300,7 +298,7 @@ function settings(context) {
   alert.addButtonWithTitle("Cancel"); // Creating the view
 
   var viewWidth = 300;
-  var viewHeight = 200;
+  var viewHeight = 260;
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
   alert.addAccessoryView(view); // Label: Arrow Direction
 
@@ -332,12 +330,18 @@ function settings(context) {
 
   var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20)); // Add select options and mark selected the active one
 
-  setActiveSpacingSetting(arrowSpacingField); //Made with <3 by Farid Sabitov and with the support from Epam.com. If you have any suggestions, please write on farid_sabitov@epam.com
-
+  setActiveSpacingSetting(arrowSpacingField);
   view.addSubview(arrowSpacingField); // Label: Arrow Spacing Desctiption
 
   var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 187, 280, 40));
   infoLabel.setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Label: Arrow Description
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 240, 280, 40));
+  infoLabel.setStringValue("Made by Farid Sabitov and with the support of EPAM.com ❤️");
   infoLabel.setSelectable(false);
   infoLabel.setDrawsBackground(false);
   infoLabel.setBezeled(false);
