@@ -15,6 +15,7 @@
       "name": "Define Links",
       "description" : "Select more than one layer, to create a link between first object and others",
       "identifier": "definelink",
+      "icon" : "icon.png",
       "shortcut" : "command shift u",
       "script": "./script.js"
     },
@@ -23,6 +24,7 @@
       "description" : "Update all the arrows on selected group",
       "identifier": "updateArrows",
       "script": "./script.js",
+      "icon" : "icon.png",
       "shortcut" : "command option shift r",
       "handler": "updateArrows"
     },
@@ -31,6 +33,7 @@
       "description" : "Cleaning all the layers and removing all connections from database",
       "identifier": "cleanArrows",
       "script": "./script.js",
+      "icon" : "icon.png",
       "shortcut" : "command option shift u",
       "handler": "cleanArrows"
     },
@@ -39,6 +42,7 @@
       "description" : "Provide settings for the arrows",
       "identifier": "settings",
       "script": "./script.js",
+      "icon" : "icon.png",
       "handler": "settings"
     },
     {
@@ -46,12 +50,14 @@
       "description" : "Download library for having interactive arrows",
       "identifier": "getLibrary",
       "script": "./links.js",
+      "icon" : "icon.png",
       "handler": "getLibrary"
     },{
       "name": "Join Community",
       "description" : "Share all the suggestions, bugs or just say Hi",
       "identifier": "joinCommunity",
       "script": "./links.js",
+      "icon" : "icon.png",
       "handler": "joinCommunity"
     }
   ],

@@ -1,6 +1,10 @@
 # 👉 Arrows
 
+
+
 ![preview](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/assets/preview.jpg)
+[![Download from Sketchpacks.com](https://badges.sketchpacks.com/plugins/me.sabitov.sketch.connectionFlowArrows/version.svg)](https://api.sketchpacks.com/v1/plugins/me.sabitov.sketch.connectionFlowArrows/download) [![View on Sketchpacks.com](https://badges.sketchpacks.com/plugins/me.sabitov.sketch.connectionFlowArrows/downloads/total.svg)](https://sketchpacks.com/faridsabitov/Sketch-Connection-Flow-Arrows)
+
 Plugin for Sketch to create connection flow arrows for creating user flows, sitemaps and many more. Just select two objects and click on "Plugins" → "👉 Arrows" → "Define a Link" and voilà! It will create a connection with arrow 🚀
 
 
@@ -9,7 +13,7 @@ Plugin for Sketch to create connection flow arrows for creating user flows, site
 - [How it works](#How-it-works)
 - [Download Plugin](#Download-Plugin)
 - [Bonus](#Bonus)
-- [Join Community](#Join-Community)
+- [Join Community and Contacts](#Join-Community-and-Contacts)
 - [FAQ](#FAQ)
 - [Roadmap](#Roadmap)
 
@@ -32,7 +36,7 @@ This plugin allows you to provide an arrow between two objects, but for creating
 #### [Download Free Interactions Library 🎉](https://github.com/faridsabitov/Sketch-Interactions)
 
 
-## Join Community
+## Join Community and Contacts
 If you would like to suggest improvement, report a bug or just say "Hi 👋" join our community on [**Spectrum**](https://spectrum.chat/sketch-arrows)
 
 You can write me directly via [mssg.me/farid](https://mssg.me/farid) or find me on [Instagram](https://www.instagram.com/faridsabitov/) or [Dribbble](https://dribbble.com/FaridSabitov) as @faridsabitov
