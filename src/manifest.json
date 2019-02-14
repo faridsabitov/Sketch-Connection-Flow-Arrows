@@ -29,8 +29,8 @@
       "handler": "updateArrows"
     },
     {
-      "name": "Delete All Arrows",
-      "description" : "Cleaning all the layers and removing all connections from database",
+      "name": "Delete Arrows",
+      "description" : "Cleaning all the layers based on the selection",
       "identifier": "cleanArrows",
       "script": "./script.js",
       "icon" : "icon.png",

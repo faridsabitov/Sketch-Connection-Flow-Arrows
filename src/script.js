@@ -44,7 +44,7 @@ export default function(context) {
     // TODO: There is a problem with the source object. Need to select it based on the direction
     let sourceObject = selection.firstObject()
 
-    for(var g = 0; g < selection.count(); g++) {
+    for(let g = 0; g < selection.count(); g++) {
       
       if(selection[g].objectID() != sourceObject.objectID()){
         const connectionIndex = findConnectionData(selection[g].objectID(), sourceObject.objectID())
@@ -119,9 +119,21 @@ export function updateArrows(context) {
 }
 
 export function cleanArrows(context) {
+  let selection = context.selection
+  let selectionMessage
+
+  for(var g = 0; g < selection.count(); g++) {
+
+    // If user selected two objects
+    if(selection.count() == 1 && selection[0].class() == "MSArtboardGroup"){selectionMessage}
+  }
+
+
+
+
   let alert = COSAlertWindow.new()
   // Title
-  alert.setMessageText("Would you like to delete all the arrows?")
+  alert.setMessageText("Would you like to delete all the arrows from "+selectionMessage)
 
   // Creating dialog buttons
   alert.addButtonWithTitle("Delete Arrows")
@@ -137,7 +149,7 @@ export function cleanArrows(context) {
   // Label
   var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40))
 
-  infoLabel.setStringValue("ℹ️ You can select an artboard to delete all the arrows from selected one")
+  infoLabel.setStringValue("ℹ️ You can select layers, artboards to delete all the arrows from selected one only")
   infoLabel.setSelectable(false)
   infoLabel.setDrawsBackground(false)
   infoLabel.setBezeled(false)

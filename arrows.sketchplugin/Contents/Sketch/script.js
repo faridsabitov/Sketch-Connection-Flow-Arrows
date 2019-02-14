@@ -226,9 +226,19 @@ function updateArrows(context) {
 
 }
 function cleanArrows(context) {
+  var selection = context.selection;
+  var selectionMessage;
+
+  for (var g = 0; g < selection.count(); g++) {
+    // If user selected two objects
+    if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+      selectionMessage;
+    }
+  }
+
   var alert = COSAlertWindow.new(); // Title
 
-  alert.setMessageText("Would you like to delete all the arrows?"); // Creating dialog buttons
+  alert.setMessageText("Would you like to delete all the arrows from " + selectionMessage); // Creating dialog buttons
 
   alert.addButtonWithTitle("Delete Arrows");
   alert.addButtonWithTitle("Cancel"); // Creating the view
@@ -239,7 +249,7 @@ function cleanArrows(context) {
   alert.addAccessoryView(view); // Label
 
   var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40));
-  infoLabel.setStringValue("ℹ️ You can select an artboard to delete all the arrows from selected one");
+  infoLabel.setStringValue("ℹ️ You can select layers, artboards to delete all the arrows from selected one only");
   infoLabel.setSelectable(false);
   infoLabel.setDrawsBackground(false);
   infoLabel.setBezeled(false);
@@ -248,10 +258,10 @@ function cleanArrows(context) {
   var modalResponse = alert.runModal();
 
   if (modalResponse == NSAlertFirstButtonReturn) {
-    var selection = context.selection;
+    var _selection = context.selection;
     var firstObject, secondObject;
 
-    if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+    if (_selection.count() == 1 && _selection[0].class() == "MSArtboardGroup") {
       // Need to delete all the arrows only from selected artboard
       var connections = getConnectionsData();
 
@@ -264,8 +274,8 @@ function cleanArrows(context) {
           firstObject = document.getLayerWithID(connections[i].firstObject);
           secondObject = document.getLayerWithID(connections[i].secondObject);
 
-          if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
-            if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
+          if (firstObject.sketchObject.parentArtboard().objectID() == _selection[0].objectID()) {
+            if (secondObject.sketchObject.parentArtboard().objectID() == _selection[0].objectID()) {
               deleteLine(connections[i].line);
               newConnectionsData = deleteConnectionFromData(i);
             }
