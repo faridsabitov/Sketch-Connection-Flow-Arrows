@@ -18,7 +18,14 @@ let currentGroup
 
 // Settings
 var Settings = require('sketch/settings')
-let arrowDirectionSetting = Settings.settingForKey('arrowDirection')
+let arrowDirectionSetting
+
+if(Settings.settingForKey("arrowDirection")) {
+  arrowDirectionSetting = Settings.settingForKey('arrowDirection')
+} else {
+  arrowDirectionSetting = "Auto"
+}
+  
 
 //
 //  Default Function

@@ -132,9 +132,16 @@ var currentGroup; // Settings
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var arrowDirectionSetting = Settings.settingForKey('arrowDirection'); //
+var arrowDirectionSetting;
+
+if (Settings.settingForKey("arrowDirection")) {
+  arrowDirectionSetting = Settings.settingForKey('arrowDirection');
+} else {
+  arrowDirectionSetting = "Auto";
+} //
 //  Default Function
 //
+
 
 /* harmony default export */ __webpack_exports__["default"] = (function (context) {
   // Check if we have "Arrows" group
