@@ -335,12 +335,8 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   // TODO: Need to send real object
   updateSpacing(sourceObjectID, childObjectID, localDirection)
 
-  
-  
   let line = drawLine(sourceObjectID, childObjectID, localDirection)
   addToArrowsGroup(line)
-
-  
 
   // Storage for current connection
   let connection = {
@@ -570,7 +566,6 @@ function findConnectionData(firstObjectID, secondObjectID){
     // If we have database, need to check for connections
     let connections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey)
 
-    
     for(let y = 0; y < connections.count(); y++){
 
       if(firstObjectID == connections[y].firstObject || firstObjectID == connections[y].secondObject){
@@ -579,7 +574,7 @@ function findConnectionData(firstObjectID, secondObjectID){
         if(secondObjectID == connections[y].firstObject || secondObjectID == connections[y].secondObject){
           // if we found that we have this object in connection database already
           arrayNumber = y
-        }
+        } 
       }
     }
   }
