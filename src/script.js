@@ -1,16 +1,14 @@
 import sketch from 'sketch'
-const { toArray } = require('util')
+// const { toArray } = require('util')
 
 //
 //  Variables
 //
 
 let UI = require('sketch/ui') 
-let Group = require('sketch/dom').Group
-const pluginKey = "flowArrows" // TODO: Need to refactor
+const pluginKey = "flowArrows"
 const document = sketch.fromNative(context.document)
-const page = document.selectedPage
-let docData = context.document.documentData() // TODO: Need to refactor
+let docData = context.document.documentData()
 let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey) // TODO: Need to refactor
 let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage() // TODO: Need to refactor
 let newConnectionsData = getConnectionsData()
@@ -33,36 +31,33 @@ if(Settings.settingForKey("arrowDirection")) {
 
 export default function(context) {
 
-  // Check if we have "Arrows" group
-  // TODO: Need to refactor
-  currentGroup = checkForArrowGroup()
   let selection = context.selection
 
   if(selection.count() > 1){
-    // When user selected more than one layer
-    // Need to define source object first
-    // TODO: There is a problem with the source object. Need to select it based on the direction
-    let sourceObject = selection.firstObject()
+    // Need to find source object by ID first
+    let sourceObjectID = getSourceObjectFromSelection(selection)
+    let currentConnectionsData = newConnectionsData
 
-    for(var g = 0; g < selection.count(); g++) {
-      
-      if(selection[g].objectID() != sourceObject.objectID()){
-        const connectionIndex = findConnectionData(selection[g].objectID(), sourceObject.objectID())
+    for(let g = 0; g < selection.count(); g++) {
+      // log("Current G "+g)
+      if(selection[g].objectID() != sourceObjectID){
+        // log("Current G after check "+g)
+        // Then need to create or update connection arrow with each selection
+        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(pluginData[connectionIndex].firstObject, pluginData[connectionIndex].secondObject, arrowDirectionSetting, pluginData[connectionIndex].line, connectionIndex)
-          context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
           sketch.UI.message("Current connection is updated 🚀")
         } else {
           // There is no connection with this two objects in our database
-          createArrow(sourceObject.objectID(), selection[g].objectID(), arrowDirectionSetting)
-          context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+          createArrow(sourceObjectID, selection[g].objectID(), arrowDirectionSetting)
           sketch.UI.message("New connection is created 🚀")
         }
       }
     }
-    
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+    // log(newConnectionsData)
   } else {
     // When user didn't select anything
     sketch.UI.message("Please select more than two layers")
@@ -73,7 +68,35 @@ export default function(context) {
 // Plugin Commands
 //
 
-export function updateArrows(context) {
+export function updateSelectedArrows(context) {
+
+  let selection = context.selection
+
+  if(selection.count() > 1){
+    // Need to find source object by ID first
+    let sourceObjectID = getSourceObjectFromSelection(selection)
+    let currentConnectionsData = newConnectionsData
+
+    for(let g = 0; g < selection.count(); g++) {
+      if(selection[g].objectID() != sourceObjectID){
+        // Then need to create or update connection arrow with each selection
+        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
+
+        if(connectionIndex != null){
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
+          sketch.UI.message("Current connection is updated 🚀")
+        } 
+      }
+    }
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+    // log(newConnectionsData)
+  } else {
+    // When user didn't select anything
+    sketch.UI.message("Please select more than two layers")
+  }
+}
+
+export function updateArtboardArrows(context) {
   // TODO: Need to show amount of updated arrows and deleted ones
   let selection = context.selection
   let connections = getConnectionsData()
@@ -102,10 +125,6 @@ export function updateArrows(context) {
           // If not just saving it
           newConnectionsData.push(connections[i])
         }
-      } else {
-        // Need to go through each connection and update arrow position without artboards
-        // Need to check if current object don't have the parrent
-        updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i)
       }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
@@ -118,78 +137,114 @@ export function updateArrows(context) {
   // log(newConnectionsData)
 }
 
-export function cleanArrows(context) {
-  let alert = COSAlertWindow.new()
-  // Title
-  alert.setMessageText("Would you like to delete all the arrows?")
+export function updateAllArrows(context) { // TODO
+  // TODO: Need to show amount of updated arrows and deleted ones
+  let selection = context.selection
+  let connections = getConnectionsData()
+  let firstObjectArtboard
+  let secondObjectArtboard
+  
+  if(connections.length > 0){
+    // We have connections in database
+    const updateArrowsCounter = connections.length
+    for (let i = 0; i < updateArrowsCounter; i ++) {
+      // Need to go through each connection and update arrow position without artboards
+      // Need to check if current object don't have the parrent
+      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i)
+    }
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+    sketch.UI.message("All arrows are updated 🚀")
+  } else {
+    // We don't have any connections to update
+    sketch.UI.message("There is nothing to update")
+  }
+}
 
-  // Creating dialog buttons
-  alert.addButtonWithTitle("Delete Arrows")
-  alert.addButtonWithTitle("Cancel")
+export function deleteAllArrows(context) {
 
-  // Creating the view
-  const viewWidth = 300
-  const viewHeight = 40
+  if(newConnectionsData.length > 0){
+    // We have connections in database
+    for (let i = 0; i < newConnectionsData.length; i ++) {
+      // Need to go through each connection and update arrow position
+      deleteLine(newConnectionsData[i].line)
+    }
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(null, "arrowConnections", docData, pluginKey)
+    sketch.UI.message("All arrows are deleted")
+  } else {
+    // We don't have any connections to update
+    sketch.UI.message("There is nothing to delete")
+  }
+}
 
-  let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight))
-  alert.addAccessoryView(view)
+export function deleteArtboardArrows(context) {
+  let selection = context.selection
+  let firstObject, secondObject
 
-  // Label
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40))
-
-  infoLabel.setStringValue("ℹ️ You can select an artboard to delete all the arrows from selected one")
-  infoLabel.setSelectable(false)
-  infoLabel.setDrawsBackground(false)
-  infoLabel.setBezeled(false)
-
-  view.addSubview(infoLabel)
-
-  // Show modal and get the results
-  let modalResponse = alert.runModal()
-
-  if(modalResponse == NSAlertFirstButtonReturn){
-    let selection = context.selection
-    let firstObject, secondObject
-
-    if(selection.count() == 1 && selection[0].class() == "MSArtboardGroup"){
-      // Need to delete all the arrows only from selected artboard
-      let connections = getConnectionsData()
-      
-      if(connections.length > 0){
-        // We have connections in database
-        const updateArrowsCounter = connections.length
-        for (let i = 0; i < updateArrowsCounter; i ++) {
-          // Need to go through each connection and check if it placed on selected artboard
-          firstObject = document.getLayerWithID(connections[i].firstObject)
-          secondObject = document.getLayerWithID(connections[i].secondObject)
-          if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
-            if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
-              deleteLine(connections[i].line)
-              newConnectionsData = deleteConnectionFromData(i)
-            }
+  // Need to delete all the arrows only from selected artboard
+  if(selection.count() == 1 && selection[0].class() == "MSArtboardGroup"){
+    let connections = getConnectionsData()
+    
+    if(connections.length > 0){
+      // We have connections in database
+      const updateArrowsCounter = connections.length
+      for (let i = 0; i < updateArrowsCounter; i ++) {
+        // Need to go through each connection and check if it placed on selected artboard
+        firstObject = document.getLayerWithID(connections[i].firstObject)
+        secondObject = document.getLayerWithID(connections[i].secondObject)
+        if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
+          if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
+            deleteLine(connections[i].line)
+            newConnectionsData = deleteConnectionFromData(i)
           }
         }
-        context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
-        sketch.UI.message("All arrows from selected artboard are deleted")
-      } else {
-        // We don't have any connections to update
-        sketch.UI.message("There is nothing to delete")
       }
+      context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+      sketch.UI.message("All arrows from selected artboard are deleted")
     } else {
-      // Need to delete all the lines
-      if(newConnectionsData.length > 0){
-        // We have connections in database
-        for (let i = 0; i < newConnectionsData.length; i ++) {
-          // Need to go through each connection and update arrow position
-          deleteLine(newConnectionsData[i].line)
+      // We don't have any connections to update
+      sketch.UI.message("There is nothing to delete")
+    }
+  } else {
+    sketch.UI.message("Please select one artboard")
+  }
+}
+
+export function deleteSelectedArrows(context) {
+  let selection = context.selection
+  let firstObject, secondObject
+
+  // Need to delete all the arrows only from selected artboard
+  if(selection.count() > 1){
+
+    for(let g = 0; g < selection.count(); g++) {
+
+      if(selection[g].objectID() != selection[0].objectID()){
+        let connections = getConnectionsData()
+        
+        let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections)
+        
+        
+        if(connectionIndex != null){
+          // We have connections in database
+          const updateArrowsCounter = connections.length
+          for (let i = 0; i < updateArrowsCounter; i ++) {
+            // Need to go through each connection and check if it placed on selected artboard
+            firstObject = document.getLayerWithID(connections[i].firstObject)
+            secondObject = document.getLayerWithID(connections[i].secondObject)
+            if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
+              if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
+                deleteLine(connections[i].line)
+                newConnectionsData = deleteConnectionFromData(i)
+              }
+            }
+          }
+          context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+          sketch.UI.message("All arrows from selected artboard are deleted")
         }
-        context.command.setValue_forKey_onLayer_forPluginIdentifier(null, "arrowConnections", docData, pluginKey)
-        sketch.UI.message("All arrows are deleted")
-      } else {
-        // We don't have any connections to update
-        sketch.UI.message("There is nothing to delete")
       }
     }
+  } else {
+    sketch.UI.message("Select some layers, please")
   }
 }
 
@@ -274,7 +329,7 @@ export function settings(context) {
   // Label: Arrow Description
   var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-240, 280, 40));
 
-  infoLabel.setStringValue("Made by Farid Sabitov and with the support of EPAM.com ❤️")
+  infoLabel.setStringValue("Made by Farid Sabitov with the support of EPAM.com ❤️")
   infoLabel.setSelectable(false);
   infoLabel.setDrawsBackground(false)
   infoLabel.setBezeled(false)
@@ -335,12 +390,8 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   // TODO: Need to send real object
   updateSpacing(sourceObjectID, childObjectID, localDirection)
 
-  
-  
   let line = drawLine(sourceObjectID, childObjectID, localDirection)
   addToArrowsGroup(line)
-
-  
 
   // Storage for current connection
   let connection = {
@@ -359,6 +410,7 @@ function checkForArrowGroup() {
     if(currentParentGroup.layers()[i].name() == "Arrows") {
       // If we already have "Arrow" group we need to save it's folder
       currentGroup = currentParentGroup.layers()[i]
+      refactorLines(currentGroup)
     } 
   }
   return currentGroup // TODO: Need to refactor. Can be used global variable here
@@ -538,6 +590,7 @@ function addToArrowsGroup(line){
   } else {
     // If we don't have a group
     // Creating a group
+    let Group = require('sketch/dom').Group
     let group = new Group({
       parent: currentParentGroup,
       name: 'Arrows',
@@ -563,23 +616,26 @@ function getConnectionsData(){
   return dataArray
 }
 
-function findConnectionData(firstObjectID, secondObjectID){
+function findConnectionData(firstObjectID, secondObjectID, data){
   let arrayNumber = null
 
   if(pluginData){
     // If we have database, need to check for connections
-    let connections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey)
+    // log(data.length)
 
-    
-    for(let y = 0; y < connections.count(); y++){
+    for(let y = 0; y < data.length; y++){
+      // log("First one "+firstObjectID)
+      // log("Current Index "+y)
 
-      if(firstObjectID == connections[y].firstObject || firstObjectID == connections[y].secondObject){
+      if(firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject){
         // if we found that we have this object in connection database already
-
-        if(secondObjectID == connections[y].firstObject || secondObjectID == connections[y].secondObject){
+        // log("We have the first one")
+        // log("Second one "+secondObjectID)
+        if(secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject){
           // if we found that we have this object in connection database already
           arrayNumber = y
-        }
+          // log("We have the second one as"+arrayNumber)
+        } 
       }
     }
   }
@@ -725,6 +781,14 @@ function deleteConnectionFromData(arrayNumber){
   return newConnections
 }
 
+function refactorLines(group){ // Need to finish
+  log(group.layers().length)
+  for(let i = 0; i < group.layers().length; i++){
+    log(group.layers()[i].objectID())
+    // Here we need to go through each data in our database and delete line if there is no data
+  }
+}
+
 function deleteLine(lineID){
   const lineObject = document.getLayerWithID(lineID)
   let selectedGroup
@@ -808,4 +872,44 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){
   }
 
   return sourceObjectID
+}
+
+function getSourceObjectFromSelection(selection){
+  let sourceObjectID = selection.firstObject().objectID()
+  
+  if(arrowDirectionSetting != "Auto"){
+    for(let g = 0; g < selection.count(); g++) {
+      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting)
+    }
+  }
+ 
+  return sourceObjectID
+}
+
+function confirmationAlert(alert, message) {
+    // Title
+    alert.setMessageText("Would you like to delete all the arrows from "+message)
+
+    // Creating dialog buttons
+    alert.addButtonWithTitle("Delete Arrows")
+    alert.addButtonWithTitle("Cancel")
+  
+    // Creating the view
+    const viewWidth = 300
+    const viewHeight = 40
+  
+    let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight))
+    alert.addAccessoryView(view)
+  
+    // Label
+    var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40))
+  
+    infoLabel.setStringValue("ℹ️ You can select layers, artboards to delete all the arrows from selected one only")
+    infoLabel.setSelectable(false)
+    infoLabel.setDrawsBackground(false)
+    infoLabel.setBezeled(false)
+  
+    view.addSubview(infoLabel)
+
+    return alert
 }

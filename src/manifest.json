@@ -1,72 +1,117 @@
 {
   "compatibleVersion": 3,
   "bundleVersion": 1,
-  "identifier" : "me.sabitov.sketch.connectionFlowArrows",
-  "version" : "2.5.3sk",
+  "identifier": "me.sabitov.sketch.connectionFlowArrows",
+  "version": "2.5.3sk",
   "icon": "icon.png",
-  "authorEmail" : "farid.sabitov.design@gmail.com",
-  "author" : "Farid Sabitov",
-  "description" : "Create auto connected connection flow arrows",
-  "download-url" : "https://github.com/faridsabitov/Sketch-user-flows/releases",
-  "repo-url" : "https://github.com/faridsabitov/Sketch-user-flows",
-  "homepage" : "https://spectrum.chat/sketch-arrows",
+  "authorEmail": "farid.sabitov.design@gmail.com",
+  "author": "Farid Sabitov",
+  "description": "Create auto connected connection flow arrows",
+  "download-url": "https://github.com/faridsabitov/Sketch-user-flows/releases",
+  "repo-url": "https://github.com/faridsabitov/Sketch-user-flows",
+  "homepage": "https://spectrum.chat/sketch-arrows",
   "commands": [
     {
-      "name": "Define Links",
-      "description" : "Select more than one layer, to create a link between first object and others",
+      "name": "Create Connection",
+      "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "definelink",
-      "icon" : "icon.png",
-      "shortcut" : "command shift u",
+      "icon": "icon.png",
+      "shortcut": "command shift u",
       "script": "./script.js"
     },
     {
-      "name": "(WIP) Update Arrows",
-      "description" : "Update all the arrows on selected group",
-      "identifier": "updateArrows",
+      "name": "Between Selected",
+      "description": "Update connection between selected layers",
+      "identifier": "updateSelectedArrows",
       "script": "./script.js",
-      "icon" : "icon.png",
-      "shortcut" : "command option shift r",
-      "handler": "updateArrows"
+      "icon": "icon.png",
+      "handler": "updateSelectedArrows"
     },
     {
-      "name": "Delete All Arrows",
-      "description" : "Cleaning all the layers and removing all connections from database",
-      "identifier": "cleanArrows",
+      "name": "From the Selected Artboard",
+      "description": "Update all the arrows from selected artboard",
+      "identifier": "updateArtboardArrows",
       "script": "./script.js",
-      "icon" : "icon.png",
-      "shortcut" : "command option shift u",
-      "handler": "cleanArrows"
+      "icon": "icon.png",
+      "handler": "updateArtboardArrows"
+    },
+    {
+      "name": "All Connections",
+      "description": "Update all the arrows",
+      "identifier": "updateAllArrows",
+      "script": "./script.js",
+      "icon": "icon.png",
+      "handler": "updateAllArrows"
+    },
+    {
+      "name": "(WIP) Between Selected",
+      "description": "Delete all connections between selected ones",
+      "identifier": "deleteSelectedArrows",
+      "script": "./script.js",
+      "icon": "icon.png",
+      "handler": "deleteSelectedArrows"
+    },
+    {
+      "name": "From the Selected Artboard",
+      "description": "Delete all connections from selected artboard",
+      "identifier": "deleteArtboardArrows",
+      "script": "./script.js",
+      "icon": "icon.png",
+      "handler": "deleteArtboardArrows"
+    },
+    {
+      "name": "All Connections",
+      "description": "Delete all connections",
+      "identifier": "deleteAllArrows",
+      "script": "./script.js",
+      "icon": "icon.png",
+      "handler": "deleteAllArrows"
     },
     {
       "name": "Settings",
-      "description" : "Provide settings for the arrows",
+      "description": "Provide settings for the arrows",
       "identifier": "settings",
       "script": "./script.js",
-      "icon" : "icon.png",
+      "icon": "icon.png",
       "handler": "settings"
     },
     {
       "name": "Get Free Library",
-      "description" : "Download library for having interactive arrows",
+      "description": "Download library for having interactive arrows",
       "identifier": "getLibrary",
       "script": "./links.js",
-      "icon" : "icon.png",
+      "icon": "icon.png",
       "handler": "getLibrary"
-    },{
+    },
+    {
       "name": "Join Community",
-      "description" : "Share all the suggestions, bugs or just say Hi",
+      "description": "Share all the suggestions, bugs or just say Hi",
       "identifier": "joinCommunity",
       "script": "./links.js",
-      "icon" : "icon.png",
+      "icon": "icon.png",
       "handler": "joinCommunity"
     }
   ],
   "menu": {
-    "title": "👉 Arrows",
+    "title": "👉 Connection Arrows",
     "items": [
-      "definelink", 
-      "updateArrows",
-      "cleanArrows",
+      "definelink",
+      {
+        "title": "Update Connection",
+        "items": [
+          "updateSelectedArrows",
+          "updateArtboardArrows",
+          "updateAllArrows"
+        ]
+      },
+      {
+        "title": "Delete Connection",
+        "items": [
+          "deleteSelectedArrows",
+          "deleteArtboardArrows",
+          "deleteAllArrows"
+        ]
+      },
       "settings",
       "-",
       "getLibrary",
