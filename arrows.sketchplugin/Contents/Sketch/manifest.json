@@ -12,7 +12,7 @@
   "homepage": "https://spectrum.chat/sketch-arrows",
   "commands": [
     {
-      "name": "Define Links",
+      "name": "Create Connection",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "definelink",
       "icon": "icon.png",
@@ -20,22 +20,52 @@
       "script": "script.js"
     },
     {
-      "name": "(WIP) Update Arrows",
-      "description": "Update all the arrows on selected group",
-      "identifier": "updateArrows",
+      "name": "Between Selected",
+      "description": "Update connection between selected layers",
+      "identifier": "updateSelectedArrows",
       "script": "script.js",
       "icon": "icon.png",
-      "shortcut": "command option shift r",
-      "handler": "updateArrows"
+      "handler": "updateSelectedArrows"
     },
     {
-      "name": "Delete Arrows",
-      "description": "Cleaning all the layers based on the selection",
-      "identifier": "cleanArrows",
+      "name": "From the Selected Artboard",
+      "description": "Update all the arrows from selected artboard",
+      "identifier": "updateArtboardArrows",
       "script": "script.js",
       "icon": "icon.png",
-      "shortcut": "command option shift u",
-      "handler": "cleanArrows"
+      "handler": "updateArtboardArrows"
+    },
+    {
+      "name": "All Connections",
+      "description": "Update all the arrows",
+      "identifier": "updateAllArrows",
+      "script": "script.js",
+      "icon": "icon.png",
+      "handler": "updateAllArrows"
+    },
+    {
+      "name": "(WIP) Between Selected",
+      "description": "Delete all connections between selected ones",
+      "identifier": "deleteSelectedArrows",
+      "script": "script.js",
+      "icon": "icon.png",
+      "handler": "deleteSelectedArrows"
+    },
+    {
+      "name": "From the Selected Artboard",
+      "description": "Delete all connections from selected artboard",
+      "identifier": "deleteArtboardArrows",
+      "script": "script.js",
+      "icon": "icon.png",
+      "handler": "deleteArtboardArrows"
+    },
+    {
+      "name": "All Connections",
+      "description": "Delete all connections",
+      "identifier": "deleteAllArrows",
+      "script": "script.js",
+      "icon": "icon.png",
+      "handler": "deleteAllArrows"
     },
     {
       "name": "Settings",
@@ -63,11 +93,25 @@
     }
   ],
   "menu": {
-    "title": "👉 Arrows",
+    "title": "👉 Connection Arrows",
     "items": [
       "definelink",
-      "updateArrows",
-      "cleanArrows",
+      {
+        "title": "Update Connection",
+        "items": [
+          "updateSelectedArrows",
+          "updateArtboardArrows",
+          "updateAllArrows"
+        ]
+      },
+      {
+        "title": "Delete Connection",
+        "items": [
+          "deleteSelectedArrows",
+          "deleteArtboardArrows",
+          "deleteAllArrows"
+        ]
+      },
       "settings",
       "-",
       "getLibrary",
