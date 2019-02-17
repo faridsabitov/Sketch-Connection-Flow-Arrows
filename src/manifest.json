@@ -76,6 +76,14 @@
       "handler": "settings"
     },
     {
+      "name": "Toggle Panel",
+      "description": "Show or hide Connection Arrows Panel",
+      "identifier": "panel",
+      "script": "./script.js",
+      "icon": "icon.png",
+      "handler": "panel"
+    },
+    {
       "name": "Get Free Library",
       "description": "Download library for having interactive arrows",
       "identifier": "getLibrary",
@@ -113,6 +121,7 @@
         ]
       },
       "settings",
+      "panel",
       "-",
       "getLibrary",
       "joinCommunity"
