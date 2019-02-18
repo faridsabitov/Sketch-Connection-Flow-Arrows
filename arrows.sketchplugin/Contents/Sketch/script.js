@@ -674,7 +674,8 @@ function drawLine(firstObjectID, secondObjectID, direction) {
   points[1].cornerRadius = 20;
   points[2].cornerRadius = 20; // Providing Settings for the arrow
 
-  line.setName("Arrow"); // Styling Border Style
+  line.setName("Arrow"); // line.x = line.x - 100
+  // Styling Border Style
 
   var border = line.style().addStylePartOfType(1);
   border.color = MSColor.colorWithRGBADictionary({

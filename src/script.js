@@ -635,6 +635,8 @@ function drawLine(firstObjectID, secondObjectID, direction){
   // Providing Settings for the arrow
   line.setName("Arrow")
 
+  // line.x = line.x - 100
+
   // Styling Border Style
   let border = line.style().addStylePartOfType(1)
   border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
