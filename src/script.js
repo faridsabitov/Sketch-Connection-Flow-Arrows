@@ -292,7 +292,7 @@ export function settings(context) {
   infoLabel.setDrawsBackground(false)
   infoLabel.setBezeled(false)
 
-  view.addSubview(infoLabel);
+  view.addSubview(infoLabel)
 
 
   // Label: Arrow Spacing
