@@ -348,6 +348,15 @@ export function settings(context) {
   }
 }
 
+export function onLayersMoved(context) {
+  sketch.UI.message("Please select more than two layers")
+  // let a = 0
+  const action = context.actionContext
+  log(context.actionContext)
+  log("moved")
+  
+}
+
 export function panel(context) {
   let ControlBar
   ControlBar = NSPanel.alloc().init();
@@ -400,6 +409,8 @@ export function panel(context) {
 
 
 }
+
+
 
 //
 // Functions

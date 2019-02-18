@@ -98,6 +98,16 @@
       "script": "links.js",
       "icon": "icon.png",
       "handler": "joinCommunity"
+    },
+    {
+      "script": "script.js",
+      "name": "onLayersMoved",
+      "handlers": {
+        "actions": {
+          "LayersMoved.finish": "onLayersMoved"
+        }
+      },
+      "identifier": "onLayersMoved"
     }
   ],
   "menu": {

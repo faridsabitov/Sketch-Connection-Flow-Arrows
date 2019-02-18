@@ -95,7 +95,7 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, panel */
+/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -107,6 +107,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteArtboardArrows", function() { return deleteArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteSelectedArrows", function() { return deleteSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onLayersMoved", function() { return onLayersMoved; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "panel", function() { return panel; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
@@ -420,6 +421,13 @@ function settings(context) {
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
     UI.message("Settings are updated 🚀");
   }
+}
+function onLayersMoved(context) {
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers"); // let a = 0
+
+  var action = context.actionContext;
+  log(context.actionContext);
+  log("moved");
 }
 function panel(context) {
   var ControlBar;
@@ -1087,6 +1095,7 @@ that['deleteSelectedArrows'] = __skpm_run.bind(this, 'deleteSelectedArrows');
 that['deleteArtboardArrows'] = __skpm_run.bind(this, 'deleteArtboardArrows');
 that['deleteAllArrows'] = __skpm_run.bind(this, 'deleteAllArrows');
 that['settings'] = __skpm_run.bind(this, 'settings');
-that['panel'] = __skpm_run.bind(this, 'panel')
+that['panel'] = __skpm_run.bind(this, 'panel');
+that['onLayersMoved'] = __skpm_run.bind(this, 'onLayersMoved')
 
 //# sourceMappingURL=script.js.map
