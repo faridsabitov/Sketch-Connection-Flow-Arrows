@@ -411,7 +411,6 @@ export function panel(context) {
 }
 
 
-
 //
 // Functions
 //
@@ -650,10 +649,9 @@ function addToArrowsGroup(line){
   if(currentGroup){
     // If we already have group
     currentGroup.addLayers([line])
-
+    currentGroup.fixGeometryWithOptions(0)
   } else {
     // If we don't have a group
-    // Creating a group
     let Group = require('sketch/dom').Group
     let group = new Group({
       parent: currentParentGroup,
@@ -664,7 +662,11 @@ function addToArrowsGroup(line){
 
     // Moving this group to the bottom of the page
     group.moveToBack()
+    group.fixGeometryWithOptions(0)
   }
+
+  
+  
 }
 
 function getConnectionsData(){

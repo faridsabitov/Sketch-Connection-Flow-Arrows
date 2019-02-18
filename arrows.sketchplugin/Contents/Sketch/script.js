@@ -694,9 +694,9 @@ function addToArrowsGroup(line) {
   if (currentGroup) {
     // If we already have group
     currentGroup.addLayers([line]);
+    currentGroup.fixGeometryWithOptions(0);
   } else {
     // If we don't have a group
-    // Creating a group
     var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
     var group = new Group({
@@ -707,6 +707,7 @@ function addToArrowsGroup(line) {
     }); // Moving this group to the bottom of the page
 
     group.moveToBack();
+    group.fixGeometryWithOptions(0);
   }
 }
 
