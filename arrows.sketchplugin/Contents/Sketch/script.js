@@ -508,8 +508,7 @@ function createArrow(firstObjectID, secondObjectID, direction) {
     childObjectID = secondObjectID;
   } else {
     childObjectID = firstObjectID;
-  } // TODO: Need to send real object
-
+  }
 
   updateSpacing(sourceObjectID, childObjectID, localDirection);
   var line = drawLine(sourceObjectID, childObjectID, localDirection);
@@ -674,8 +673,7 @@ function drawLine(firstObjectID, secondObjectID, direction) {
   points[1].cornerRadius = 20;
   points[2].cornerRadius = 20; // Providing Settings for the arrow
 
-  line.setName("Arrow"); // line.x = line.x - 100
-  // Styling Border Style
+  line.setName("Arrow"); // Styling Border Style
 
   var border = line.style().addStylePartOfType(1);
   border.color = MSColor.colorWithRGBADictionary({
@@ -694,6 +692,12 @@ function addToArrowsGroup(line) {
 
   if (currentGroup) {
     // If we already have group
+    // line.frame().x(100)
+    // log()
+    // log(currentGroup.frame().x())
+    // line.x = line.x - 100
+    //https://sketchplugins.com/d/198-how-to-get-a-layers-coordinates-relative-to-the-artboard/7
+    // Need to get object ID and then update the position and fix the geometry
     currentGroup.addLayers([line]);
     currentGroup.fixGeometryWithOptions(0);
   } else {
@@ -893,10 +897,9 @@ function deleteConnectionFromData(arrayNumber) {
 
 function refactorLines(group) {
   // Need to finish
-  log(group.layers().length);
-
-  for (var i = 0; i < group.layers().length; i++) {
-    log(group.layers()[i].objectID()); // Here we need to go through each data in our database and delete line if there is no data
+  // log(group.layers().length)
+  for (var i = 0; i < group.layers().length; i++) {// log(group.layers()[i].objectID())
+    // Here we need to go through each data in our database and delete line if there is no data
   }
 }
 

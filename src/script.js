@@ -450,7 +450,6 @@ function createArrow(firstObjectID, secondObjectID, direction) {
     childObjectID = firstObjectID
   }
   
-  // TODO: Need to send real object
   updateSpacing(sourceObjectID, childObjectID, localDirection)
 
   let line = drawLine(sourceObjectID, childObjectID, localDirection)
@@ -635,8 +634,6 @@ function drawLine(firstObjectID, secondObjectID, direction){
   // Providing Settings for the arrow
   line.setName("Arrow")
 
-  // line.x = line.x - 100
-
   // Styling Border Style
   let border = line.style().addStylePartOfType(1)
   border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
@@ -650,6 +647,12 @@ function addToArrowsGroup(line){
   currentGroup = checkForArrowGroup()
   if(currentGroup){
     // If we already have group
+    // line.frame().x(100)
+    // log()
+    // log(currentGroup.frame().x())
+  // line.x = line.x - 100
+  //https://sketchplugins.com/d/198-how-to-get-a-layers-coordinates-relative-to-the-artboard/7
+    // Need to get object ID and then update the position and fix the geometry
     currentGroup.addLayers([line])
     currentGroup.fixGeometryWithOptions(0)
   } else {
@@ -850,9 +853,9 @@ function deleteConnectionFromData(arrayNumber){
 }
 
 function refactorLines(group){ // Need to finish
-  log(group.layers().length)
+  // log(group.layers().length)
   for(let i = 0; i < group.layers().length; i++){
-    log(group.layers()[i].objectID())
+    // log(group.layers()[i].objectID())
     // Here we need to go through each data in our database and delete line if there is no data
   }
 }
