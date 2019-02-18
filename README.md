@@ -42,8 +42,8 @@ If you would like to suggest improvement, report a bug or just say "Hi 👋" joi
 You can write me directly via [mssg.me/farid](https://mssg.me/farid) or find me on [Instagram](https://www.instagram.com/faridsabitov/) or [Dribbble](https://dribbble.com/FaridSabitov) as @faridsabitov
 
 
-## FAQ
-{Youtube video will be shared soon}
+## Watch tutorial on Youtube
+[![Preview](YoutubePreview.jpg)](https://youtu.be/9z7BrknRocg)
 
 
 ## Roadmap
