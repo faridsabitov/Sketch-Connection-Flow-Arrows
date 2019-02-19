@@ -538,16 +538,18 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   // Drawing a line
   let path = NSBezierPath.bezierPath()
+
+  let currentGroup = checkForArrowGroup()
   
   // Based on direction, we need to specify connection points
   if(direction == "Up"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2
-    firstLayerPosY = firstObject.frame.y
+    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-currentGroup.frame().x()
+    firstLayerPosY = firstObject.frame.y-currentGroup.frame().y()
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2
-    secondLayerPosY = secondObject.frame.y+secondObject.frame.height
+    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-currentGroup.frame().x()
+    secondLayerPosY = secondObject.frame.y+secondObject.frame.height-currentGroup.frame().y()
 
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -562,12 +564,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   if(direction == "Right"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x+firstObject.frame.width
-    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2
+    firstLayerPosX = firstObject.frame.x+firstObject.frame.width-currentGroup.frame().x()
+    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-currentGroup.frame().y()
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x
-    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2
+    secondLayerPosX = secondObject.frame.x-currentGroup.frame().x()
+    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-currentGroup.frame().y()
     
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -582,12 +584,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   if(direction == "Down"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2
-    firstLayerPosY = firstObject.frame.y+firstObject.frame.height
+    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-currentGroup.frame().x()
+    firstLayerPosY = firstObject.frame.y+firstObject.frame.height-currentGroup.frame().y()
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2
-    secondLayerPosY = secondObject.frame.y
+    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-currentGroup.frame().x()
+    secondLayerPosY = secondObject.frame.y-currentGroup.frame().y()
 
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -602,12 +604,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   if(direction == "Left"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x
-    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2
+    firstLayerPosX = firstObject.frame.x-currentGroup.frame().x()
+    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-currentGroup.frame().y()
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x+secondObject.frame.width
-    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2
+    secondLayerPosX = secondObject.frame.x+secondObject.frame.width-currentGroup.frame().x()
+    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-currentGroup.frame().y()
 
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -653,8 +655,13 @@ function addToArrowsGroup(line){
   // line.x = line.x - 100
   //https://sketchplugins.com/d/198-how-to-get-a-layers-coordinates-relative-to-the-artboard/7
     // Need to get object ID and then update the position and fix the geometry
+    // let lineID = line.objectID()
+    // log(line.layers().firstObject().offset(100,100))
+
+    // let lineObject = document.getLayerWithID(lineID)
+    // log(lineObject)
     currentGroup.addLayers([line])
-    currentGroup.fixGeometryWithOptions(0)
+    currentGroup.fixGeometryWithOptions(1)
   } else {
     // If we don't have a group
     let Group = require('sketch/dom').Group
@@ -667,7 +674,8 @@ function addToArrowsGroup(line){
 
     // Moving this group to the bottom of the page
     group.moveToBack()
-    group.fixGeometryWithOptions(0)
+    currentGroup = checkForArrowGroup()
+    currentGroup.fixGeometryWithOptions(1)
   }
 
   
