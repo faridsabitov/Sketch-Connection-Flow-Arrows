@@ -10,9 +10,8 @@ const pluginKey = "flowArrows"
 const document = sketch.fromNative(context.document)
 let docData = context.document.documentData()
 let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey) // TODO: Need to refactor
-let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage() // TODO: Need to refactor
+let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage() // TODO: Might be a problem for multiple artboards
 let newConnectionsData = getConnectionsData()
-let currentGroup
 
 // Settings
 var Settings = require('sketch/settings')
@@ -39,12 +38,10 @@ export default function(context) {
     let currentConnectionsData = newConnectionsData
 
     for(let g = 0; g < selection.count(); g++) {
-      // log("Current G "+g)
       if(selection[g].objectID() != sourceObjectID){
-        // log("Current G after check "+g)
         // Then need to create or update connection arrow with each selection
         let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
-
+        // log("Index "+connectionIndex)
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
           updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
@@ -292,7 +289,7 @@ export function settings(context) {
   infoLabel.setDrawsBackground(false)
   infoLabel.setBezeled(false)
 
-  view.addSubview(infoLabel);
+  view.addSubview(infoLabel)
 
 
   // Label: Arrow Spacing
@@ -348,6 +345,69 @@ export function settings(context) {
   }
 }
 
+export function onLayersMoved(context) {
+  sketch.UI.message("Please select more than two layers")
+  // let a = 0
+  const action = context.actionContext
+  // log(context.actionContext)
+  // log("moved")
+  
+}
+
+export function panel(context) {
+  let ControlBar
+  ControlBar = NSPanel.alloc().init();
+  ControlBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
+  // ControlBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.99, 0.99, 0.99, 1));
+  ControlBar.setTitleVisibility(NSWindowTitleHidden);
+  ControlBar.setTitlebarAppearsTransparent(true);
+  ControlBar.setFrame_display(NSMakeRect(0, 0, 720, 50), false);
+  ControlBar.setMovableByWindowBackground(true);
+  ControlBar.setHasShadow(true);
+  ControlBar.setLevel(NSFloatingWindowLevel);
+
+  // contentView.addSubview(closeButton)
+  ControlBar.center();
+  ControlBar.makeKeyAndOrderFront(nil);
+
+//   getImage = function(size, name){
+//     var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
+//         suffix = (isRetinaDisplay)? "@2x": "",
+//         imageURL = NSURL.fileURLWithPath(self.pluginResources + "/icons/" + name + suffix + ".png"),
+//         image = NSImage.alloc().initWithContentsOfURL(imageURL);
+//     return image
+// },
+// addButton = function(rect, name, callAction){
+//     var button = NSButton.alloc().initWithFrame(rect),
+//         image = getImage(rect.size, name);
+
+//     button.setImage(image);
+//     button.setBordered(false);
+//     button.sizeToFit();
+//     button.setButtonType(NSMomentaryChangeButton);
+//     button.setCOSJSTargetFunction(callAction);
+//     button.setAction("callAction:");
+//     return button;
+// },
+// addImage = function(rect, name){
+//     var view = NSImageView.alloc().initWithFrame(rect),
+//         image = getImage(rect.size, name);
+//     view.setImage(image);
+//     return view;
+// },
+
+// closeButton = addButton( NSMakeRect(20, 10, 30, 30), "close-control",
+//     function(sender){
+//         coscript.setShouldKeepAround(false);
+//         threadDictionary.removeObjectForKey(identifier);
+//         ControlBar.close();
+// }),
+
+
+
+}
+
+
 //
 // Functions
 //
@@ -371,7 +431,7 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
 
 function createArrow(firstObjectID, secondObjectID, direction) {
   // Process of creating new connection
-  let localDirection, sourceObjectID, childObjectID
+  let localDirection
   
   if(direction == "Auto"){
     // If direction is auto, we need to specify direction ourselves
@@ -379,24 +439,16 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   } else {
     localDirection = direction
   }
-
-  sourceObjectID = defineSourceObject(firstObjectID, secondObjectID, localDirection)
-  if(sourceObjectID == firstObjectID){
-    childObjectID = secondObjectID
-  } else {
-    childObjectID = firstObjectID
-  }
   
-  // TODO: Need to send real object
-  updateSpacing(sourceObjectID, childObjectID, localDirection)
-
-  let line = drawLine(sourceObjectID, childObjectID, localDirection)
-  addToArrowsGroup(line)
+  updateSpacing(firstObjectID, secondObjectID, localDirection)
+  let currentGroup = checkForArrowGroup()
+  let line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup)
+  addToArrowsGroup(line, currentGroup)
 
   // Storage for current connection
   let connection = {
-    firstObject : sourceObjectID,
-    secondObject : childObjectID,
+    firstObject : firstObjectID,
+    secondObject : secondObjectID,
     direction: localDirection,
     line : line.objectID()
   }
@@ -405,6 +457,7 @@ function createArrow(firstObjectID, secondObjectID, direction) {
 }
 
 function checkForArrowGroup() {
+  let currentGroup = null
   // Checking all the groups that we have
   for(let i = 0; i < currentParentGroup.layers().count(); i++){
     if(currentParentGroup.layers()[i].name() == "Arrows") {
@@ -413,7 +466,7 @@ function checkForArrowGroup() {
       refactorLines(currentGroup)
     } 
   }
-  return currentGroup // TODO: Need to refactor. Can be used global variable here
+  return currentGroup
 }
 
 function getDirection(firstObjectID, secondObjectID){
@@ -469,23 +522,35 @@ function getDirection(firstObjectID, secondObjectID){
   return direction
 }
 
-function drawLine(firstObjectID, secondObjectID, direction){
-  let firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY
+function drawLine(firstObjectID, secondObjectID, direction, currentGroup){
+  let firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
 
+  
+  if(currentGroup){
+    //if we already have a group, need to specify the difference
+    diffX = currentGroup.frame().x()
+    diffY = currentGroup.frame().y()
+  } else {
+    diffX = 0
+    diffY = 0
+  }
+
   // Drawing a line
   let path = NSBezierPath.bezierPath()
+
+  
   
   // Based on direction, we need to specify connection points
   if(direction == "Up"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2
-    firstLayerPosY = firstObject.frame.y
+    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
+    firstLayerPosY = firstObject.frame.y-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2
-    secondLayerPosY = secondObject.frame.y+secondObject.frame.height
+    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
+    secondLayerPosY = secondObject.frame.y+secondObject.frame.height-diffY
 
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -500,12 +565,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   if(direction == "Right"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x+firstObject.frame.width
-    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2
+    firstLayerPosX = firstObject.frame.x+firstObject.frame.width-diffX
+    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x
-    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2
+    secondLayerPosX = secondObject.frame.x-diffX
+    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
     
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -520,12 +585,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   if(direction == "Down"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2
-    firstLayerPosY = firstObject.frame.y+firstObject.frame.height
+    firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
+    firstLayerPosY = firstObject.frame.y+firstObject.frame.height-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2
-    secondLayerPosY = secondObject.frame.y
+    secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
+    secondLayerPosY = secondObject.frame.y-diffY
 
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -540,12 +605,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
 
   if(direction == "Left"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x
-    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2
+    firstLayerPosX = firstObject.frame.x-diffX
+    firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObject.frame.x+secondObject.frame.width
-    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2
+    secondLayerPosX = secondObject.frame.x+secondObject.frame.width-diffX
+    secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
 
     // Middle Points
     middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -581,15 +646,12 @@ function drawLine(firstObjectID, secondObjectID, direction){
   return line
 }
 
-function addToArrowsGroup(line){
-  currentGroup = checkForArrowGroup()
+function addToArrowsGroup(line, currentGroup){
   if(currentGroup){
-    // If we already have group
     currentGroup.addLayers([line])
-
+    currentGroup.fixGeometryWithOptions(1)
   } else {
     // If we don't have a group
-    // Creating a group
     let Group = require('sketch/dom').Group
     let group = new Group({
       parent: currentParentGroup,
@@ -597,10 +659,14 @@ function addToArrowsGroup(line){
       locked: true,
       layers: [line]
     })
-
     // Moving this group to the bottom of the page
     group.moveToBack()
+    currentGroup = checkForArrowGroup()
+    currentGroup.fixGeometryWithOptions(1)
   }
+
+  
+  
 }
 
 function getConnectionsData(){
@@ -621,7 +687,6 @@ function findConnectionData(firstObjectID, secondObjectID, data){
 
   if(pluginData){
     // If we have database, need to check for connections
-    // log(data.length)
 
     for(let y = 0; y < data.length; y++){
       // log("First one "+firstObjectID)
@@ -782,9 +847,9 @@ function deleteConnectionFromData(arrayNumber){
 }
 
 function refactorLines(group){ // Need to finish
-  log(group.layers().length)
+  // log(group.layers().length)
   for(let i = 0; i < group.layers().length; i++){
-    log(group.layers()[i].objectID())
+    // log(group.layers()[i].objectID())
     // Here we need to go through each data in our database and delete line if there is no data
   }
 }
@@ -836,12 +901,13 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){
   let secondObject = document.getLayerWithID(secondObjectID)
   let sourceObjectID
 
-  
-  
+  if(direction == "Auto"){
+    sourceObjectID = firstObject.id
+  }
+
   if(direction == "Right"){
     if(firstObject.frame.x <= secondObject.frame.x){
       sourceObjectID = firstObject.id
-      
     } else {
       sourceObjectID = secondObject.id
     }
@@ -881,6 +947,8 @@ function getSourceObjectFromSelection(selection){
     for(let g = 0; g < selection.count(); g++) {
       sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting)
     }
+  } else {
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting)
   }
  
   return sourceObjectID
@@ -913,3 +981,14 @@ function confirmationAlert(alert, message) {
 
     return alert
 }
+
+// {
+//   "script": "./script.js",
+//   "name" : "onLayersMoved",
+//   "handlers" : {
+//     "actions": {
+//       "LayersMoved.finish": "onLayersMoved"
+//     }
+//   },
+//   "identifier" : "onLayersMoved"
+// }

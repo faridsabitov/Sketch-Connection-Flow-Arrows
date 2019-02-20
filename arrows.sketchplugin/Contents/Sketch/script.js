@@ -95,7 +95,7 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings */
+/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -107,6 +107,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteArtboardArrows", function() { return deleteArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteSelectedArrows", function() { return deleteSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onLayersMoved", function() { return onLayersMoved; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "panel", function() { return panel; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
  // const { toArray } = require('util')
@@ -121,10 +123,9 @@ var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.
 var docData = context.document.documentData();
 var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey); // TODO: Need to refactor
 
-var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Need to refactor
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
-var newConnectionsData = getConnectionsData();
-var currentGroup; // Settings
+var newConnectionsData = getConnectionsData(); // Settings
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
@@ -148,11 +149,9 @@ if (Settings.settingForKey("arrowDirection")) {
     var currentConnectionsData = newConnectionsData;
 
     for (var g = 0; g < selection.count(); g++) {
-      // log("Current G "+g)
       if (selection[g].objectID() != sourceObjectID) {
-        // log("Current G after check "+g)
         // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
+        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData); // log("Index "+connectionIndex)
 
         if (connectionIndex != null) {
           // Because this is creating flow, we need to take the direction from user settings
@@ -419,6 +418,56 @@ function settings(context) {
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
     UI.message("Settings are updated 🚀");
   }
+}
+function onLayersMoved(context) {
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers"); // let a = 0
+
+  var action = context.actionContext; // log(context.actionContext)
+  // log("moved")
+}
+function panel(context) {
+  var ControlBar;
+  ControlBar = NSPanel.alloc().init();
+  ControlBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask); // ControlBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.99, 0.99, 0.99, 1));
+
+  ControlBar.setTitleVisibility(NSWindowTitleHidden);
+  ControlBar.setTitlebarAppearsTransparent(true);
+  ControlBar.setFrame_display(NSMakeRect(0, 0, 720, 50), false);
+  ControlBar.setMovableByWindowBackground(true);
+  ControlBar.setHasShadow(true);
+  ControlBar.setLevel(NSFloatingWindowLevel); // contentView.addSubview(closeButton)
+
+  ControlBar.center();
+  ControlBar.makeKeyAndOrderFront(nil); //   getImage = function(size, name){
+  //     var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
+  //         suffix = (isRetinaDisplay)? "@2x": "",
+  //         imageURL = NSURL.fileURLWithPath(self.pluginResources + "/icons/" + name + suffix + ".png"),
+  //         image = NSImage.alloc().initWithContentsOfURL(imageURL);
+  //     return image
+  // },
+  // addButton = function(rect, name, callAction){
+  //     var button = NSButton.alloc().initWithFrame(rect),
+  //         image = getImage(rect.size, name);
+  //     button.setImage(image);
+  //     button.setBordered(false);
+  //     button.sizeToFit();
+  //     button.setButtonType(NSMomentaryChangeButton);
+  //     button.setCOSJSTargetFunction(callAction);
+  //     button.setAction("callAction:");
+  //     return button;
+  // },
+  // addImage = function(rect, name){
+  //     var view = NSImageView.alloc().initWithFrame(rect),
+  //         image = getImage(rect.size, name);
+  //     view.setImage(image);
+  //     return view;
+  // },
+  // closeButton = addButton( NSMakeRect(20, 10, 30, 30), "close-control",
+  //     function(sender){
+  //         coscript.setShouldKeepAround(false);
+  //         threadDictionary.removeObjectForKey(identifier);
+  //         ControlBar.close();
+  // }),
 } //
 // Functions
 //
@@ -440,7 +489,7 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
 
 function createArrow(firstObjectID, secondObjectID, direction) {
   // Process of creating new connection
-  var localDirection, sourceObjectID, childObjectID;
+  var localDirection;
 
   if (direction == "Auto") {
     // If direction is auto, we need to specify direction ourselves
@@ -449,22 +498,14 @@ function createArrow(firstObjectID, secondObjectID, direction) {
     localDirection = direction;
   }
 
-  sourceObjectID = defineSourceObject(firstObjectID, secondObjectID, localDirection);
-
-  if (sourceObjectID == firstObjectID) {
-    childObjectID = secondObjectID;
-  } else {
-    childObjectID = firstObjectID;
-  } // TODO: Need to send real object
-
-
-  updateSpacing(sourceObjectID, childObjectID, localDirection);
-  var line = drawLine(sourceObjectID, childObjectID, localDirection);
-  addToArrowsGroup(line); // Storage for current connection
+  updateSpacing(firstObjectID, secondObjectID, localDirection);
+  var currentGroup = checkForArrowGroup();
+  var line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup);
+  addToArrowsGroup(line, currentGroup); // Storage for current connection
 
   var connection = {
-    firstObject: sourceObjectID,
-    secondObject: childObjectID,
+    firstObject: firstObjectID,
+    secondObject: secondObjectID,
     direction: localDirection,
     line: line.objectID() // Need to save this data to the global array
 
@@ -473,7 +514,8 @@ function createArrow(firstObjectID, secondObjectID, direction) {
 }
 
 function checkForArrowGroup() {
-  // Checking all the groups that we have
+  var currentGroup = null; // Checking all the groups that we have
+
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
     if (currentParentGroup.layers()[i].name() == "Arrows") {
       // If we already have "Arrow" group we need to save it's folder
@@ -482,7 +524,7 @@ function checkForArrowGroup() {
     }
   }
 
-  return currentGroup; // TODO: Need to refactor. Can be used global variable here
+  return currentGroup;
 }
 
 function getDirection(firstObjectID, secondObjectID) {
@@ -538,20 +580,30 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function drawLine(firstObjectID, secondObjectID, direction) {
-  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY;
+function drawLine(firstObjectID, secondObjectID, direction, currentGroup) {
+  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY;
   var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID); // Drawing a line
+  var secondObject = document.getLayerWithID(secondObjectID);
+
+  if (currentGroup) {
+    //if we already have a group, need to specify the difference
+    diffX = currentGroup.frame().x();
+    diffY = currentGroup.frame().y();
+  } else {
+    diffX = 0;
+    diffY = 0;
+  } // Drawing a line
+
 
   var path = NSBezierPath.bezierPath(); // Based on direction, we need to specify connection points
 
   if (direction == "Up") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2;
-    firstLayerPosY = firstObject.frame.y; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+    firstLayerPosY = firstObject.frame.y - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2;
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height; // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -564,11 +616,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Right") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width;
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x;
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2; // Middle Points
+    secondLayerPosX = secondObject.frame.x - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -581,11 +633,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Down") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2;
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2;
-    secondLayerPosY = secondObject.frame.y; // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+    secondLayerPosY = secondObject.frame.y - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -598,11 +650,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Left") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x;
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width;
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2; // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -635,15 +687,12 @@ function drawLine(firstObjectID, secondObjectID, direction) {
   return line;
 }
 
-function addToArrowsGroup(line) {
-  currentGroup = checkForArrowGroup();
-
+function addToArrowsGroup(line, currentGroup) {
   if (currentGroup) {
-    // If we already have group
     currentGroup.addLayers([line]);
+    currentGroup.fixGeometryWithOptions(1);
   } else {
     // If we don't have a group
-    // Creating a group
     var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
     var group = new Group({
@@ -654,6 +703,8 @@ function addToArrowsGroup(line) {
     }); // Moving this group to the bottom of the page
 
     group.moveToBack();
+    currentGroup = checkForArrowGroup();
+    currentGroup.fixGeometryWithOptions(1);
   }
 }
 
@@ -677,7 +728,6 @@ function findConnectionData(firstObjectID, secondObjectID, data) {
 
   if (pluginData) {
     // If we have database, need to check for connections
-    // log(data.length)
     for (var y = 0; y < data.length; y++) {
       // log("First one "+firstObjectID)
       // log("Current Index "+y)
@@ -838,10 +888,9 @@ function deleteConnectionFromData(arrayNumber) {
 
 function refactorLines(group) {
   // Need to finish
-  log(group.layers().length);
-
-  for (var i = 0; i < group.layers().length; i++) {
-    log(group.layers()[i].objectID()); // Here we need to go through each data in our database and delete line if there is no data
+  // log(group.layers().length)
+  for (var i = 0; i < group.layers().length; i++) {// log(group.layers()[i].objectID())
+    // Here we need to go through each data in our database and delete line if there is no data
   }
 }
 
@@ -913,6 +962,10 @@ function defineSourceObject(firstObjectID, secondObjectID, direction) {
   var secondObject = document.getLayerWithID(secondObjectID);
   var sourceObjectID;
 
+  if (direction == "Auto") {
+    sourceObjectID = firstObject.id;
+  }
+
   if (direction == "Right") {
     if (firstObject.frame.x <= secondObject.frame.x) {
       sourceObjectID = firstObject.id;
@@ -955,6 +1008,8 @@ function getSourceObjectFromSelection(selection) {
     for (var g = 0; g < selection.count(); g++) {
       sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting);
     }
+  } else {
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting);
   }
 
   return sourceObjectID;
@@ -979,7 +1034,16 @@ function confirmationAlert(alert, message) {
   infoLabel.setBezeled(false);
   view.addSubview(infoLabel);
   return alert;
-}
+} // {
+//   "script": "./script.js",
+//   "name" : "onLayersMoved",
+//   "handlers" : {
+//     "actions": {
+//       "LayersMoved.finish": "onLayersMoved"
+//     }
+//   },
+//   "identifier" : "onLayersMoved"
+// }
 
 /***/ }),
 
@@ -1041,6 +1105,7 @@ that['updateAllArrows'] = __skpm_run.bind(this, 'updateAllArrows');
 that['deleteSelectedArrows'] = __skpm_run.bind(this, 'deleteSelectedArrows');
 that['deleteArtboardArrows'] = __skpm_run.bind(this, 'deleteArtboardArrows');
 that['deleteAllArrows'] = __skpm_run.bind(this, 'deleteAllArrows');
-that['settings'] = __skpm_run.bind(this, 'settings')
+that['settings'] = __skpm_run.bind(this, 'settings');
+that['panel'] = __skpm_run.bind(this, 'panel')
 
 //# sourceMappingURL=script.js.map
