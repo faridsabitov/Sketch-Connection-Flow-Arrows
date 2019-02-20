@@ -123,10 +123,9 @@ var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.
 var docData = context.document.documentData();
 var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey); // TODO: Need to refactor
 
-var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Need to refactor
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
-var newConnectionsData = getConnectionsData();
-var currentGroup; // Settings
+var newConnectionsData = getConnectionsData(); // Settings
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
@@ -511,8 +510,9 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   }
 
   updateSpacing(sourceObjectID, childObjectID, localDirection);
-  var line = drawLine(sourceObjectID, childObjectID, localDirection);
-  addToArrowsGroup(line); // Storage for current connection
+  var currentGroup = checkForArrowGroup();
+  var line = drawLine(sourceObjectID, childObjectID, localDirection, currentGroup);
+  addToArrowsGroup(line, currentGroup); // Storage for current connection
 
   var connection = {
     firstObject: sourceObjectID,
@@ -525,7 +525,8 @@ function createArrow(firstObjectID, secondObjectID, direction) {
 }
 
 function checkForArrowGroup() {
-  // Checking all the groups that we have
+  var currentGroup = null; // Checking all the groups that we have
+
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
     if (currentParentGroup.layers()[i].name() == "Arrows") {
       // If we already have "Arrow" group we need to save it's folder
@@ -534,7 +535,7 @@ function checkForArrowGroup() {
     }
   }
 
-  return currentGroup; // TODO: Need to refactor. Can be used global variable here
+  return currentGroup;
 }
 
 function getDirection(firstObjectID, secondObjectID) {
@@ -590,20 +591,30 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function drawLine(firstObjectID, secondObjectID, direction) {
-  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY;
+function drawLine(firstObjectID, secondObjectID, direction, currentGroup) {
+  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY;
   var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID); // Drawing a line
+  var secondObject = document.getLayerWithID(secondObjectID);
+
+  if (currentGroup) {
+    //if we already have a group, need to specify the difference
+    diffX = currentGroup.frame().x();
+    diffY = currentGroup.frame().y();
+  } else {
+    diffX = 0;
+    diffY = 0;
+  } // Drawing a line
+
 
   var path = NSBezierPath.bezierPath(); // Based on direction, we need to specify connection points
 
   if (direction == "Up") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2;
-    firstLayerPosY = firstObject.frame.y; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+    firstLayerPosY = firstObject.frame.y - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2;
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height; // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -616,11 +627,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Right") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width;
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x;
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2; // Middle Points
+    secondLayerPosX = secondObject.frame.x - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -633,11 +644,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Down") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2;
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2;
-    secondLayerPosY = secondObject.frame.y; // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+    secondLayerPosY = secondObject.frame.y - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -650,11 +661,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Left") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x;
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2; // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width;
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2; // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -687,9 +698,7 @@ function drawLine(firstObjectID, secondObjectID, direction) {
   return line;
 }
 
-function addToArrowsGroup(line) {
-  currentGroup = checkForArrowGroup();
-
+function addToArrowsGroup(line, currentGroup) {
   if (currentGroup) {
     currentGroup.addLayers([line]);
     currentGroup.fixGeometryWithOptions(1);
@@ -702,8 +711,7 @@ function addToArrowsGroup(line) {
       name: 'Arrows',
       locked: true,
       layers: [line]
-    }); // line.absoluteRect().x()
-    // Moving this group to the bottom of the page
+    }); // Moving this group to the bottom of the page
 
     group.moveToBack();
     currentGroup = checkForArrowGroup();
@@ -1032,7 +1040,16 @@ function confirmationAlert(alert, message) {
   infoLabel.setBezeled(false);
   view.addSubview(infoLabel);
   return alert;
-}
+} // {
+//   "script": "./script.js",
+//   "name" : "onLayersMoved",
+//   "handlers" : {
+//     "actions": {
+//       "LayersMoved.finish": "onLayersMoved"
+//     }
+//   },
+//   "identifier" : "onLayersMoved"
+// }
 
 /***/ }),
 
@@ -1095,7 +1112,6 @@ that['deleteSelectedArrows'] = __skpm_run.bind(this, 'deleteSelectedArrows');
 that['deleteArtboardArrows'] = __skpm_run.bind(this, 'deleteArtboardArrows');
 that['deleteAllArrows'] = __skpm_run.bind(this, 'deleteAllArrows');
 that['settings'] = __skpm_run.bind(this, 'settings');
-that['panel'] = __skpm_run.bind(this, 'panel');
-that['onLayersMoved'] = __skpm_run.bind(this, 'onLayersMoved')
+that['panel'] = __skpm_run.bind(this, 'panel')
 
 //# sourceMappingURL=script.js.map
