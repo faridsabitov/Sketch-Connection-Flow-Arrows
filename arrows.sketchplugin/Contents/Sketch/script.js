@@ -149,11 +149,9 @@ if (Settings.settingForKey("arrowDirection")) {
     var currentConnectionsData = newConnectionsData;
 
     for (var g = 0; g < selection.count(); g++) {
-      // log("Current G "+g)
       if (selection[g].objectID() != sourceObjectID) {
-        // log("Current G after check "+g)
         // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
+        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData); // log("Index "+connectionIndex)
 
         if (connectionIndex != null) {
           // Because this is creating flow, we need to take the direction from user settings
@@ -424,9 +422,8 @@ function settings(context) {
 function onLayersMoved(context) {
   sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers"); // let a = 0
 
-  var action = context.actionContext;
-  log(context.actionContext);
-  log("moved");
+  var action = context.actionContext; // log(context.actionContext)
+  // log("moved")
 }
 function panel(context) {
   var ControlBar;
@@ -492,7 +489,7 @@ function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectio
 
 function createArrow(firstObjectID, secondObjectID, direction) {
   // Process of creating new connection
-  var localDirection, sourceObjectID, childObjectID;
+  var localDirection;
 
   if (direction == "Auto") {
     // If direction is auto, we need to specify direction ourselves
@@ -501,22 +498,14 @@ function createArrow(firstObjectID, secondObjectID, direction) {
     localDirection = direction;
   }
 
-  sourceObjectID = defineSourceObject(firstObjectID, secondObjectID, localDirection);
-
-  if (sourceObjectID == firstObjectID) {
-    childObjectID = secondObjectID;
-  } else {
-    childObjectID = firstObjectID;
-  }
-
-  updateSpacing(sourceObjectID, childObjectID, localDirection);
+  updateSpacing(firstObjectID, secondObjectID, localDirection);
   var currentGroup = checkForArrowGroup();
-  var line = drawLine(sourceObjectID, childObjectID, localDirection, currentGroup);
+  var line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup);
   addToArrowsGroup(line, currentGroup); // Storage for current connection
 
   var connection = {
-    firstObject: sourceObjectID,
-    secondObject: childObjectID,
+    firstObject: firstObjectID,
+    secondObject: secondObjectID,
     direction: localDirection,
     line: line.objectID() // Need to save this data to the global array
 
@@ -739,7 +728,6 @@ function findConnectionData(firstObjectID, secondObjectID, data) {
 
   if (pluginData) {
     // If we have database, need to check for connections
-    // log(data.length)
     for (var y = 0; y < data.length; y++) {
       // log("First one "+firstObjectID)
       // log("Current Index "+y)
@@ -974,6 +962,10 @@ function defineSourceObject(firstObjectID, secondObjectID, direction) {
   var secondObject = document.getLayerWithID(secondObjectID);
   var sourceObjectID;
 
+  if (direction == "Auto") {
+    sourceObjectID = firstObject.id;
+  }
+
   if (direction == "Right") {
     if (firstObject.frame.x <= secondObject.frame.x) {
       sourceObjectID = firstObject.id;
@@ -1016,6 +1008,8 @@ function getSourceObjectFromSelection(selection) {
     for (var g = 0; g < selection.count(); g++) {
       sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting);
     }
+  } else {
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting);
   }
 
   return sourceObjectID;
