@@ -595,16 +595,15 @@ function drawLine(firstObjectID, secondObjectID, direction) {
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID); // Drawing a line
 
-  var path = NSBezierPath.bezierPath();
-  var currentGroup = checkForArrowGroup(); // Based on direction, we need to specify connection points
+  var path = NSBezierPath.bezierPath(); // Based on direction, we need to specify connection points
 
   if (direction == "Up") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - currentGroup.frame().x();
-    firstLayerPosY = firstObject.frame.y - currentGroup.frame().y(); // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2;
+    firstLayerPosY = firstObject.frame.y; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - currentGroup.frame().x();
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height - currentGroup.frame().y(); // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -617,11 +616,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Right") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width - currentGroup.frame().x();
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - currentGroup.frame().y(); // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x - currentGroup.frame().x();
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - currentGroup.frame().y(); // Middle Points
+    secondLayerPosX = secondObject.frame.x;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -634,11 +633,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Down") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - currentGroup.frame().x();
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height - currentGroup.frame().y(); // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - currentGroup.frame().x();
-    secondLayerPosY = secondObject.frame.y - currentGroup.frame().y(); // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2;
+    secondLayerPosY = secondObject.frame.y; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -651,11 +650,11 @@ function drawLine(firstObjectID, secondObjectID, direction) {
 
   if (direction == "Left") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObject.frame.x - currentGroup.frame().x();
-    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - currentGroup.frame().y(); // Second Layer Position End Point Position
+    firstLayerPosX = firstObject.frame.x;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObject.frame.x + secondObject.frame.width - currentGroup.frame().x();
-    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - currentGroup.frame().y(); // Middle Points
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2; // Middle Points
 
     middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
     middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
@@ -692,17 +691,6 @@ function addToArrowsGroup(line) {
   currentGroup = checkForArrowGroup();
 
   if (currentGroup) {
-    // If we already have group
-    // line.frame().x(100)
-    // log()
-    // log(currentGroup.frame().x())
-    // line.x = line.x - 100
-    //https://sketchplugins.com/d/198-how-to-get-a-layers-coordinates-relative-to-the-artboard/7
-    // Need to get object ID and then update the position and fix the geometry
-    // let lineID = line.objectID()
-    // log(line.layers().firstObject().offset(100,100))
-    // let lineObject = document.getLayerWithID(lineID)
-    // log(lineObject)
     currentGroup.addLayers([line]);
     currentGroup.fixGeometryWithOptions(1);
   } else {
@@ -714,7 +702,8 @@ function addToArrowsGroup(line) {
       name: 'Arrows',
       locked: true,
       layers: [line]
-    }); // Moving this group to the bottom of the page
+    }); // line.absoluteRect().x()
+    // Moving this group to the bottom of the page
 
     group.moveToBack();
     currentGroup = checkForArrowGroup();
