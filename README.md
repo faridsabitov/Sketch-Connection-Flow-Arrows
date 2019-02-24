@@ -29,7 +29,7 @@ In our day to day activities, we are creating a lot of diagrams in [EPAM](https:
 The most recent version you can find here:
 [**Download the Latest Arrows Sketch Plugin**](https://github.com/faridsabitov/Sketch-user-flows/releases)
 
-<a href="https://sketchpacks.com/faridsabitov/Sketch-Connection-Flow-Arrows/install" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/sketchpacks-badge-install.png" width="160" height="41"></a>
+<a href="https://github.com/faridsabitov/Sketch-user-flows/releases" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/gitDownload.png" width="160" height="41"></a> <a href="https://sketchpacks.com/faridsabitov/Sketch-Connection-Flow-Arrows/install" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/sketchpacks-badge-install.png" width="160" height="41"></a>
 
 
 
