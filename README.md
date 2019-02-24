@@ -41,22 +41,22 @@ The most recent version you can find here:
 ![Update all connections inside artboard](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/updateConnection.gif)
 
 
-**Delete connection between two layers. **Select layers that have a connection and click on "Plugins" 👉 "Connection Arrows" 👉 "Delete Connection" 👉 "Between Selected"
+**Delete connection between two layers.** Select layers that have a connection and click on "Plugins" 👉 "Connection Arrows" 👉 "Delete Connection" 👉 "Between Selected"
 
 ![Delete connection between two layers](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/deleteConnection.gif)
 
 
-**Arrow Direction. **By the default you will have an "Auto" mode, that will draw arrows based on the position of the second layer but if you are creating userflows or sitemap, where all the arrows are pointed in one direction, you can specify it in settings
+**Arrow Direction.** By the default you will have an "Auto" mode, that will draw arrows based on the position of the second layer but if you are creating userflows or sitemap, where all the arrows are pointed in one direction, you can specify it in settings
 
 ![Arrow Direction](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowDirection.gif)
 
 
-**Arrow Spacing. **For saving time and not moving all the layers one by one, you can pre-define spacing in settings. When you will create or update connection between two objects, it will automatically move the second layer for a specified amount of pixels ✌️
+**Arrow Spacing.** For saving time and not moving all the layers one by one, you can pre-define spacing in settings. When you will create or update connection between two objects, it will automatically move the second layer for a specified amount of pixels ✌️
 
 ![Arrow Spacing](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowSpacing.gif)
 
 
-**Auto-align. **If your second object is misaligned for less than 5px with this option turned on the plugin will auto-align the second object based on the direction. So you don't need to spend time aligning everything 🤘
+**Auto-align.** If your second object is misaligned for less than 5px with this option turned on the plugin will auto-align the second object based on the direction. So you don't need to spend time aligning everything 🤘
 
 ![Auto-align](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/autoAlign.gif)
 
