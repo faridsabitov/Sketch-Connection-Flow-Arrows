@@ -299,8 +299,6 @@ export function settings(context) {
   let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-330, 280, 40)
   view.addSubview(pluginInfoLabel)
 
-  
-  
   // Show modal and get the results
   let modalResponse = alert.runModal()
 
@@ -410,6 +408,7 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   }
   
   updateSpacing(firstObjectID, secondObjectID, localDirection)
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection)
   let currentGroup = checkForArrowGroup()
   let line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup)
   addToArrowsGroup(line, currentGroup)
@@ -863,6 +862,33 @@ function updateSpacing(sourceObjectID, childObjectID, direction){
     if(direction == "Up"){
       if(currentSpacing == "30px"){childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 30}
       if(currentSpacing == "70px"){childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 70}
+    }
+  }
+}
+
+
+function autoAlignLayer(sourceObjectID, childObjectID, direction){ // Check with Auto settings
+  let sourceObject = document.getLayerWithID(sourceObjectID)
+  let childObject = document.getLayerWithID(childObjectID)
+  let sourceMidY, childMidY, sourceMidX, childMidX, diff
+
+  if(Settings.settingForKey("autoAlign")){
+    if(Settings.settingForKey("autoAlign") == true){
+      // If user turned on Auto-Align settings
+      
+      if(direction == "Right" || direction == "Left"){
+        sourceMidY = sourceObject.frame.y + sourceObject.frame.height/2
+        childMidY = childObject.frame.y + childObject.frame.height/2
+        diff = sourceMidY - childMidY
+        if(diff > -6 && diff < 6){childObject.frame.y = childObject.frame.y + diff}
+      }
+    
+      if(direction == "Down" || direction == "Up"){
+        sourceMidX = sourceObject.frame.x + sourceObject.frame.width/2
+        childMidX = childObject.frame.x + childObject.frame.width/2
+        diff = sourceMidX - childMidX
+        if(diff > -6 && diff < 6){childObject.frame.x = childObject.frame.x + diff}
+      }
     }
   }
 }

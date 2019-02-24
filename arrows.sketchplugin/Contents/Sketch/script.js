@@ -486,6 +486,7 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   }
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection);
   var currentGroup = checkForArrowGroup();
   var line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup);
   addToArrowsGroup(line, currentGroup); // Storage for current connection
@@ -941,6 +942,38 @@ function updateSpacing(sourceObjectID, childObjectID, direction) {
 
       if (currentSpacing == "70px") {
         childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 70;
+      }
+    }
+  }
+}
+
+function autoAlignLayer(sourceObjectID, childObjectID, direction) {
+  // Check with Auto settings
+  var sourceObject = document.getLayerWithID(sourceObjectID);
+  var childObject = document.getLayerWithID(childObjectID);
+  var sourceMidY, childMidY, sourceMidX, childMidX, diff;
+
+  if (Settings.settingForKey("autoAlign")) {
+    if (Settings.settingForKey("autoAlign") == true) {
+      // If user turned on Auto-Align settings
+      if (direction == "Right" || direction == "Left") {
+        sourceMidY = sourceObject.frame.y + sourceObject.frame.height / 2;
+        childMidY = childObject.frame.y + childObject.frame.height / 2;
+        diff = sourceMidY - childMidY;
+
+        if (diff > -6 && diff < 6) {
+          childObject.frame.y = childObject.frame.y + diff;
+        }
+      }
+
+      if (direction == "Down" || direction == "Up") {
+        sourceMidX = sourceObject.frame.x + sourceObject.frame.width / 2;
+        childMidX = childObject.frame.x + childObject.frame.width / 2;
+        diff = sourceMidX - childMidX;
+
+        if (diff > -6 && diff < 6) {
+          childObject.frame.x = childObject.frame.x + diff;
+        }
       }
     }
   }
