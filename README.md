@@ -28,7 +28,9 @@ In our day to day activities, we are creating a lot of diagrams in [EPAM](https:
 ## Download Plugin
 The most recent version you can find here:
 [**Download the Latest Arrows Sketch Plugin**](https://github.com/faridsabitov/Sketch-user-flows/releases)
-[![Install Sketch Arrows with Sketchpacks](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/sketchpacks-badge-install.png "Install Sketch Arrows with Sketchpacks")](https://sketchpacks.com/faridsabitov/Sketch-Connection-Flow-Arrows/install)
+
+<a href="https://sketchpacks.com/faridsabitov/Sketch-Connection-Flow-Arrows/install" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/sketchpacks-badge-install.png" width="160" height="41"></a>
+
 
 
 ## Bonus
