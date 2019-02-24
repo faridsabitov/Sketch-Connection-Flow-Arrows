@@ -18,10 +18,10 @@ Plugin for Sketch to create connection flow arrows for creating user flows, site
 
 
 ## Motivation
-In our day to day activities, we are creating a lot of diagrams in [EPAM](https://www.epam.com). We understood that most of our time we are spending on connecting and drawing arrows for our user flows and to automate that, I created this plugin
+In our day to day activities, we are creating a lot of diagrams in [EPAM](http://epam.design). We understood that most of our time we are spending on connecting and drawing arrows for our user flows and to automate that, I created this plugin
 
 ## How it works
-![ArrowDemo](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowDemo.gif)
+![ArrowDemo](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/overview.gif)
 
 ## Download Plugin
 The most recent version you can find here:
