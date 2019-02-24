@@ -15,7 +15,6 @@ Plugin for Sketch to create connection flow arrows for creating user flows, site
 - [Bonus](#Bonus)
 - [Join Community and Contacts](#Join-Community-and-Contacts)
 - [FAQ](#FAQ)
-- [Roadmap](#Roadmap)
 
 
 
@@ -44,16 +43,15 @@ If you would like to suggest improvement, report a bug or just say "Hi 👋" joi
 
 You can write me directly via [mssg.me/farid](https://mssg.me/farid) or find me on [Instagram](https://www.instagram.com/faridsabitov/) or [Dribbble](https://dribbble.com/FaridSabitov) as @faridsabitov
 
-**With the support from ❤️**
 
-<a href="http://epam.design" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/epamLogo.png" width="177" height="64"></a>
 
 ## Watch tutorial on Youtube
 [![Preview](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/youtubePreview.jpg)](https://youtu.be/9z7BrknRocg)
 
 
-## Roadmap
-- [ ] Allow user to specify arrow from Library
+**With the support from ❤️**
+
+<a href="http://epam.design" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/epamLogo.png" width="177" height="64"></a>
 
 
 
