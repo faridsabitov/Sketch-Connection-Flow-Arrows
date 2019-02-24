@@ -211,37 +211,39 @@ export function deleteSelectedArrows(context) {
   let firstObject, secondObject
 
   // Need to delete all the arrows only from selected artboard
-  if(selection.count() > 1){
+  if(selection.count() == 2){
 
     for(let g = 0; g < selection.count(); g++) {
 
-      if(selection[g].objectID() != selection[0].objectID()){
+      if(selection[g].objectID() != selection[0].objectID()){ // It will never check 3rd connection
         let connections = getConnectionsData()
         
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections)
-        
+        // log(connectionIndex)
         
         if(connectionIndex != null){
           // We have connections in database
+          deleteLine(connections[connectionIndex].line)
+          newConnectionsData = deleteConnectionFromData(connectionIndex)
           const updateArrowsCounter = connections.length
           for (let i = 0; i < updateArrowsCounter; i ++) {
             // Need to go through each connection and check if it placed on selected artboard
             firstObject = document.getLayerWithID(connections[i].firstObject)
             secondObject = document.getLayerWithID(connections[i].secondObject)
-            if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
-              if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
+            if(firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
+              if(secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()){
                 deleteLine(connections[i].line)
                 newConnectionsData = deleteConnectionFromData(i)
               }
             }
           }
           context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
-          sketch.UI.message("All arrows from selected artboard are deleted")
+          sketch.UI.message("All arrows from selected layers are deleted ✌️")
         }
       }
     }
   } else {
-    sketch.UI.message("Select some layers, please")
+    sketch.UI.message("Select two layers, please 🧐")
   }
 }
 
@@ -684,6 +686,8 @@ function getConnectionsData(){
 
 function findConnectionData(firstObjectID, secondObjectID, data){
   let arrayNumber = null
+  firstObjectID = String(firstObjectID)
+  secondObjectID = String(secondObjectID)
 
   if(pluginData){
     // If we have database, need to check for connections

@@ -1,21 +1,1116 @@
-var that=this;function __skpm_run(e,t){that.context=t;var r=function(e){var t={};function r(a){if(t[a])return t[a].exports;var i=t[a]={i:a,l:!1,exports:{}};return e[a].call(i.exports,i,i.exports,r),i.l=!0,i.exports}return r.m=e,r.c=t,r.d=function(e,t,a){r.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:a})},r.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.t=function(e,t){if(1&t&&(e=r(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var a=Object.create(null);if(r.r(a),Object.defineProperty(a,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var i in e)r.d(a,i,function(t){return e[t]}.bind(null,i));return a},r.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(t,"a",t),t},r.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},r.p="",r(r.s="./src/script.js")}({"./src/script.js":
+var that = this;
+function __skpm_run (key, context) {
+  that.context = context;
+
+var exports =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/script.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./src/script.js":
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */function(e,r,a){"use strict";a.r(r),a.d(r,"updateSelectedArrows",function(){return I}),a.d(r,"updateArtboardArrows",function(){return g}),a.d(r,"updateAllArrows",function(){return S}),a.d(r,"deleteAllArrows",function(){return p}),a.d(r,"deleteArtboardArrows",function(){return b}),a.d(r,"deleteSelectedArrows",function(){return w}),a.d(r,"settings",function(){return y}),a.d(r,"onLayersMoved",function(){return v}),a.d(r,"panel",function(){return T});var i,o=a(/*! sketch */"sketch"),n=a.n(o),s=a(/*! sketch/ui */"sketch/ui"),l="flowArrows",d=n.a.fromNative(t.document),c=t.document.documentData(),m=t.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections",c,l),f=c.currentPage().currentArtboard()||c.currentPage(),u=D(),h=a(/*! sketch/settings */"sketch/settings");function I(e){var t=e.selection;if(t.count()>1){for(var r=M(t),a=u,o=0;o<t.count();o++)if(t[o].objectID()!=r){var s=P(r,t[o].objectID(),a);null!=s&&(W(a[s].firstObject,a[s].secondObject,i,a[s].line,s),n.a.UI.message("Current connection is updated 🚀"))}e.command.setValue_forKey_onLayer_forPluginIdentifier(u,"arrowConnections",c,l)}else n.a.UI.message("Please select more than two layers")}function g(e){var t,r,a=e.selection,i=D();if(i.length>0){for(var o=i.length,s=0;s<o;s++)t=(t=d.getLayerWithID(i[s].firstObject)).sketchObject.parentArtboard().objectID(),r=(r=d.getLayerWithID(i[s].secondObject)).sketchObject.parentArtboard().objectID(),1==a.count()&&"MSArtboardGroup"==a[0].class()&&(t==a[0].objectID()&&r==a[0].objectID()?W(i[s].firstObject,i[s].secondObject,i[s].direction,i[s].line,s):u.push(i[s]));e.command.setValue_forKey_onLayer_forPluginIdentifier(u,"arrowConnections",c,l),n.a.UI.message("All arrows are updated 🚀")}else n.a.UI.message("There is nothing to update")}function S(e){e.selection;var t=D();if(t.length>0){for(var r=t.length,a=0;a<r;a++)W(t[a].firstObject,t[a].secondObject,t[a].direction,t[a].line,a);e.command.setValue_forKey_onLayer_forPluginIdentifier(u,"arrowConnections",c,l),n.a.UI.message("All arrows are updated 🚀")}else n.a.UI.message("There is nothing to update")}function p(e){if(u.length>0){for(var t=0;t<u.length;t++)x(u[t].line);e.command.setValue_forKey_onLayer_forPluginIdentifier(null,"arrowConnections",c,l),n.a.UI.message("All arrows are deleted")}else n.a.UI.message("There is nothing to delete")}function b(e){var t,r,a=e.selection;if(1==a.count()&&"MSArtboardGroup"==a[0].class()){var i=D();if(i.length>0){for(var o=i.length,s=0;s<o;s++)t=d.getLayerWithID(i[s].firstObject),r=d.getLayerWithID(i[s].secondObject),t.sketchObject.parentArtboard().objectID()==a[0].objectID()&&r.sketchObject.parentArtboard().objectID()==a[0].objectID()&&(x(i[s].line),u=_(s));e.command.setValue_forKey_onLayer_forPluginIdentifier(u,"arrowConnections",c,l),n.a.UI.message("All arrows from selected artboard are deleted")}else n.a.UI.message("There is nothing to delete")}else n.a.UI.message("Please select one artboard")}function w(e){var t,r,a=e.selection;if(a.count()>1){for(var i=0;i<a.count();i++)if(a[i].objectID()!=a[0].objectID()){var o=D();if(null!=P(a[0].objectID(),a[i].objectID(),o)){for(var s=o.length,m=0;m<s;m++)t=d.getLayerWithID(o[m].firstObject),r=d.getLayerWithID(o[m].secondObject),t.sketchObject.parentArtboard().objectID()==a[0].objectID()&&r.sketchObject.parentArtboard().objectID()==a[0].objectID()&&(x(o[m].line),u=_(m));e.command.setValue_forKey_onLayer_forPluginIdentifier(u,"arrowConnections",c,l),n.a.UI.message("All arrows from selected artboard are deleted")}}}else n.a.UI.message("Select some layers, please")}function y(e){var t=COSAlertWindow.new();t.setMessageText("Arrow Plugin Settings"),t.addButtonWithTitle("Update Settings"),t.addButtonWithTitle("Cancel");var r=NSView.alloc().initWithFrame(NSMakeRect(0,0,300,260));t.addAccessoryView(r),(i=NSTextField.alloc().initWithFrame(NSMakeRect(-1,243,330,20))).setStringValue("Arrow Direction"),i.setSelectable(!1),i.setDrawsBackground(!1),i.setBezeled(!1),r.addSubview(i);var a=NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2,220,300,20));!function(e){var t="Auto";h.settingForKey("arrowDirection")?("Auto"==(t=h.settingForKey("arrowDirection"))&&(e.addItemWithTitle("Auto"),e.lastItem().setState(1),e.addItemWithTitle("Right"),e.lastItem().setState(0),e.addItemWithTitle("Down"),e.lastItem().setState(0),e.addItemWithTitle("Left"),e.lastItem().setState(0),e.addItemWithTitle("Up"),e.lastItem().setState(0)),"Right"==t&&(e.addItemWithTitle("Right"),e.lastItem().setState(1),e.addItemWithTitle("Down"),e.lastItem().setState(0),e.addItemWithTitle("Left"),e.lastItem().setState(0),e.addItemWithTitle("Up"),e.lastItem().setState(0),e.addItemWithTitle("Auto"),e.lastItem().setState(0)),"Down"==t&&(e.addItemWithTitle("Down"),e.lastItem().setState(1),e.addItemWithTitle("Left"),e.lastItem().setState(0),e.addItemWithTitle("Up"),e.lastItem().setState(0),e.addItemWithTitle("Auto"),e.lastItem().setState(0),e.addItemWithTitle("Right"),e.lastItem().setState(0)),"Left"==t&&(e.addItemWithTitle("Left"),e.lastItem().setState(1),e.addItemWithTitle("Up"),e.lastItem().setState(0),e.addItemWithTitle("Auto"),e.lastItem().setState(0),e.addItemWithTitle("Right"),e.lastItem().setState(0),e.addItemWithTitle("Down"),e.lastItem().setState(0)),"Up"==t&&(e.addItemWithTitle("Up"),e.lastItem().setState(1),e.addItemWithTitle("Auto"),e.lastItem().setState(0),e.addItemWithTitle("Right"),e.lastItem().setState(0),e.addItemWithTitle("Down"),e.lastItem().setState(0),e.addItemWithTitle("Left"),e.lastItem().setState(0))):(e.addItemWithTitle("Auto"),e.addItemWithTitle("Right"),e.addItemWithTitle("Down"),e.addItemWithTitle("Left"),e.addItemWithTitle("Up"))}(a),r.addSubview(a),(i=NSTextField.alloc().initWithFrame(NSMakeRect(-1,176,280,40))).setStringValue("ℹ️ Auto mode will draw arrow based on location of the second object"),i.setSelectable(!1),i.setDrawsBackground(!1),i.setBezeled(!1),r.addSubview(i),(i=NSTextField.alloc().initWithFrame(NSMakeRect(-1,140,330,20))).setStringValue("Arrow Spacing"),i.setSelectable(!1),i.setDrawsBackground(!1),i.setBezeled(!1),r.addSubview(i);var i,o=NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2,117,300,20));!function(e){var t="Not selected";h.settingForKey("arrowSpacing")?("Not selected"==(t=h.settingForKey("arrowSpacing"))&&(e.addItemWithTitle("Not selected"),e.lastItem().setState(1),e.addItemWithTitle("30px"),e.lastItem().setState(0),e.addItemWithTitle("70px"),e.lastItem().setState(0)),"30px"==t&&(e.addItemWithTitle("30px"),e.lastItem().setState(1),e.addItemWithTitle("70px"),e.lastItem().setState(0),e.addItemWithTitle("Not selected"),e.lastItem().setState(0)),"70px"==t&&(e.addItemWithTitle("70px"),e.lastItem().setState(1),e.addItemWithTitle("Not selected"),e.lastItem().setState(0),e.addItemWithTitle("30px"),e.lastItem().setState(0))):(e.addItemWithTitle("Not Selected"),e.addItemWithTitle("30px"),e.addItemWithTitle("70px"))}(o),r.addSubview(o),(i=NSTextField.alloc().initWithFrame(NSMakeRect(-1,73,280,40))).setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer"),i.setSelectable(!1),i.setDrawsBackground(!1),i.setBezeled(!1),r.addSubview(i),(i=NSTextField.alloc().initWithFrame(NSMakeRect(-1,20,280,40))).setStringValue("Made by Farid Sabitov with the support of EPAM.com ❤️"),i.setSelectable(!1),i.setDrawsBackground(!1),i.setBezeled(!1),r.addSubview(i),t.runModal()==NSAlertFirstButtonReturn&&(h.setSettingForKey("arrowDirection",t.views()[0].subviews()[1].title()),h.setSettingForKey("arrowSpacing",t.views()[0].subviews()[4].title()),s.message("Settings are updated 🚀"))}function v(e){n.a.UI.message("Please select more than two layers");e.actionContext}function T(e){var t;(t=NSPanel.alloc().init()).setStyleMask(NSTitledWindowMask+NSFullSizeContentViewWindowMask),t.setTitleVisibility(NSWindowTitleHidden),t.setTitlebarAppearsTransparent(!0),t.setFrame_display(NSMakeRect(0,0,720,50),!1),t.setMovableByWindowBackground(!0),t.setHasShadow(!0),t.setLevel(NSFloatingWindowLevel),t.center(),t.makeKeyAndOrderFront(nil)}function W(e,t,r,a,i){var o=d.getLayerWithID(e),n=d.getLayerWithID(t);x(a),u=_(i),o&&n&&A(e,t,r)}function A(e,t,r){var i;!function(e,t,r){var a=d.getLayerWithID(e),i=d.getLayerWithID(t);if(h.settingForKey("arrowSpacing")){var o=h.settingForKey("arrowSpacing");"Right"==r&&("30px"==o&&(i.frame.x=a.frame.x+a.frame.width+30),"70px"==o&&(i.frame.x=a.frame.x+a.frame.width+70)),"Down"==r&&("30px"==o&&(i.frame.y=a.frame.y+a.frame.height+30),"70px"==o&&(i.frame.y=a.frame.y+a.frame.height+70)),"Left"==r&&("30px"==o&&(i.frame.x=a.frame.x-i.frame.width-30),"70px"==o&&(i.frame.x=a.frame.x-i.frame.width-70)),"Up"==r&&("30px"==o&&(i.frame.y=a.frame.y-i.frame.height-30),"70px"==o&&(i.frame.y=a.frame.y-i.frame.height-70))}}(e,t,i="Auto"==r?function(e,t){var r,a=d.getLayerWithID(e),i=d.getLayerWithID(t),o=a.frame.x+a.frame.width/2,n=a.frame.y+a.frame.height/2,s=i.frame.x+i.frame.width/2,l=i.frame.y+i.frame.height/2,c=o-s,m=n-l,f=Math.abs(c),u=Math.abs(m);r=s>o?l>n?c>m?"Down":"Right":f>u?"Right":"Up":l>n?f>u?"Left":"Down":c>m?"Left":"Up";return r}(e,t):r);var o=k(),n=function(e,t,r,a){var i,o,n,s,l,c,m,f,u=d.getLayerWithID(e),h=d.getLayerWithID(t);a?(m=a.frame().x(),f=a.frame().y()):(m=0,f=0);var I=NSBezierPath.bezierPath();"Up"==r&&(i=u.frame.x+u.frame.width/2-m,o=u.frame.y-f,n=h.frame.x+h.frame.width/2-m,s=h.frame.y+h.frame.height-f,l=(i+n)/2,c=(o+s)/2,I.moveToPoint(NSMakePoint(i,o)),I.lineToPoint(NSMakePoint(i,c)),I.lineToPoint(NSMakePoint(n,c)),I.lineToPoint(NSMakePoint(n,s)));"Right"==r&&(i=u.frame.x+u.frame.width-m,o=u.frame.y+u.frame.height/2-f,n=h.frame.x-m,s=h.frame.y+h.frame.height/2-f,l=(i+n)/2,c=(o+s)/2,I.moveToPoint(NSMakePoint(i,o)),I.lineToPoint(NSMakePoint(l,o)),I.lineToPoint(NSMakePoint(l,s)),I.lineToPoint(NSMakePoint(n,s)));"Down"==r&&(i=u.frame.x+u.frame.width/2-m,o=u.frame.y+u.frame.height-f,n=h.frame.x+h.frame.width/2-m,s=h.frame.y-f,l=(i+n)/2,c=(o+s)/2,I.moveToPoint(NSMakePoint(i,o)),I.lineToPoint(NSMakePoint(i,c)),I.lineToPoint(NSMakePoint(n,c)),I.lineToPoint(NSMakePoint(n,s)));"Left"==r&&(i=u.frame.x-m,o=u.frame.y+u.frame.height/2-f,n=h.frame.x+h.frame.width-m,s=h.frame.y+h.frame.height/2-f,l=(i+n)/2,c=(o+s)/2,I.moveToPoint(NSMakePoint(i,o)),I.lineToPoint(NSMakePoint(l,o)),I.lineToPoint(NSMakePoint(l,s)),I.lineToPoint(NSMakePoint(n,s)));var g=MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(I)),S=g.layers().firstObject().points();S[1].cornerRadius=20,S[2].cornerRadius=20,g.setName("Arrow");var p=g.style().addStylePartOfType(1);return p.color=MSColor.colorWithRGBADictionary({r:.89,g:.89,b:.89,a:1}),p.thickness=2,g.style().endMarkerType=2,g}(e,t,i,o);!function(e,t){if(t)t.addLayers([e]),t.fixGeometryWithOptions(1);else{var r=a(/*! sketch/dom */"sketch/dom").Group,i=new r({parent:f,name:"Arrows",locked:!0,layers:[e]});i.moveToBack(),(t=k()).fixGeometryWithOptions(1)}}(n,o);var s={firstObject:e,secondObject:t,direction:i,line:n.objectID()};u.push(s)}function k(){for(var e=null,t=0;t<f.layers().count();t++)"Arrows"==f.layers()[t].name()&&j(e=f.layers()[t]);return e}function D(){var e=[],r=[];if(m){r=t.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections",c,l);for(var a=0;a<r.length;a++)e.push(r[a])}return e}function P(e,t,r){var a=null;if(m)for(var i=0;i<r.length;i++)e!=r[i].firstObject&&e!=r[i].secondObject||t!=r[i].firstObject&&t!=r[i].secondObject||(a=i);return a}function _(e){var r=[];if(m)for(var a=t.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections",c,l),i=0;i<a.length;i++)i!=e&&r.push(a[i]);return r}function j(e){for(var t=0;t<e.layers().length;t++);}function x(e){var t,r=d.getLayerWithID(e);r&&(t=r.parent,r.remove(),0==t.layers.length&&t.remove())}function N(e,t,r){var a,i=d.getLayerWithID(e),o=d.getLayerWithID(t);return"Auto"==r&&(a=i.id),"Right"==r&&(a=i.frame.x<=o.frame.x?i.id:o.id),"Down"==r&&(a=i.frame.y<=o.frame.y?i.id:o.id),"Left"==r&&(a=i.frame.x<=o.frame.x?o.id:i.id),"Up"==r&&(a=i.frame.y<=o.frame.y?o.id:i.id),a}function M(e){var t=e.firstObject().objectID();if("Auto"!=i)for(var r=0;r<e.count();r++)t=N(t,e[r].objectID(),i);else t=N(t,e[0].objectID(),i);return t}i=h.settingForKey("arrowDirection")?h.settingForKey("arrowDirection"):"Auto",r.default=function(e){var t=e.selection;if(t.count()>1){for(var r=M(t),a=u,o=0;o<t.count();o++)if(t[o].objectID()!=r){var s=P(r,t[o].objectID(),a);null!=s?(W(a[s].firstObject,a[s].secondObject,i,a[s].line,s),n.a.UI.message("Current connection is updated 🚀")):(A(r,t[o].objectID(),i),n.a.UI.message("New connection is created 🚀"))}e.command.setValue_forKey_onLayer_forPluginIdentifier(u,"arrowConnections",c,l)}else n.a.UI.message("Please select more than two layers")}},sketch:
+/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateSelectedArrows", function() { return updateSelectedArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArtboardArrows", function() { return updateArtboardArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAllArrows", function() { return updateAllArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAllArrows", function() { return deleteAllArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteArtboardArrows", function() { return deleteArtboardArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteSelectedArrows", function() { return deleteSelectedArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onLayersMoved", function() { return onLayersMoved; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "panel", function() { return panel; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+ // const { toArray } = require('util')
+//
+//  Variables
+//
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var pluginKey = "flowArrows";
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey); // TODO: Need to refactor
+
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+
+var newConnectionsData = getConnectionsData(); // Settings
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var arrowDirectionSetting;
+
+if (Settings.settingForKey("arrowDirection")) {
+  arrowDirectionSetting = Settings.settingForKey('arrowDirection');
+} else {
+  arrowDirectionSetting = "Auto";
+} //
+//  Default Function
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = (function (context) {
+  var selection = context.selection;
+
+  if (selection.count() > 1) {
+    // Need to find source object by ID first
+    var sourceObjectID = getSourceObjectFromSelection(selection);
+    var currentConnectionsData = newConnectionsData;
+
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != sourceObjectID) {
+        // Then need to create or update connection arrow with each selection
+        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData); // log("Index "+connectionIndex)
+
+        if (connectionIndex != null) {
+          // Because this is creating flow, we need to take the direction from user settings
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
+        } else {
+          // There is no connection with this two objects in our database
+          createArrow(sourceObjectID, selection[g].objectID(), arrowDirectionSetting);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
+        }
+      }
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey); // log(newConnectionsData)
+  } else {
+    // When user didn't select anything
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
+  }
+}); //
+// Plugin Commands
+//
+
+function updateSelectedArrows(context) {
+  var selection = context.selection;
+
+  if (selection.count() > 1) {
+    // Need to find source object by ID first
+    var sourceObjectID = getSourceObjectFromSelection(selection);
+    var currentConnectionsData = newConnectionsData;
+
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != sourceObjectID) {
+        // Then need to create or update connection arrow with each selection
+        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
+
+        if (connectionIndex != null) {
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
+        }
+      }
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey); // log(newConnectionsData)
+  } else {
+    // When user didn't select anything
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
+  }
+}
+function updateArtboardArrows(context) {
+  // TODO: Need to show amount of updated arrows and deleted ones
+  var selection = context.selection;
+  var connections = getConnectionsData();
+  var firstObjectArtboard;
+  var secondObjectArtboard;
+
+  if (connections.length > 0) {
+    // We have connections in database
+    var updateArrowsCounter = connections.length;
+
+    for (var i = 0; i < updateArrowsCounter; i++) {
+      // Need to check if the element is selected globally or from the artboard
+      firstObjectArtboard = document.getLayerWithID(connections[i].firstObject);
+      firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
+      secondObjectArtboard = document.getLayerWithID(connections[i].secondObject);
+      secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
+
+      if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+        // Need to go through each connection and update arrow position for specific artboard
+        if (firstObjectArtboard == selection[0].objectID()) {
+          if (secondObjectArtboard == selection[0].objectID()) {
+            updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i);
+          } else {
+            newConnectionsData.push(connections[i]);
+          }
+        } else {
+          // If not just saving it
+          newConnectionsData.push(connections[i]);
+        }
+      }
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
+  } else {
+    // We don't have any connections to update
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to update");
+  } // log(newConnectionsData)
+
+}
+function updateAllArrows(context) {
+  // TODO
+  // TODO: Need to show amount of updated arrows and deleted ones
+  var selection = context.selection;
+  var connections = getConnectionsData();
+  var firstObjectArtboard;
+  var secondObjectArtboard;
+
+  if (connections.length > 0) {
+    // We have connections in database
+    var updateArrowsCounter = connections.length;
+
+    for (var i = 0; i < updateArrowsCounter; i++) {
+      // Need to go through each connection and update arrow position without artboards
+      // Need to check if current object don't have the parrent
+      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].direction, connections[i].line, i);
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
+  } else {
+    // We don't have any connections to update
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to update");
+  }
+}
+function deleteAllArrows(context) {
+  if (newConnectionsData.length > 0) {
+    // We have connections in database
+    for (var i = 0; i < newConnectionsData.length; i++) {
+      // Need to go through each connection and update arrow position
+      deleteLine(newConnectionsData[i].line);
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(null, "arrowConnections", docData, pluginKey);
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are deleted");
+  } else {
+    // We don't have any connections to update
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to delete");
+  }
+}
+function deleteArtboardArrows(context) {
+  var selection = context.selection;
+  var firstObject, secondObject; // Need to delete all the arrows only from selected artboard
+
+  if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+    var connections = getConnectionsData();
+
+    if (connections.length > 0) {
+      // We have connections in database
+      var updateArrowsCounter = connections.length;
+
+      for (var i = 0; i < updateArrowsCounter; i++) {
+        // Need to go through each connection and check if it placed on selected artboard
+        firstObject = document.getLayerWithID(connections[i].firstObject);
+        secondObject = document.getLayerWithID(connections[i].secondObject);
+
+        if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
+          if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
+            deleteLine(connections[i].line);
+            newConnectionsData = deleteConnectionFromData(i);
+          }
+        }
+      }
+
+      context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows from selected artboard are deleted");
+    } else {
+      // We don't have any connections to update
+      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to delete");
+    }
+  } else {
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select one artboard");
+  }
+}
+function deleteSelectedArrows(context) {
+  var selection = context.selection;
+  var firstObject, secondObject; // Need to delete all the arrows only from selected artboard
+
+  if (selection.count() == 2) {
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != selection[0].objectID()) {
+        // It will never check 3rd connection
+        var connections = getConnectionsData();
+        var connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections); // log(connectionIndex)
+
+        if (connectionIndex != null) {
+          // We have connections in database
+          deleteLine(connections[connectionIndex].line);
+          newConnectionsData = deleteConnectionFromData(connectionIndex);
+          var updateArrowsCounter = connections.length;
+
+          for (var i = 0; i < updateArrowsCounter; i++) {
+            // Need to go through each connection and check if it placed on selected artboard
+            firstObject = document.getLayerWithID(connections[i].firstObject);
+            secondObject = document.getLayerWithID(connections[i].secondObject);
+
+            if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
+              if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
+                deleteLine(connections[i].line);
+                newConnectionsData = deleteConnectionFromData(i);
+              }
+            }
+          }
+
+          context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows from selected layers are deleted ✌️");
+        }
+      }
+    }
+  } else {
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Select two layers, please 🧐");
+  }
+}
+function settings(context) {
+  var alert = COSAlertWindow.new(); // Title
+
+  alert.setMessageText("Arrow Plugin Settings"); // Creating dialog buttons
+
+  alert.addButtonWithTitle("Update Settings");
+  alert.addButtonWithTitle("Cancel"); // Creating the view
+
+  var viewWidth = 300;
+  var viewHeight = 260;
+  var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
+  alert.addAccessoryView(view); // Label: Arrow Direction
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 17, 330, 20));
+  infoLabel.setStringValue("Arrow Direction");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Select: Arrow Direction
+
+  var arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20)); // Add select options and mark selected the active one
+
+  setActiveDirectionSetting(arrowDirectionField);
+  view.addSubview(arrowDirectionField); // Label: Auto Direction Desctiption
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 84, 280, 40));
+  infoLabel.setStringValue("ℹ️ Auto mode will draw arrow based on location of the second object");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Label: Arrow Spacing
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 120, 330, 20));
+  infoLabel.setStringValue("Arrow Spacing");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Select: Arrow Spacing
+
+  var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20)); // Add select options and mark selected the active one
+
+  setActiveSpacingSetting(arrowSpacingField);
+  view.addSubview(arrowSpacingField); // Label: Arrow Spacing Desctiption
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 187, 280, 40));
+  infoLabel.setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Label: Arrow Description
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 240, 280, 40));
+  infoLabel.setStringValue("Made by Farid Sabitov with the support of EPAM.com ❤️");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel); // Show modal and get the results
+
+  var modalResponse = alert.runModal();
+
+  if (modalResponse == NSAlertFirstButtonReturn) {
+    // When user clicks on "Update Settings"
+    // Need to save all this results into the Plugin Settings
+    Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title());
+    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
+    UI.message("Settings are updated 🚀");
+  }
+}
+function onLayersMoved(context) {
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers"); // let a = 0
+
+  var action = context.actionContext; // log(context.actionContext)
+  // log("moved")
+}
+function panel(context) {
+  var ControlBar;
+  ControlBar = NSPanel.alloc().init();
+  ControlBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask); // ControlBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.99, 0.99, 0.99, 1));
+
+  ControlBar.setTitleVisibility(NSWindowTitleHidden);
+  ControlBar.setTitlebarAppearsTransparent(true);
+  ControlBar.setFrame_display(NSMakeRect(0, 0, 720, 50), false);
+  ControlBar.setMovableByWindowBackground(true);
+  ControlBar.setHasShadow(true);
+  ControlBar.setLevel(NSFloatingWindowLevel); // contentView.addSubview(closeButton)
+
+  ControlBar.center();
+  ControlBar.makeKeyAndOrderFront(nil); //   getImage = function(size, name){
+  //     var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
+  //         suffix = (isRetinaDisplay)? "@2x": "",
+  //         imageURL = NSURL.fileURLWithPath(self.pluginResources + "/icons/" + name + suffix + ".png"),
+  //         image = NSImage.alloc().initWithContentsOfURL(imageURL);
+  //     return image
+  // },
+  // addButton = function(rect, name, callAction){
+  //     var button = NSButton.alloc().initWithFrame(rect),
+  //         image = getImage(rect.size, name);
+  //     button.setImage(image);
+  //     button.setBordered(false);
+  //     button.sizeToFit();
+  //     button.setButtonType(NSMomentaryChangeButton);
+  //     button.setCOSJSTargetFunction(callAction);
+  //     button.setAction("callAction:");
+  //     return button;
+  // },
+  // addImage = function(rect, name){
+  //     var view = NSImageView.alloc().initWithFrame(rect),
+  //         image = getImage(rect.size, name);
+  //     view.setImage(image);
+  //     return view;
+  // },
+  // closeButton = addButton( NSMakeRect(20, 10, 30, 30), "close-control",
+  //     function(sender){
+  //         coscript.setShouldKeepAround(false);
+  //         threadDictionary.removeObjectForKey(identifier);
+  //         ControlBar.close();
+  // }),
+} //
+// Functions
+//
+
+function updateArrow(firstObjectID, secondObjectID, direction, lineID, connectionIndex) {
+  // There might be a situation, when user deleted current group or current group stays on another artboard => In that case need to create another group
+  // Need to check if we have the layers with such IDs
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID); // Need to delete data first, because we will have a new line
+
+  deleteLine(lineID);
+  newConnectionsData = deleteConnectionFromData(connectionIndex);
+
+  if (firstObject && secondObject) {
+    // If we have all the objects, we can recreate the line
+    createArrow(firstObjectID, secondObjectID, direction);
+  }
+}
+
+function createArrow(firstObjectID, secondObjectID, direction) {
+  // Process of creating new connection
+  var localDirection;
+
+  if (direction == "Auto") {
+    // If direction is auto, we need to specify direction ourselves
+    localDirection = getDirection(firstObjectID, secondObjectID);
+  } else {
+    localDirection = direction;
+  }
+
+  updateSpacing(firstObjectID, secondObjectID, localDirection);
+  var currentGroup = checkForArrowGroup();
+  var line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup);
+  addToArrowsGroup(line, currentGroup); // Storage for current connection
+
+  var connection = {
+    firstObject: firstObjectID,
+    secondObject: secondObjectID,
+    direction: localDirection,
+    line: line.objectID() // Need to save this data to the global array
+
+  };
+  newConnectionsData.push(connection);
+}
+
+function checkForArrowGroup() {
+  var currentGroup = null; // Checking all the groups that we have
+
+  for (var i = 0; i < currentParentGroup.layers().count(); i++) {
+    if (currentParentGroup.layers()[i].name() == "Arrows") {
+      // If we already have "Arrow" group we need to save it's folder
+      currentGroup = currentParentGroup.layers()[i];
+      refactorLines(currentGroup);
+    }
+  }
+
+  return currentGroup;
+}
+
+function getDirection(firstObjectID, secondObjectID) {
+  // Get direction from the source object
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var firstObjectMidX = firstObject.frame.x + firstObject.frame.width / 2;
+  var firstObjectMidY = firstObject.frame.y + firstObject.frame.height / 2;
+  var secondObjectMidX = secondObject.frame.x + secondObject.frame.width / 2;
+  var secondObjectMidY = secondObject.frame.y + secondObject.frame.height / 2;
+  var diffX = firstObjectMidX - secondObjectMidX;
+  var diffY = firstObjectMidY - secondObjectMidY;
+  var absDiffX = Math.abs(diffX);
+  var absDiffY = Math.abs(diffY);
+  var direction;
+
+  if (secondObjectMidX > firstObjectMidX) {
+    // Right Half
+    if (secondObjectMidY > firstObjectMidY) {
+      // Bottom quarter
+      if (diffX > diffY) {
+        direction = "Down";
+      } else {
+        direction = "Right";
+      }
+    } else {
+      // Top quarter
+      if (absDiffX > absDiffY) {
+        direction = "Right";
+      } else {
+        direction = "Up";
+      }
+    }
+  } else {
+    // Left Half
+    if (secondObjectMidY > firstObjectMidY) {
+      // Bottom quarter
+      if (absDiffX > absDiffY) {
+        direction = "Left";
+      } else {
+        direction = "Down";
+      }
+    } else {
+      // Top quarter
+      if (diffX > diffY) {
+        direction = "Left";
+      } else {
+        direction = "Up";
+      }
+    }
+  }
+
+  return direction;
+}
+
+function drawLine(firstObjectID, secondObjectID, direction, currentGroup) {
+  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY;
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+
+  if (currentGroup) {
+    //if we already have a group, need to specify the difference
+    diffX = currentGroup.frame().x();
+    diffY = currentGroup.frame().y();
+  } else {
+    diffX = 0;
+    diffY = 0;
+  } // Drawing a line
+
+
+  var path = NSBezierPath.bezierPath(); // Based on direction, we need to specify connection points
+
+  if (direction == "Up") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+    firstLayerPosY = firstObject.frame.y - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Right") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObject.frame.x - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Down") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+    secondLayerPosY = secondObject.frame.y - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Left") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObject.frame.x - diffX;
+    firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObject.frame.x + secondObject.frame.width - diffX;
+    secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  } //TODO: Provide a separate file with all the stylings
+  // Painting the line
+
+
+  var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
+
+  var points = line.layers().firstObject().points();
+  points[1].cornerRadius = 20;
+  points[2].cornerRadius = 20; // Providing Settings for the arrow
+
+  line.setName("Arrow"); // Styling Border Style
+
+  var border = line.style().addStylePartOfType(1);
+  border.color = MSColor.colorWithRGBADictionary({
+    r: 0.89,
+    g: 0.89,
+    b: 0.89,
+    a: 1
+  });
+  border.thickness = 2;
+  line.style().endMarkerType = 2;
+  return line;
+}
+
+function addToArrowsGroup(line, currentGroup) {
+  if (currentGroup) {
+    currentGroup.addLayers([line]);
+    currentGroup.fixGeometryWithOptions(1);
+  } else {
+    // If we don't have a group
+    var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+
+    var group = new Group({
+      parent: currentParentGroup,
+      name: 'Arrows',
+      locked: true,
+      layers: [line]
+    }); // Moving this group to the bottom of the page
+
+    group.moveToBack();
+    currentGroup = checkForArrowGroup();
+    currentGroup.fixGeometryWithOptions(1);
+  }
+}
+
+function getConnectionsData() {
+  var dataArray = [];
+  var pluginDataConnections = [];
+
+  if (pluginData) {
+    pluginDataConnections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+
+    for (var i = 0; i < pluginDataConnections.length; i++) {
+      dataArray.push(pluginDataConnections[i]);
+    }
+  }
+
+  return dataArray;
+}
+
+function findConnectionData(firstObjectID, secondObjectID, data) {
+  var arrayNumber = null;
+  firstObjectID = String(firstObjectID);
+  secondObjectID = String(secondObjectID);
+
+  if (pluginData) {
+    // If we have database, need to check for connections
+    for (var y = 0; y < data.length; y++) {
+      // log("First one "+firstObjectID)
+      // log("Current Index "+y)
+      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
+        // if we found that we have this object in connection database already
+        // log("We have the first one")
+        // log("Second one "+secondObjectID)
+        if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
+          // if we found that we have this object in connection database already
+          arrayNumber = y; // log("We have the second one as"+arrayNumber)
+        }
+      }
+    }
+  }
+
+  return arrayNumber;
+}
+
+function setActiveDirectionSetting(arrowDirectionField) {
+  var currentDirection = "Auto";
+
+  if (Settings.settingForKey("arrowDirection")) {
+    // if there is data in settings
+    currentDirection = Settings.settingForKey("arrowDirection");
+
+    if (currentDirection == "Auto") {
+      arrowDirectionField.addItemWithTitle("Auto");
+      arrowDirectionField.lastItem().setState(1);
+      arrowDirectionField.addItemWithTitle("Right");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Down");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Left");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Up");
+      arrowDirectionField.lastItem().setState(0);
+    }
+
+    if (currentDirection == "Right") {
+      arrowDirectionField.addItemWithTitle("Right");
+      arrowDirectionField.lastItem().setState(1);
+      arrowDirectionField.addItemWithTitle("Down");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Left");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Up");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Auto");
+      arrowDirectionField.lastItem().setState(0);
+    }
+
+    if (currentDirection == "Down") {
+      arrowDirectionField.addItemWithTitle("Down");
+      arrowDirectionField.lastItem().setState(1);
+      arrowDirectionField.addItemWithTitle("Left");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Up");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Auto");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Right");
+      arrowDirectionField.lastItem().setState(0);
+    }
+
+    if (currentDirection == "Left") {
+      arrowDirectionField.addItemWithTitle("Left");
+      arrowDirectionField.lastItem().setState(1);
+      arrowDirectionField.addItemWithTitle("Up");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Auto");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Right");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Down");
+      arrowDirectionField.lastItem().setState(0);
+    }
+
+    if (currentDirection == "Up") {
+      arrowDirectionField.addItemWithTitle("Up");
+      arrowDirectionField.lastItem().setState(1);
+      arrowDirectionField.addItemWithTitle("Auto");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Right");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Down");
+      arrowDirectionField.lastItem().setState(0);
+      arrowDirectionField.addItemWithTitle("Left");
+      arrowDirectionField.lastItem().setState(0);
+    }
+  } else {
+    // Show default
+    arrowDirectionField.addItemWithTitle("Auto");
+    arrowDirectionField.addItemWithTitle("Right");
+    arrowDirectionField.addItemWithTitle("Down");
+    arrowDirectionField.addItemWithTitle("Left");
+    arrowDirectionField.addItemWithTitle("Up");
+  }
+}
+
+function setActiveSpacingSetting(arrowSpacingField) {
+  var currentSpacing = "Not selected";
+
+  if (Settings.settingForKey("arrowSpacing")) {
+    // if there is data in settings
+    currentSpacing = Settings.settingForKey("arrowSpacing");
+
+    if (currentSpacing == "Not selected") {
+      arrowSpacingField.addItemWithTitle("Not selected");
+      arrowSpacingField.lastItem().setState(1);
+      arrowSpacingField.addItemWithTitle("30px");
+      arrowSpacingField.lastItem().setState(0);
+      arrowSpacingField.addItemWithTitle("70px");
+      arrowSpacingField.lastItem().setState(0);
+    }
+
+    if (currentSpacing == "30px") {
+      arrowSpacingField.addItemWithTitle("30px");
+      arrowSpacingField.lastItem().setState(1);
+      arrowSpacingField.addItemWithTitle("70px");
+      arrowSpacingField.lastItem().setState(0);
+      arrowSpacingField.addItemWithTitle("Not selected");
+      arrowSpacingField.lastItem().setState(0);
+    }
+
+    if (currentSpacing == "70px") {
+      arrowSpacingField.addItemWithTitle("70px");
+      arrowSpacingField.lastItem().setState(1);
+      arrowSpacingField.addItemWithTitle("Not selected");
+      arrowSpacingField.lastItem().setState(0);
+      arrowSpacingField.addItemWithTitle("30px");
+      arrowSpacingField.lastItem().setState(0);
+    }
+  } else {
+    // Show default
+    arrowSpacingField.addItemWithTitle("Not Selected");
+    arrowSpacingField.addItemWithTitle("30px");
+    arrowSpacingField.addItemWithTitle("70px");
+  }
+}
+
+function deleteConnectionFromData(arrayNumber) {
+  var newConnections = [];
+
+  if (pluginData) {
+    // If we have database
+    var connections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+
+    for (var i = 0; i < connections.length; i++) {
+      // Updating all connections without deleted one
+      if (i != arrayNumber) {
+        newConnections.push(connections[i]);
+      }
+    }
+  }
+
+  return newConnections;
+}
+
+function refactorLines(group) {
+  // Need to finish
+  // log(group.layers().length)
+  for (var i = 0; i < group.layers().length; i++) {// log(group.layers()[i].objectID())
+    // Here we need to go through each data in our database and delete line if there is no data
+  }
+}
+
+function deleteLine(lineID) {
+  var lineObject = document.getLayerWithID(lineID);
+  var selectedGroup;
+
+  if (lineObject) {
+    selectedGroup = lineObject.parent;
+    lineObject.remove();
+
+    if (selectedGroup.layers.length == 0) {
+      selectedGroup.remove();
+    }
+  }
+}
+
+function updateSpacing(sourceObjectID, childObjectID, direction) {
+  var sourceObject = document.getLayerWithID(sourceObjectID);
+  var childObject = document.getLayerWithID(childObjectID);
+
+  if (Settings.settingForKey("arrowSpacing")) {
+    var currentSpacing = Settings.settingForKey("arrowSpacing");
+
+    if (direction == "Right") {
+      if (currentSpacing == "30px") {
+        childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 70;
+      }
+    }
+
+    if (direction == "Down") {
+      if (currentSpacing == "30px") {
+        childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 70;
+      }
+    }
+
+    if (direction == "Left") {
+      if (currentSpacing == "30px") {
+        childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 70;
+      }
+    }
+
+    if (direction == "Up") {
+      if (currentSpacing == "30px") {
+        childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 30;
+      }
+
+      if (currentSpacing == "70px") {
+        childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 70;
+      }
+    }
+  }
+}
+
+function defineSourceObject(firstObjectID, secondObjectID, direction) {
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var sourceObjectID;
+
+  if (direction == "Auto") {
+    sourceObjectID = firstObject.id;
+  }
+
+  if (direction == "Right") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Down") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Left") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  if (direction == "Up") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  return sourceObjectID;
+}
+
+function getSourceObjectFromSelection(selection) {
+  var sourceObjectID = selection.firstObject().objectID();
+
+  if (arrowDirectionSetting != "Auto") {
+    for (var g = 0; g < selection.count(); g++) {
+      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting);
+    }
+  } else {
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting);
+  }
+
+  return sourceObjectID;
+}
+
+function confirmationAlert(alert, message) {
+  // Title
+  alert.setMessageText("Would you like to delete all the arrows from " + message); // Creating dialog buttons
+
+  alert.addButtonWithTitle("Delete Arrows");
+  alert.addButtonWithTitle("Cancel"); // Creating the view
+
+  var viewWidth = 300;
+  var viewHeight = 40;
+  var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
+  alert.addAccessoryView(view); // Label
+
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40));
+  infoLabel.setStringValue("ℹ️ You can select layers, artboards to delete all the arrows from selected one only");
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  view.addSubview(infoLabel);
+  return alert;
+} // {
+//   "script": "./script.js",
+//   "name" : "onLayersMoved",
+//   "handlers" : {
+//     "actions": {
+//       "LayersMoved.finish": "onLayersMoved"
+//     }
+//   },
+//   "identifier" : "onLayersMoved"
+// }
+
+/***/ }),
+
+/***/ "sketch":
 /*!*************************!*\
   !*** external "sketch" ***!
   \*************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch")},"sketch/dom":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch");
+
+/***/ }),
+
+/***/ "sketch/dom":
 /*!*****************************!*\
   !*** external "sketch/dom" ***!
   \*****************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/dom")},"sketch/settings":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/dom");
+
+/***/ }),
+
+/***/ "sketch/settings":
 /*!**********************************!*\
   !*** external "sketch/settings" ***!
   \**********************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/settings")},"sketch/ui":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/settings");
+
+/***/ }),
+
+/***/ "sketch/ui":
 /*!****************************!*\
   !*** external "sketch/ui" ***!
   \****************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/ui")}});"default"===e&&"function"==typeof r?r(t):r[e](t)}that.onRun=__skpm_run.bind(this,"default"),that.updateSelectedArrows=__skpm_run.bind(this,"updateSelectedArrows"),that.updateArtboardArrows=__skpm_run.bind(this,"updateArtboardArrows"),that.updateAllArrows=__skpm_run.bind(this,"updateAllArrows"),that.deleteSelectedArrows=__skpm_run.bind(this,"deleteSelectedArrows"),that.deleteArtboardArrows=__skpm_run.bind(this,"deleteArtboardArrows"),that.deleteAllArrows=__skpm_run.bind(this,"deleteAllArrows"),that.settings=__skpm_run.bind(this,"settings"),that.panel=__skpm_run.bind(this,"panel");
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/ui");
+
+/***/ })
+
+/******/ });
+  if (key === 'default' && typeof exports === 'function') {
+    exports(context);
+  } else {
+    exports[key](context);
+  }
+}
+that['onRun'] = __skpm_run.bind(this, 'default');
+that['updateSelectedArrows'] = __skpm_run.bind(this, 'updateSelectedArrows');
+that['updateArtboardArrows'] = __skpm_run.bind(this, 'updateArtboardArrows');
+that['updateAllArrows'] = __skpm_run.bind(this, 'updateAllArrows');
+that['deleteSelectedArrows'] = __skpm_run.bind(this, 'deleteSelectedArrows');
+that['deleteArtboardArrows'] = __skpm_run.bind(this, 'deleteArtboardArrows');
+that['deleteAllArrows'] = __skpm_run.bind(this, 'deleteAllArrows');
+that['settings'] = __skpm_run.bind(this, 'settings');
+that['panel'] = __skpm_run.bind(this, 'panel')
+
+//# sourceMappingURL=script.js.map
