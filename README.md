@@ -5,7 +5,7 @@
 ![preview](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/assets/preview.jpg)
 [![Download from Sketchpacks.com](https://badges.sketchpacks.com/plugins/me.sabitov.sketch.connectionFlowArrows/version.svg)](https://api.sketchpacks.com/v1/plugins/me.sabitov.sketch.connectionFlowArrows/download) [![View on Sketchpacks.com](https://badges.sketchpacks.com/plugins/me.sabitov.sketch.connectionFlowArrows/downloads/total.svg)](https://sketchpacks.com/faridsabitov/Sketch-Connection-Flow-Arrows)
 
-Plugin for Sketch to create connection flow arrows for creating user flows, sitemaps and many more. Just select two objects and click on "Plugins" → "👉 Arrows" → "Define a Link" and voilà! It will create a connection with arrow 🚀
+Plugin for Sketch to create connection flow arrows for creating user flows, sitemaps and many more. Just select two objects and click on "Plugins" → "👉 Connection Arrows" → "Create Connection" and voilà! It will create a connection with arrow 🚀
 
 
 **Table of contents**
@@ -47,7 +47,7 @@ You can write me directly via [mssg.me/farid](https://mssg.me/farid) or find me 
 [![Preview](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/youtubePreview.jpg)](https://youtu.be/9z7BrknRocg)
 
 
-## With the support from ❤️
+## With support from ❤️
 <a href="http://epam.design" target="_blank"><img src="https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/epamLogo.png" width="177" height="64"></a>
 
 
