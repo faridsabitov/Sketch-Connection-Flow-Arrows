@@ -250,7 +250,7 @@ export function deleteSelectedArrows(context) {
 export function settings(context) {
   let alert = COSAlertWindow.new()
   const viewWidth = 300
-  const viewHeight = 260
+  const viewHeight = 330
   
   // Alert window settingsnp
   alert = alertSetup(alert, viewWidth, viewHeight)
@@ -258,7 +258,7 @@ export function settings(context) {
   alert.addAccessoryView(view)
 
   // Label: Arrow Direction
-  let arrowDirectionLabel = alertLabel("Arrow Direction", -1, viewHeight - 17, 330, 20)
+  let arrowDirectionLabel = alertLabel("Arrow Direction", true, -1, viewHeight - 17, 330, 20)
   view.addSubview(arrowDirectionLabel)
     
   // Select: Arrow Direction
@@ -267,11 +267,11 @@ export function settings(context) {
   view.addSubview(arrowDirectionField)
 
   // Label: Auto Direction Info
-  let arrowDirectionInfoLabel = alertLabel("ℹ️ Auto mode will draw arrow based on location of the second object", -1, viewHeight-84, 280, 40)
+  let arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight-84, 280, 40)
   view.addSubview(arrowDirectionInfoLabel)
 
   // Label: Arrow Spacing
-  let arrowSpacingLabel = alertLabel("Arrow Spacing", -1, viewHeight - 120, 330, 20)
+  let arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 120, 330, 20)
   view.addSubview(arrowSpacingLabel)
 
   // Select: Arrow Spacing
@@ -280,11 +280,23 @@ export function settings(context) {
   view.addSubview(arrowSpacingField)
   
   // Label: Auto Spacing Info
-  let arrowSpacingInfoLabel = alertLabel("ℹ️ If you will select spacing, the second layer position will be moved closer", -1, viewHeight-187, 280, 40)
+  let arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight-187, 280, 40)
   view.addSubview(arrowSpacingInfoLabel)
 
+  // Label: Other Settings
+  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-240, 280, 40)
+  view.addSubview(otherSettingsLabel)
+
+  // Checkbox: Auto-Align
+  let checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight-250, 280, 40)
+  view.addSubview(checkbox)
+
+  // Label: Auto-Align Info
+  let autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight-280, 280, 40)
+  view.addSubview(autoAlignInfoLabel)
+
   // Label: Plugin Info
-  let pluginInfoLabel = alertLabel("Made by Farid Sabitov with the support of EPAM.com ❤️", -1, viewHeight-240, 280, 40)
+  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-330, 280, 40)
   view.addSubview(pluginInfoLabel)
 
   // Show modal and get the results
@@ -295,6 +307,7 @@ export function settings(context) {
     // Need to save all this results into the Plugin Settings
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title())
+    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[7].state())
     UI.message("Settings are updated 🚀")
   }
 }
@@ -395,6 +408,7 @@ function createArrow(firstObjectID, secondObjectID, direction) {
   }
   
   updateSpacing(firstObjectID, secondObjectID, localDirection)
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection)
   let currentGroup = checkForArrowGroup()
   let line = drawLine(firstObjectID, secondObjectID, localDirection, currentGroup)
   addToArrowsGroup(line, currentGroup)
@@ -852,6 +866,33 @@ function updateSpacing(sourceObjectID, childObjectID, direction){
   }
 }
 
+
+function autoAlignLayer(sourceObjectID, childObjectID, direction){ // Check with Auto settings
+  let sourceObject = document.getLayerWithID(sourceObjectID)
+  let childObject = document.getLayerWithID(childObjectID)
+  let sourceMidY, childMidY, sourceMidX, childMidX, diff
+
+  if(Settings.settingForKey("autoAlign")){
+    if(Settings.settingForKey("autoAlign") == true){
+      // If user turned on Auto-Align settings
+      
+      if(direction == "Right" || direction == "Left"){
+        sourceMidY = sourceObject.frame.y + sourceObject.frame.height/2
+        childMidY = childObject.frame.y + childObject.frame.height/2
+        diff = sourceMidY - childMidY
+        if(diff > -6 && diff < 6){childObject.frame.y = childObject.frame.y + diff}
+      }
+    
+      if(direction == "Down" || direction == "Up"){
+        sourceMidX = sourceObject.frame.x + sourceObject.frame.width/2
+        childMidX = childObject.frame.x + childObject.frame.width/2
+        diff = sourceMidX - childMidX
+        if(diff > -6 && diff < 6){childObject.frame.x = childObject.frame.x + diff}
+      }
+    }
+  }
+}
+
 function defineSourceObject(firstObjectID, secondObjectID, direction){
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
@@ -949,15 +990,35 @@ function alertSetup(alert, viewWidth, viewHeight){
   return alert
 }
 
-function alertLabel(message, x, y, width, height){
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height))
+function alertLabel(message, state, x, y, width, height){
+  let infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height))
 
   infoLabel.setStringValue(message)
   infoLabel.setSelectable(false)
   infoLabel.setDrawsBackground(false)
   infoLabel.setBezeled(false)
 
+  if(state == false){
+    infoLabel.textColor = NSColor.disabledControlTextColor()
+  }
+
   return infoLabel
+}
+
+function alertCheckbox(message, state, x, y, width, height){
+  let checkbox = NSButton.alloc().initWithFrame(NSMakeRect(x, y, width, height))
+
+  checkbox.setButtonType(NSSwitchButton)
+  checkbox.setBezelStyle(0)
+  checkbox.setTitle(message)
+  if(Settings.settingForKey("autoAlign")){
+    let currentState = Settings.settingForKey("autoAlign")  
+    checkbox.setState(currentState)
+  } else {
+    checkbox.setState(state)
+  }
+
+  return checkbox
 }
 
 // {
@@ -970,3 +1031,6 @@ function alertLabel(message, x, y, width, height){
 //   },
 //   "identifier" : "onLayersMoved"
 // }
+
+
+
