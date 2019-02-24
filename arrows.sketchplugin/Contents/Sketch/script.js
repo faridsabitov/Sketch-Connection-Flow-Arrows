@@ -357,33 +357,42 @@ function deleteSelectedArrows(context) {
 function settings(context) {
   var alert = COSAlertWindow.new();
   var viewWidth = 300;
-  var viewHeight = 260; // Alert window settingsnp
+  var viewHeight = 330; // Alert window settingsnp
 
   alert = alertSetup(alert, viewWidth, viewHeight);
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
   alert.addAccessoryView(view); // Label: Arrow Direction
 
-  var arrowDirectionLabel = alertLabel("Arrow Direction", -1, viewHeight - 17, 330, 20);
+  var arrowDirectionLabel = alertLabel("Arrow Direction", true, -1, viewHeight - 17, 330, 20);
   view.addSubview(arrowDirectionLabel); // Select: Arrow Direction
 
   var arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
   setActiveDirectionSetting(arrowDirectionField);
   view.addSubview(arrowDirectionField); // Label: Auto Direction Info
 
-  var arrowDirectionInfoLabel = alertLabel("ℹ️ Auto mode will draw arrow based on location of the second object", -1, viewHeight - 84, 280, 40);
+  var arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight - 84, 280, 40);
   view.addSubview(arrowDirectionInfoLabel); // Label: Arrow Spacing
 
-  var arrowSpacingLabel = alertLabel("Arrow Spacing", -1, viewHeight - 120, 330, 20);
+  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 120, 330, 20);
   view.addSubview(arrowSpacingLabel); // Select: Arrow Spacing
 
   var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20));
   setActiveSpacingSetting(arrowSpacingField);
   view.addSubview(arrowSpacingField); // Label: Auto Spacing Info
 
-  var arrowSpacingInfoLabel = alertLabel("ℹ️ If you will select spacing, the second layer position will be moved closer", -1, viewHeight - 187, 280, 40);
-  view.addSubview(arrowSpacingInfoLabel); // Label: Plugin Info
+  var arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight - 187, 280, 40);
+  view.addSubview(arrowSpacingInfoLabel); // Label: Other Settings
 
-  var pluginInfoLabel = alertLabel("Made by Farid Sabitov with the support of EPAM.com ❤️", -1, viewHeight - 240, 280, 40);
+  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 240, 280, 40);
+  view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
+
+  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 250, 280, 40);
+  view.addSubview(checkbox); // Label: Auto-Align Info
+
+  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 280, 280, 40);
+  view.addSubview(autoAlignInfoLabel); // Label: Plugin Info
+
+  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 330, 280, 40);
   view.addSubview(pluginInfoLabel); // Show modal and get the results
 
   var modalResponse = alert.runModal();
@@ -393,6 +402,7 @@ function settings(context) {
     // Need to save all this results into the Plugin Settings
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title());
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
+    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[7].state());
     UI.message("Settings are updated 🚀");
   }
 }
@@ -1024,13 +1034,34 @@ function alertSetup(alert, viewWidth, viewHeight) {
   return alert;
 }
 
-function alertLabel(message, x, y, width, height) {
+function alertLabel(message, state, x, y, width, height) {
   var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height));
   infoLabel.setStringValue(message);
   infoLabel.setSelectable(false);
   infoLabel.setDrawsBackground(false);
   infoLabel.setBezeled(false);
+
+  if (state == false) {
+    infoLabel.textColor = NSColor.disabledControlTextColor();
+  }
+
   return infoLabel;
+}
+
+function alertCheckbox(message, state, x, y, width, height) {
+  var checkbox = NSButton.alloc().initWithFrame(NSMakeRect(x, y, width, height));
+  checkbox.setButtonType(NSSwitchButton);
+  checkbox.setBezelStyle(0);
+  checkbox.setTitle(message);
+
+  if (Settings.settingForKey("autoAlign")) {
+    var currentState = Settings.settingForKey("autoAlign");
+    checkbox.setState(currentState);
+  } else {
+    checkbox.setState(state);
+  }
+
+  return checkbox;
 } // {
 //   "script": "./script.js",
 //   "name" : "onLayersMoved",

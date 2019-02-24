@@ -43,7 +43,7 @@ You can write me directly via [mssg.me/farid](https://mssg.me/farid) or find me 
 
 
 ## Watch tutorial on Youtube
-[![Preview](youtubePreview.jpg)](https://youtu.be/9z7BrknRocg)
+[![Preview](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/youtubePreview.jpg)](https://youtu.be/9z7BrknRocg)
 
 
 ## Roadmap
