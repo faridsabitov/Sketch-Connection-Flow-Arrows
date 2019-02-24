@@ -249,91 +249,43 @@ export function deleteSelectedArrows(context) {
 
 export function settings(context) {
   let alert = COSAlertWindow.new()
+  const viewWidth = 300
+  const viewHeight = 260
+  
+  // Alert window settingsnp
+  alert = alertSetup(alert, viewWidth, viewHeight)
+  let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight))
+  alert.addAccessoryView(view)
 
-  // Title
-  alert.setMessageText("Arrow Plugin Settings")
-  
-  // Creating dialog buttons
-  alert.addButtonWithTitle("Update Settings")
-  alert.addButtonWithTitle("Cancel")
-  
-  // Creating the view
-  const viewWidth = 300;
-  const viewHeight = 260;
-  
-  let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
-  alert.addAccessoryView(view);
-  
   // Label: Arrow Direction
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 17, 330, 20));
-
-  infoLabel.setStringValue("Arrow Direction")
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-
-  view.addSubview(infoLabel);
-
+  let arrowDirectionLabel = alertLabel("Arrow Direction", -1, viewHeight - 17, 330, 20)
+  view.addSubview(arrowDirectionLabel)
+    
   // Select: Arrow Direction
-  let arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
-
-  // Add select options and mark selected the active one
+  let arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20))
   setActiveDirectionSetting(arrowDirectionField)
+  view.addSubview(arrowDirectionField)
 
-  view.addSubview(arrowDirectionField);
-
-
-  // Label: Auto Direction Desctiption
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-84, 280, 40));
-
-  infoLabel.setStringValue("ℹ️ Auto mode will draw arrow based on location of the second object")
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false)
-  infoLabel.setBezeled(false)
-
-  view.addSubview(infoLabel)
-
+  // Label: Auto Direction Info
+  let arrowDirectionInfoLabel = alertLabel("ℹ️ Auto mode will draw arrow based on location of the second object", -1, viewHeight-84, 280, 40)
+  view.addSubview(arrowDirectionInfoLabel)
 
   // Label: Arrow Spacing
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 120, 330, 20))
-
-  infoLabel.setStringValue("Arrow Spacing")
-  infoLabel.setSelectable(false)
-  infoLabel.setDrawsBackground(false)
-  infoLabel.setBezeled(false)
-
-  view.addSubview(infoLabel)
+  let arrowSpacingLabel = alertLabel("Arrow Spacing", -1, viewHeight - 120, 330, 20)
+  view.addSubview(arrowSpacingLabel)
 
   // Select: Arrow Spacing
   let arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20));
-
-  // Add select options and mark selected the active one
   setActiveSpacingSetting(arrowSpacingField)
-
-  
-
   view.addSubview(arrowSpacingField)
   
+  // Label: Auto Spacing Info
+  let arrowSpacingInfoLabel = alertLabel("ℹ️ If you will select spacing, the second layer position will be moved closer", -1, viewHeight-187, 280, 40)
+  view.addSubview(arrowSpacingInfoLabel)
 
-  // Label: Arrow Spacing Desctiption
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-187, 280, 40));
-
-  infoLabel.setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer")
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false)
-  infoLabel.setBezeled(false)
-
-  view.addSubview(infoLabel)
-
-  // Label: Arrow Description
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight-240, 280, 40));
-
-  infoLabel.setStringValue("Made by Farid Sabitov with the support of EPAM.com ❤️")
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false)
-  infoLabel.setBezeled(false)
-
-  view.addSubview(infoLabel)
+  // Label: Plugin Info
+  let pluginInfoLabel = alertLabel("Made by Farid Sabitov with the support of EPAM.com ❤️", -1, viewHeight-240, 280, 40)
+  view.addSubview(pluginInfoLabel)
 
   // Show modal and get the results
   let modalResponse = alert.runModal()
@@ -984,6 +936,28 @@ function confirmationAlert(alert, message) {
     view.addSubview(infoLabel)
 
     return alert
+}
+
+function alertSetup(alert, viewWidth, viewHeight){
+  // Title
+  alert.setMessageText("Arrow Plugin Settings")
+  
+  // Creating dialog buttons
+  alert.addButtonWithTitle("Update Settings")
+  alert.addButtonWithTitle("Cancel")
+  
+  return alert
+}
+
+function alertLabel(message, x, y, width, height){
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height))
+
+  infoLabel.setStringValue(message)
+  infoLabel.setSelectable(false)
+  infoLabel.setDrawsBackground(false)
+  infoLabel.setBezeled(false)
+
+  return infoLabel
 }
 
 // {

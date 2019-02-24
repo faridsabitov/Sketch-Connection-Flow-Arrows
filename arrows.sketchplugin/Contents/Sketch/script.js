@@ -355,62 +355,36 @@ function deleteSelectedArrows(context) {
   }
 }
 function settings(context) {
-  var alert = COSAlertWindow.new(); // Title
-
-  alert.setMessageText("Arrow Plugin Settings"); // Creating dialog buttons
-
-  alert.addButtonWithTitle("Update Settings");
-  alert.addButtonWithTitle("Cancel"); // Creating the view
-
+  var alert = COSAlertWindow.new();
   var viewWidth = 300;
-  var viewHeight = 260;
+  var viewHeight = 260; // Alert window settingsnp
+
+  alert = alertSetup(alert, viewWidth, viewHeight);
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
   alert.addAccessoryView(view); // Label: Arrow Direction
 
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 17, 330, 20));
-  infoLabel.setStringValue("Arrow Direction");
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-  view.addSubview(infoLabel); // Select: Arrow Direction
+  var arrowDirectionLabel = alertLabel("Arrow Direction", -1, viewHeight - 17, 330, 20);
+  view.addSubview(arrowDirectionLabel); // Select: Arrow Direction
 
-  var arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20)); // Add select options and mark selected the active one
-
+  var arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
   setActiveDirectionSetting(arrowDirectionField);
-  view.addSubview(arrowDirectionField); // Label: Auto Direction Desctiption
+  view.addSubview(arrowDirectionField); // Label: Auto Direction Info
 
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 84, 280, 40));
-  infoLabel.setStringValue("ℹ️ Auto mode will draw arrow based on location of the second object");
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-  view.addSubview(infoLabel); // Label: Arrow Spacing
+  var arrowDirectionInfoLabel = alertLabel("ℹ️ Auto mode will draw arrow based on location of the second object", -1, viewHeight - 84, 280, 40);
+  view.addSubview(arrowDirectionInfoLabel); // Label: Arrow Spacing
 
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 120, 330, 20));
-  infoLabel.setStringValue("Arrow Spacing");
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-  view.addSubview(infoLabel); // Select: Arrow Spacing
+  var arrowSpacingLabel = alertLabel("Arrow Spacing", -1, viewHeight - 120, 330, 20);
+  view.addSubview(arrowSpacingLabel); // Select: Arrow Spacing
 
-  var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20)); // Add select options and mark selected the active one
-
+  var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 143, 300, 20));
   setActiveSpacingSetting(arrowSpacingField);
-  view.addSubview(arrowSpacingField); // Label: Arrow Spacing Desctiption
+  view.addSubview(arrowSpacingField); // Label: Auto Spacing Info
 
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 187, 280, 40));
-  infoLabel.setStringValue("ℹ️ If you will select spacing, the second layer position will be moved closer");
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-  view.addSubview(infoLabel); // Label: Arrow Description
+  var arrowSpacingInfoLabel = alertLabel("ℹ️ If you will select spacing, the second layer position will be moved closer", -1, viewHeight - 187, 280, 40);
+  view.addSubview(arrowSpacingInfoLabel); // Label: Plugin Info
 
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 240, 280, 40));
-  infoLabel.setStringValue("Made by Farid Sabitov with the support of EPAM.com ❤️");
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-  view.addSubview(infoLabel); // Show modal and get the results
+  var pluginInfoLabel = alertLabel("Made by Farid Sabitov with the support of EPAM.com ❤️", -1, viewHeight - 240, 280, 40);
+  view.addSubview(pluginInfoLabel); // Show modal and get the results
 
   var modalResponse = alert.runModal();
 
@@ -1039,6 +1013,24 @@ function confirmationAlert(alert, message) {
   infoLabel.setBezeled(false);
   view.addSubview(infoLabel);
   return alert;
+}
+
+function alertSetup(alert, viewWidth, viewHeight) {
+  // Title
+  alert.setMessageText("Arrow Plugin Settings"); // Creating dialog buttons
+
+  alert.addButtonWithTitle("Update Settings");
+  alert.addButtonWithTitle("Cancel");
+  return alert;
+}
+
+function alertLabel(message, x, y, width, height) {
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height));
+  infoLabel.setStringValue(message);
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+  return infoLabel;
 } // {
 //   "script": "./script.js",
 //   "name" : "onLayersMoved",
