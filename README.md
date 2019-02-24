@@ -66,6 +66,7 @@ This plugin allows you to provide an arrow between two objects, but for creating
 
 #### [Download Free Interactions Library 🎉](https://github.com/faridsabitov/Sketch-Interactions)
 
+![Library Demo](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/libraryDemo.gif)
 
 ## Join Community and Contacts
 If you would like to suggest improvement, report a bug or just say "Hi 👋" join our community on [**Spectrum**](https://spectrum.chat/sketch-arrows)
