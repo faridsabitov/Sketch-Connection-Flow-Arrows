@@ -948,7 +948,6 @@ function updateSpacing(sourceObjectID, childObjectID, direction) {
 }
 
 function autoAlignLayer(sourceObjectID, childObjectID, direction) {
-  // Check with Auto settings
   var sourceObject = document.getLayerWithID(sourceObjectID);
   var childObject = document.getLayerWithID(childObjectID);
   var sourceMidY, childMidY, sourceMidX, childMidX, diff;
