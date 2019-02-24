@@ -211,7 +211,7 @@ export function deleteSelectedArrows(context) {
   let firstObject, secondObject
 
   // Need to delete all the arrows only from selected artboard
-  if(selection.count() > 1){
+  if(selection.count() == 2){
 
     for(let g = 0; g < selection.count(); g++) {
 
@@ -243,7 +243,7 @@ export function deleteSelectedArrows(context) {
       }
     }
   } else {
-    sketch.UI.message("Select some layers, please 🧐")
+    sketch.UI.message("Select two layers, please 🧐")
   }
 }
 

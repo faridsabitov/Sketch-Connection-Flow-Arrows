@@ -319,7 +319,7 @@ function deleteSelectedArrows(context) {
   var selection = context.selection;
   var firstObject, secondObject; // Need to delete all the arrows only from selected artboard
 
-  if (selection.count() > 1) {
+  if (selection.count() == 2) {
     for (var g = 0; g < selection.count(); g++) {
       if (selection[g].objectID() != selection[0].objectID()) {
         // It will never check 3rd connection
@@ -351,7 +351,7 @@ function deleteSelectedArrows(context) {
       }
     }
   } else {
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Select some layers, please 🧐");
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Select two layers, please 🧐");
   }
 }
 function settings(context) {
