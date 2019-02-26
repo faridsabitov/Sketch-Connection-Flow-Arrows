@@ -6,6 +6,8 @@ import sketch from 'sketch'
 //
 
 let UI = require('sketch/ui') 
+var SharedStyle = require('sketch/dom').SharedStyle
+
 const pluginKey = "flowArrows"
 const document = sketch.fromNative(context.document)
 let docData = context.document.documentData()
@@ -23,7 +25,6 @@ if(Settings.settingForKey("arrowDirection")) {
   arrowDirectionSetting = "Auto"
 }
   
-
 //
 //  Default Function
 //
@@ -250,7 +251,7 @@ export function deleteSelectedArrows(context) {
 export function settings(context) {
   let alert = COSAlertWindow.new()
   const viewWidth = 300
-  const viewHeight = 330
+  const viewHeight = 430
   
   // Alert window settingsnp
   alert = alertSetup(alert, viewWidth, viewHeight)
@@ -267,7 +268,7 @@ export function settings(context) {
   view.addSubview(arrowDirectionField)
 
   // Label: Auto Direction Info
-  let arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight-84, 280, 40)
+  let arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight-84, 300, 40)
   view.addSubview(arrowDirectionInfoLabel)
 
   // Label: Arrow Spacing
@@ -280,24 +281,42 @@ export function settings(context) {
   view.addSubview(arrowSpacingField)
   
   // Label: Auto Spacing Info
-  let arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight-187, 280, 40)
+  let arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight-187, 300, 40)
   view.addSubview(arrowSpacingInfoLabel)
 
+
+  // Label: Arrow Style
+  let arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight-240, 280, 40)
+  view.addSubview(arrowStyleLabel)
+
+  // Select: Arrow Style
+  let arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 240, 300, 20));
+  // setActiveSpacingSetting(arrowSpacingField)
+  view.addSubview(arrowStylingField)
+
+  // Label: Arrow Style Info
+  let arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight-280, 300, 40)
+  view.addSubview(arrowStyleInfoLabel)
+
+
   // Label: Other Settings
-  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-240, 280, 40)
+  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-340, 280, 40)
   view.addSubview(otherSettingsLabel)
 
   // Checkbox: Auto-Align
-  let checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight-250, 280, 40)
+  let checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight-350, 260, 40)
   view.addSubview(checkbox)
 
   // Label: Auto-Align Info
-  let autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight-280, 280, 40)
+  let autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight-380, 280, 40)
   view.addSubview(autoAlignInfoLabel)
 
   // Label: Plugin Info
-  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-330, 280, 40)
+  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-430, 280, 40)
   view.addSubview(pluginInfoLabel)
+
+
+  // Need to check if style is still available
 
   // Show modal and get the results
   let modalResponse = alert.runModal()
@@ -308,6 +327,7 @@ export function settings(context) {
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title())
     Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[7].state())
+    // TODO Save style
     UI.message("Settings are updated 🚀")
   }
 }
@@ -374,6 +394,7 @@ export function panel(context) {
 
 }
 
+log(getLayerStyles())
 
 //
 // Functions
@@ -677,7 +698,7 @@ function findConnectionData(firstObjectID, secondObjectID, data){
   return arrayNumber
 }
 
-function setActiveDirectionSetting (arrowDirectionField){
+function setActiveDirectionSetting(arrowDirectionField){
   let currentDirection = "Auto"
 
   if(Settings.settingForKey("arrowDirection")){
@@ -759,7 +780,7 @@ function setActiveDirectionSetting (arrowDirectionField){
   }
 }
 
-function setActiveSpacingSetting (arrowSpacingField){
+function setActiveSpacingSetting(arrowSpacingField){
   let currentSpacing = "Not selected"
 
   if(Settings.settingForKey("arrowSpacing")){
@@ -797,6 +818,30 @@ function setActiveSpacingSetting (arrowSpacingField){
     arrowSpacingField.addItemWithTitle("Not Selected")
     arrowSpacingField.addItemWithTitle("30px")
     arrowSpacingField.addItemWithTitle("70px")
+  }
+}
+
+function setActiveStyleSetting(arrowSpacingField){
+  let currentSpacing = "Not selected"
+  let docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
+  getLayerStyles()
+
+  if(Settings.settingForKey("arrowSpacing")){
+    // if there is data in settings
+    currentSpacing = Settings.settingForKey("arrowSpacing")  
+    
+    if(currentSpacing == "Not selected"){
+      arrowSpacingField.addItemWithTitle("Not selected")
+      arrowSpacingField.lastItem().setState(1)
+      arrowSpacingField.addItemWithTitle("30px")
+      arrowSpacingField.lastItem().setState(0)
+      arrowSpacingField.addItemWithTitle("70px")
+      arrowSpacingField.lastItem().setState(0)
+    } 
+
+  } else {
+    // Show default
+    arrowSpacingField.addItemWithTitle("Default Style")
   }
 }
 
@@ -1018,6 +1063,19 @@ function alertCheckbox(message, state, x, y, width, height){
   }
 
   return checkbox
+}
+
+function getLayerStyles() {
+  let allStyles = docData.allLayerStyles()
+  let keyword = "$arrow"
+  let styles = []
+  for(let i = 0; i < allStyles.count(); i++){
+    if(allStyles[i].name().includes(keyword)){
+      styles.push(allStyles[i]);
+    }
+  }
+
+	return styles
 }
 
 // {
