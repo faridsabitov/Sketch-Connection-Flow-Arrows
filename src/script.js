@@ -327,7 +327,7 @@ export function settings(context) {
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title())
     Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[7].state())
-    // TODO Save style
+    // TODO Save style context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowStyle", docData, pluginKey)
     UI.message("Settings are updated 🚀")
   }
 }
