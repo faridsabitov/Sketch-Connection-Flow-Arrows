@@ -42,7 +42,6 @@ export default function(context) {
       if(selection[g].objectID() != sourceObjectID){
         // Then need to create or update connection arrow with each selection
         let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
-        // log("Index "+connectionIndex)
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
           updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
@@ -55,7 +54,6 @@ export default function(context) {
       }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
-    // log(newConnectionsData)
   } else {
     // When user didn't select anything
     sketch.UI.message("Please select more than two layers")
@@ -87,7 +85,6 @@ export function updateSelectedArrows(context) {
       }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
-    // log(newConnectionsData)
   } else {
     // When user didn't select anything
     sketch.UI.message("Please select more than two layers")
@@ -131,8 +128,6 @@ export function updateArtboardArrows(context) {
     // We don't have any connections to update
     sketch.UI.message("There is nothing to update")
   }
-
-  // log(newConnectionsData)
 }
 
 export function updateAllArrows(context) { // TODO
@@ -220,7 +215,6 @@ export function deleteSelectedArrows(context) {
         let connections = getConnectionsData()
         
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections)
-        // log(connectionIndex)
         
         if(connectionIndex != null){
           // We have connections in database
@@ -291,7 +285,7 @@ export function settings(context) {
 
   // Select: Arrow Style
   let arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 240, 300, 20));
-  // setActiveSpacingSetting(arrowSpacingField)
+  setActiveStyleSetting(arrowStylingField)
   view.addSubview(arrowStylingField)
 
   // Label: Arrow Style Info
@@ -326,19 +320,15 @@ export function settings(context) {
     // Need to save all this results into the Plugin Settings
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title())
-    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[7].state())
-    // TODO Save style context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowStyle", docData, pluginKey)
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[7].title(), "arrowStyle", docData, pluginKey)
+    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[10].state())
     UI.message("Settings are updated 🚀")
   }
 }
 
 export function onLayersMoved(context) {
   sketch.UI.message("Please select more than two layers")
-  // let a = 0
-  const action = context.actionContext
-  // log(context.actionContext)
-  // log("moved")
-  
+  const action = context.actionContext  
 }
 
 export function panel(context) {
@@ -393,8 +383,6 @@ export function panel(context) {
 
 
 }
-
-log(getLayerStyles())
 
 //
 // Functions
@@ -626,11 +614,25 @@ function drawLine(firstObjectID, secondObjectID, direction, currentGroup){
   // Providing Settings for the arrow
   line.setName("Arrow")
 
-  // Styling Border Style
-  let border = line.style().addStylePartOfType(1)
-  border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
-  border.thickness = 2
-  line.style().endMarkerType = 2
+  if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
+    // if we have specified options
+    let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
+    if(style[0] == null){ 
+      // Default Arrow Style
+      let border = line.style().addStylePartOfType(1)
+      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+      border.thickness = 2
+      line.style().endMarkerType = 2
+    } else {
+      line.sharedStyle = style[0]
+    }
+  } else {
+    // Default Arrow Style
+    let border = line.style().addStylePartOfType(1)
+    border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+    border.thickness = 2
+    line.style().endMarkerType = 2
+  }
 
   return line
 }
@@ -680,17 +682,12 @@ function findConnectionData(firstObjectID, secondObjectID, data){
     // If we have database, need to check for connections
 
     for(let y = 0; y < data.length; y++){
-      // log("First one "+firstObjectID)
-      // log("Current Index "+y)
 
       if(firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject){
         // if we found that we have this object in connection database already
-        // log("We have the first one")
-        // log("Second one "+secondObjectID)
         if(secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject){
           // if we found that we have this object in connection database already
           arrayNumber = y
-          // log("We have the second one as"+arrayNumber)
         } 
       }
     }
@@ -821,27 +818,24 @@ function setActiveSpacingSetting(arrowSpacingField){
   }
 }
 
-function setActiveStyleSetting(arrowSpacingField){
-  let currentSpacing = "Not selected"
+function setActiveStyleSetting(arrowStylingField){
   let docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
-  getLayerStyles()
+  let styles = getLayerStyles(null)
 
-  if(Settings.settingForKey("arrowSpacing")){
-    // if there is data in settings
-    currentSpacing = Settings.settingForKey("arrowSpacing")  
-    
-    if(currentSpacing == "Not selected"){
-      arrowSpacingField.addItemWithTitle("Not selected")
-      arrowSpacingField.lastItem().setState(1)
-      arrowSpacingField.addItemWithTitle("30px")
-      arrowSpacingField.lastItem().setState(0)
-      arrowSpacingField.addItemWithTitle("70px")
-      arrowSpacingField.lastItem().setState(0)
-    } 
-
+  if(docSettings){
+    // We have info about the settings in the current document
+    arrowStylingField.addItemWithTitle("Default Style")
+    for(let i = 0; i < styles.length; i++){
+      arrowStylingField.addItemWithTitle(styles[i].name())
+      if(styles[i].name() == docSettings){
+        arrowStylingField.lastItem().setState(1)
+      }
+    }
   } else {
-    // Show default
-    arrowSpacingField.addItemWithTitle("Default Style")
+    arrowStylingField.addItemWithTitle("Default Style")
+    for(let i = 0; i < styles.length; i++){
+      arrowStylingField.addItemWithTitle(styles[i].name())
+    }
   }
 }
 
@@ -862,9 +856,7 @@ function deleteConnectionFromData(arrayNumber){
 }
 
 function refactorLines(group){ // Need to finish
-  // log(group.layers().length)
   for(let i = 0; i < group.layers().length; i++){
-    // log(group.layers()[i].objectID())
     // Here we need to go through each data in our database and delete line if there is no data
   }
 }
@@ -1065,16 +1057,24 @@ function alertCheckbox(message, state, x, y, width, height){
   return checkbox
 }
 
-function getLayerStyles() {
+function getLayerStyles(name) {
   let allStyles = docData.allLayerStyles()
   let keyword = "$arrow"
   let styles = []
-  for(let i = 0; i < allStyles.count(); i++){
-    if(allStyles[i].name().includes(keyword)){
-      styles.push(allStyles[i]);
+  if(name == null) {
+    for(let i = 0; i < allStyles.count(); i++){
+      if(allStyles[i].name().includes(keyword)){
+        styles.push(allStyles[i]);
+      }
+    }
+  } else {
+    // Searching only for name
+    for(let i = 0; i < allStyles.count(); i++){
+      if(allStyles[i].name() == name){
+        styles.push(allStyles[i]);
+      }
     }
   }
-
 	return styles
 }
 

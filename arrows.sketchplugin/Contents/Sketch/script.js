@@ -153,7 +153,7 @@ if (Settings.settingForKey("arrowDirection")) {
     for (var g = 0; g < selection.count(); g++) {
       if (selection[g].objectID() != sourceObjectID) {
         // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData); // log("Index "+connectionIndex)
+        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
 
         if (connectionIndex != null) {
           // Because this is creating flow, we need to take the direction from user settings
@@ -167,7 +167,7 @@ if (Settings.settingForKey("arrowDirection")) {
       }
     }
 
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey); // log(newConnectionsData)
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
@@ -196,7 +196,7 @@ function updateSelectedArrows(context) {
       }
     }
 
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey); // log(newConnectionsData)
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
@@ -240,8 +240,7 @@ function updateArtboardArrows(context) {
   } else {
     // We don't have any connections to update
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to update");
-  } // log(newConnectionsData)
-
+  }
 }
 function updateAllArrows(context) {
   // TODO
@@ -326,7 +325,7 @@ function deleteSelectedArrows(context) {
       if (selection[g].objectID() != selection[0].objectID()) {
         // It will never check 3rd connection
         var connections = getConnectionsData();
-        var connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections); // log(connectionIndex)
+        var connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections);
 
         if (connectionIndex != null) {
           // We have connections in database
@@ -388,8 +387,8 @@ function settings(context) {
   var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 240, 280, 40);
   view.addSubview(arrowStyleLabel); // Select: Arrow Style
 
-  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 240, 300, 20)); // setActiveSpacingSetting(arrowSpacingField)
-
+  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 240, 300, 20));
+  setActiveStyleSetting(arrowStylingField);
   view.addSubview(arrowStylingField); // Label: Arrow Style Info
 
   var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 280, 300, 40);
@@ -415,15 +414,14 @@ function settings(context) {
     // Need to save all this results into the Plugin Settings
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title());
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
-    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[7].state());
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[7].title(), "arrowStyle", docData, pluginKey);
+    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[10].state());
     UI.message("Settings are updated 🚀");
   }
 }
 function onLayersMoved(context) {
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers"); // let a = 0
-
-  var action = context.actionContext; // log(context.actionContext)
-  // log("moved")
+  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
+  var action = context.actionContext;
 }
 function panel(context) {
   var ControlBar;
@@ -468,8 +466,7 @@ function panel(context) {
   //         threadDictionary.removeObjectForKey(identifier);
   //         ControlBar.close();
   // }),
-}
-log(getLayerStyles()); //
+} //
 // Functions
 //
 
@@ -675,17 +672,40 @@ function drawLine(firstObjectID, secondObjectID, direction, currentGroup) {
   points[1].cornerRadius = 20;
   points[2].cornerRadius = 20; // Providing Settings for the arrow
 
-  line.setName("Arrow"); // Styling Border Style
+  line.setName("Arrow");
 
-  var border = line.style().addStylePartOfType(1);
-  border.color = MSColor.colorWithRGBADictionary({
-    r: 0.89,
-    g: 0.89,
-    b: 0.89,
-    a: 1
-  });
-  border.thickness = 2;
-  line.style().endMarkerType = 2;
+  if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
+    // if we have specified options
+    var style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+
+    if (style[0] == null) {
+      // Default Arrow Style
+      var border = line.style().addStylePartOfType(1);
+      border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      border.thickness = 2;
+      line.style().endMarkerType = 2;
+    } else {
+      line.sharedStyle = style[0];
+    }
+  } else {
+    // Default Arrow Style
+    var _border = line.style().addStylePartOfType(1);
+
+    _border.color = MSColor.colorWithRGBADictionary({
+      r: 0.89,
+      g: 0.89,
+      b: 0.89,
+      a: 1
+    });
+    _border.thickness = 2;
+    line.style().endMarkerType = 2;
+  }
+
   return line;
 }
 
@@ -733,15 +753,11 @@ function findConnectionData(firstObjectID, secondObjectID, data) {
   if (pluginData) {
     // If we have database, need to check for connections
     for (var y = 0; y < data.length; y++) {
-      // log("First one "+firstObjectID)
-      // log("Current Index "+y)
       if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
         // if we found that we have this object in connection database already
-        // log("We have the first one")
-        // log("Second one "+secondObjectID)
         if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
           // if we found that we have this object in connection database already
-          arrayNumber = y; // log("We have the second one as"+arrayNumber)
+          arrayNumber = y;
         }
       }
     }
@@ -872,25 +888,27 @@ function setActiveSpacingSetting(arrowSpacingField) {
   }
 }
 
-function setActiveStyleSetting(arrowSpacingField) {
-  var currentSpacing = "Not selected";
-  getLayerStyles();
+function setActiveStyleSetting(arrowStylingField) {
+  var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
+  var styles = getLayerStyles(null);
 
-  if (Settings.settingForKey("arrowSpacing")) {
-    // if there is data in settings
-    currentSpacing = Settings.settingForKey("arrowSpacing");
+  if (docSettings) {
+    // We have info about the settings in the current document
+    arrowStylingField.addItemWithTitle("Default Style");
 
-    if (currentSpacing == "Not selected") {
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(0);
+    for (var i = 0; i < styles.length; i++) {
+      arrowStylingField.addItemWithTitle(styles[i].name());
+
+      if (styles[i].name() == docSettings) {
+        arrowStylingField.lastItem().setState(1);
+      }
     }
   } else {
-    // Show default
-    arrowSpacingField.addItemWithTitle("Default Style");
+    arrowStylingField.addItemWithTitle("Default Style");
+
+    for (var _i = 0; _i < styles.length; _i++) {
+      arrowStylingField.addItemWithTitle(styles[_i].name());
+    }
   }
 }
 
@@ -914,9 +932,7 @@ function deleteConnectionFromData(arrayNumber) {
 
 function refactorLines(group) {
   // Need to finish
-  // log(group.layers().length)
-  for (var i = 0; i < group.layers().length; i++) {// log(group.layers()[i].objectID())
-    // Here we need to go through each data in our database and delete line if there is no data
+  for (var i = 0; i < group.layers().length; i++) {// Here we need to go through each data in our database and delete line if there is no data
   }
 }
 
@@ -1132,14 +1148,23 @@ function alertCheckbox(message, state, x, y, width, height) {
   return checkbox;
 }
 
-function getLayerStyles() {
+function getLayerStyles(name) {
   var allStyles = docData.allLayerStyles();
   var keyword = "$arrow";
   var styles = [];
 
-  for (var i = 0; i < allStyles.count(); i++) {
-    if (allStyles[i].name().includes(keyword)) {
-      styles.push(allStyles[i]);
+  if (name == null) {
+    for (var i = 0; i < allStyles.count(); i++) {
+      if (allStyles[i].name().includes(keyword)) {
+        styles.push(allStyles[i]);
+      }
+    }
+  } else {
+    // Searching only for name
+    for (var _i2 = 0; _i2 < allStyles.count(); _i2++) {
+      if (allStyles[_i2].name() == name) {
+        styles.push(allStyles[_i2]);
+      }
     }
   }
 
