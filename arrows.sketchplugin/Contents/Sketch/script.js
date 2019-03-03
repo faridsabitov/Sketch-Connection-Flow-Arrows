@@ -894,20 +894,29 @@ function setActiveStyleSetting(arrowStylingField) {
 
   if (docSettings) {
     // We have info about the settings in the current document
-    arrowStylingField.addItemWithTitle("Default Style");
+    if (docSettings != "Default Style") {
+      // if user specified own option
+      arrowStylingField.addItemWithTitle(docSettings);
+      arrowStylingField.addItemWithTitle("Default Style");
 
-    for (var i = 0; i < styles.length; i++) {
-      arrowStylingField.addItemWithTitle(styles[i].name());
+      for (var i = 0; i < styles.length; i++) {
+        if (styles[i].name() != docSettings) {
+          arrowStylingField.addItemWithTitle(styles[i].name());
+        }
+      }
+    } else {
+      // Need to show the default first
+      arrowStylingField.addItemWithTitle("Default Style");
 
-      if (styles[i].name() == docSettings) {
-        arrowStylingField.lastItem().setState(1);
+      for (var _i = 0; _i < styles.length; _i++) {
+        arrowStylingField.addItemWithTitle(styles[_i].name());
       }
     }
   } else {
     arrowStylingField.addItemWithTitle("Default Style");
 
-    for (var _i = 0; _i < styles.length; _i++) {
-      arrowStylingField.addItemWithTitle(styles[_i].name());
+    for (var _i2 = 0; _i2 < styles.length; _i2++) {
+      arrowStylingField.addItemWithTitle(styles[_i2].name());
     }
   }
 }
@@ -1161,9 +1170,9 @@ function getLayerStyles(name) {
     }
   } else {
     // Searching only for name
-    for (var _i2 = 0; _i2 < allStyles.count(); _i2++) {
-      if (allStyles[_i2].name() == name) {
-        styles.push(allStyles[_i2]);
+    for (var _i3 = 0; _i3 < allStyles.count(); _i3++) {
+      if (allStyles[_i3].name() == name) {
+        styles.push(allStyles[_i3]);
       }
     }
   }

@@ -824,11 +824,22 @@ function setActiveStyleSetting(arrowStylingField){
 
   if(docSettings){
     // We have info about the settings in the current document
-    arrowStylingField.addItemWithTitle("Default Style")
-    for(let i = 0; i < styles.length; i++){
-      arrowStylingField.addItemWithTitle(styles[i].name())
-      if(styles[i].name() == docSettings){
-        arrowStylingField.lastItem().setState(1)
+    
+    if(docSettings != "Default Style") {
+      // if user specified own option
+      arrowStylingField.addItemWithTitle(docSettings)
+      arrowStylingField.addItemWithTitle("Default Style")
+      for(let i = 0; i < styles.length; i++){
+        if(styles[i].name() != docSettings){
+          arrowStylingField.addItemWithTitle(styles[i].name())
+        }
+      }
+
+    } else {
+      // Need to show the default first
+      arrowStylingField.addItemWithTitle("Default Style")
+      for(let i = 0; i < styles.length; i++){
+        arrowStylingField.addItemWithTitle(styles[i].name())
       }
     }
   } else {
