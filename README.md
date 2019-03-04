@@ -56,6 +56,11 @@ The most recent version you can find here:
 ![Arrow Spacing](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowSpacing.gif)
 
 
+**Arrow Style.** Right now you can provide an arrow style in settings. Make sure that the style that you want to specify is used on your Sketch document and it has "$arrow" text in the name. 
+
+![Arrow Spacing](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowStyle.gif)
+
+
 **Auto-align.** If your second object is misaligned for less than 5px with this option turned on the plugin will auto-align the second object based on the direction. So you don't need to spend time aligning everything 🤘
 
 ![Auto-align](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/autoAlign.gif)
