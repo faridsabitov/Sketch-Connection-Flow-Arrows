@@ -509,16 +509,15 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
 
   if (type == null) {
     localType = context.command.valueForKey_onLayer_forPluginIdentifier("arrowType", docData, pluginKey);
+    log(localType);
   } else {
-    localType = "Angled";
+    localType = type;
   }
-
-  log(localType);
 
   if (style == null) {
     localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
   } else {
-    localStyle = "Default Style";
+    localStyle = style;
   }
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
@@ -705,8 +704,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   }
 
   if (type == "Straight") {
-    log("here"); // Based on direction, we need to specify connection points
-
+    // Based on direction, we need to specify connection points
     if (direction == "Up") {
       // First Layer Position Start Point Position
       firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
@@ -771,6 +769,244 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
 
     line.setName("Arrow");
+  }
+
+  if (type == "Curved") {
+    // Based on direction, we need to specify connection points
+    if (direction == "Up") {
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+      firstLayerPosY = firstObject.frame.y - diffY; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+      secondLayerPosY = secondObject.frame.y + secondObject.frame.height - diffY; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+      var _points = line.layers().firstObject().points();
+
+      _points[0].curveMode = _points[1].curveMode = 4;
+      _points[0].hasCurveFrom = _points[1].hasCurveTo = true;
+
+      if (firstLayerPosX < secondLayerPosX) {
+        _points[0].curveFrom = {
+          x: 0,
+          y: 0.5
+        };
+        _points[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points[1].curveTo = {
+          x: 1,
+          y: 0.5
+        };
+      } else {
+        _points[0].curveFrom = {
+          x: 1,
+          y: 0.5
+        };
+        _points[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points[1].curveTo = {
+          x: 0,
+          y: 0.5
+        };
+      }
+    }
+
+    if (direction == "Right") {
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObject.frame.x + firstObject.frame.width - diffX;
+      firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObject.frame.x - diffX;
+      secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+      var _points2 = line.layers().firstObject().points();
+
+      _points2[0].curveMode = _points2[1].curveMode = 4;
+      _points2[0].hasCurveFrom = _points2[1].hasCurveTo = true;
+
+      if (firstLayerPosY < secondLayerPosY) {
+        _points2[0].curveFrom = {
+          x: 0.5,
+          y: 0
+        };
+        _points2[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points2[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points2[1].curveTo = {
+          x: 0.5,
+          y: 1
+        };
+      } else {
+        _points2[0].curveFrom = {
+          x: 0.5,
+          y: 1
+        };
+        _points2[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points2[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points2[1].curveTo = {
+          x: 0.5,
+          y: 0
+        };
+      }
+    }
+
+    if (direction == "Down") {
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObject.frame.x + firstObject.frame.width / 2 - diffX;
+      firstLayerPosY = firstObject.frame.y + firstObject.frame.height - diffY; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObject.frame.x + secondObject.frame.width / 2 - diffX;
+      secondLayerPosY = secondObject.frame.y - diffY; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+      var _points3 = line.layers().firstObject().points();
+
+      _points3[0].curveMode = _points3[1].curveMode = 4;
+      _points3[0].hasCurveFrom = _points3[1].hasCurveTo = true;
+
+      if (firstLayerPosX < secondLayerPosX) {
+        _points3[0].curveFrom = {
+          x: 0,
+          y: 0.5
+        };
+        _points3[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points3[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points3[1].curveTo = {
+          x: 1,
+          y: 0.5
+        };
+      } else {
+        _points3[0].curveFrom = {
+          x: 1,
+          y: 0.5
+        };
+        _points3[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points3[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points3[1].curveTo = {
+          x: 0,
+          y: 0.5
+        };
+      }
+    }
+
+    if (direction == "Left") {
+      // First Layer Position Start Point Position
+      firstLayerPosX = firstObject.frame.x - diffX;
+      firstLayerPosY = firstObject.frame.y + firstObject.frame.height / 2 - diffY; // Second Layer Position End Point Position
+
+      secondLayerPosX = secondObject.frame.x + secondObject.frame.width - diffX;
+      secondLayerPosY = secondObject.frame.y + secondObject.frame.height / 2 - diffY; // Middle Points
+
+      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
+
+      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+      var _points4 = line.layers().firstObject().points();
+
+      _points4[0].curveMode = _points4[1].curveMode = 4;
+      _points4[0].hasCurveFrom = _points4[1].hasCurveTo = true;
+
+      if (firstLayerPosY < secondLayerPosY) {
+        _points4[0].curveFrom = {
+          x: 0.5,
+          y: 0
+        };
+        _points4[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points4[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points4[1].curveTo = {
+          x: 0.5,
+          y: 1
+        };
+      } else {
+        _points4[0].curveFrom = {
+          x: 0.5,
+          y: 1
+        };
+        _points4[0].curveTo = {
+          x: -0.5,
+          y: 1
+        };
+        _points4[1].curveFrom = {
+          x: 1,
+          y: 1
+        };
+        _points4[1].curveTo = {
+          x: 0.5,
+          y: 0
+        };
+      }
+    } // Providing Settings for the arrow
+
+
+    line.setName("Arrows");
   } // Style Start
 
 
