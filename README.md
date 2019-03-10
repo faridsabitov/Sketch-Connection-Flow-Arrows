@@ -58,7 +58,12 @@ The most recent version you can find here:
 
 **Arrow Style.** Right now you can provide an arrow style in settings. Make sure that the style that you want to specify is used on your Sketch document and it has "$arrow" text in the name. 
 
-![Arrow Spacing](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowStyle.gif)
+![Arrow Style](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowStyle.gif)
+
+
+**Arrow Type.** You have the ability to select "Straight", "Angled" and "Curved" arrow types in settings. They are saved globally and if you update the connection, the arrow type will be taken from the arrow type that these objects had before. If you want to redraw the arrow and have the type specified in settings, please choose "Create Arrow" action 🚀
+
+![Arrow Type](https://github.com/faridsabitov/Sketch-Connection-Flow-Arrows/raw/master/media/arrowType.gif)
 
 
 **Auto-align.** If your second object is misaligned for less than 5px with this option turned on the plugin will auto-align the second object based on the direction. So you don't need to spend time aligning everything 🤘

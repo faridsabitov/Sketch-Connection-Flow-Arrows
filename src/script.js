@@ -44,7 +44,7 @@ export default function(context) {
         let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, null, null, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
           sketch.UI.message("Current connection is updated 🚀")
         } else {
           // There is no connection with this two objects in our database

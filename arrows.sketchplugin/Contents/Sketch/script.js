@@ -157,7 +157,7 @@ if (Settings.settingForKey("arrowDirection")) {
 
         if (connectionIndex != null) {
           // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex);
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, null, null, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
         } else {
           // There is no connection with this two objects in our database

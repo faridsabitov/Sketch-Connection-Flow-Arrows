@@ -13,7 +13,7 @@
   "homepage": "https://spectrum.chat/sketch-arrows",
   "commands": [
     {
-      "name": "Create Connection",
+      "name": "Create arrow between selected",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "definelink",
       "icon": "icon.png",
@@ -21,7 +21,7 @@
       "script": "script.js"
     },
     {
-      "name": "Between Selected",
+      "name": "Update arrows between selected",
       "description": "Update connection between selected layers",
       "identifier": "updateSelectedArrows",
       "script": "script.js",
@@ -29,7 +29,7 @@
       "handler": "updateSelectedArrows"
     },
     {
-      "name": "From the Selected Artboard",
+      "name": "Update arrows from the selected artboard",
       "description": "Update all the arrows from selected artboard",
       "identifier": "updateArtboardArrows",
       "script": "script.js",
@@ -37,7 +37,7 @@
       "handler": "updateArtboardArrows"
     },
     {
-      "name": "All Connections",
+      "name": "Update all arrows",
       "description": "Update all the arrows",
       "identifier": "updateAllArrows",
       "script": "script.js",
@@ -45,7 +45,7 @@
       "handler": "updateAllArrows"
     },
     {
-      "name": "Between Selected",
+      "name": "Delete arrows between selected",
       "description": "Delete all connections between selected ones",
       "identifier": "deleteSelectedArrows",
       "script": "script.js",
@@ -53,7 +53,7 @@
       "handler": "deleteSelectedArrows"
     },
     {
-      "name": "From the Selected Artboard",
+      "name": "Delete arrows from selected artboard",
       "description": "Delete all connections from selected artboard",
       "identifier": "deleteArtboardArrows",
       "script": "script.js",
@@ -61,7 +61,7 @@
       "handler": "deleteArtboardArrows"
     },
     {
-      "name": "All Connections",
+      "name": "Delete all arrows",
       "description": "Delete all connections",
       "identifier": "deleteAllArrows",
       "script": "script.js",
@@ -104,7 +104,12 @@
   "menu": {
     "title": "👉 Connection Arrows",
     "items": [
-      "definelink",
+      {
+        "title": "Create Connection",
+        "items": [
+          "definelink"
+        ]
+      },
       {
         "title": "Update Connection",
         "items": [
