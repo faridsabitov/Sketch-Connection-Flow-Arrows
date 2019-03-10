@@ -453,6 +453,10 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   let line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentGroup)
   addToArrowsGroup(line, currentGroup)
 
+  if(localStyle != "Default Style"){
+    localStyle = localStyle[0].name()
+  }
+
   // Storage for current connection
   let connection = {
     firstObject : firstObjectID,
@@ -897,6 +901,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   // Style Start
 
   if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
+    
     // if we have specified options
     let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
     if(style[0] == null){ 
