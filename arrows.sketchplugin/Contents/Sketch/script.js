@@ -425,7 +425,8 @@ function settings(context) {
     Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title());
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title());
     context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[7].title(), "arrowStyle", docData, pluginKey);
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[10].title(), "arrowType", docData, pluginKey);
+    Settings.setSettingForKey("arrowType", alert.views()[0].subviews()[10].title()); // context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[10].title(), "arrowType", docData, pluginKey)
+
     Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[13].state());
     UI.message("Settings are updated 🚀");
   }
@@ -508,7 +509,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   }
 
   if (type == null) {
-    localType = context.command.valueForKey_onLayer_forPluginIdentifier("arrowType", docData, pluginKey);
+    localType = Settings.settingForKey("arrowType");
   } else {
     localType = type;
   }
@@ -625,6 +626,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
 
   var path = NSBezierPath.bezierPath();
+  log(type);
 
   if (type == "Angled" || type == null) {
     // Based on direction, we need to specify connection points
@@ -1263,7 +1265,7 @@ function setActiveStyleSetting(arrowStylingField) {
 }
 
 function setActiveTypeSetting(arrowTypeField) {
-  var docTypeSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowType", docData, pluginKey);
+  var docTypeSettings = Settings.settingForKey("arrowType");
 
   if (docTypeSettings) {
     // We have info about the settings in the current document
