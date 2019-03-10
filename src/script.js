@@ -537,6 +537,9 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
 
+  let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup})
+  let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup})
+
   if(currentGroup){
     //if we already have a group, need to specify the difference
     diffX = currentGroup.frame().x()
@@ -549,19 +552,17 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   // Drawing a line
   let path = NSBezierPath.bezierPath()
 
-  log(type)
-
   if(type == "Angled" || type == null){
     // Based on direction, we need to specify connection points
     
     if(direction == "Up"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
-      firstLayerPosY = firstObject.frame.y-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+      firstLayerPosY = firstObjectAbsPos.y-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -576,12 +577,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Right"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
+      secondLayerPosX = secondObjectAbsPos.x-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
       
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -596,12 +597,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Down"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
-      secondLayerPosY = secondObject.frame.y-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+      secondLayerPosY = secondObjectAbsPos.y-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -616,12 +617,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Left"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
+      firstLayerPosX = firstObjectAbsPos.x-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -653,12 +654,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     // Based on direction, we need to specify connection points
     if(direction == "Up"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
-      firstLayerPosY = firstObject.frame.y-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+      firstLayerPosY = firstObjectAbsPos.y-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -671,12 +672,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Right"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
+      secondLayerPosX = secondObjectAbsPos.x-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
       
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -689,12 +690,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Down"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
-      secondLayerPosY = secondObject.frame.y-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+      secondLayerPosY = secondObjectAbsPos.y-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -707,12 +708,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Left"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
+      firstLayerPosX = firstObjectAbsPos.x-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -734,12 +735,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     // Based on direction, we need to specify connection points
     if(direction == "Up"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
-      firstLayerPosY = firstObject.frame.y-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+      firstLayerPosY = firstObjectAbsPos.y-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -773,12 +774,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Right"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
+      secondLayerPosX = secondObjectAbsPos.x-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
       
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -812,12 +813,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Down"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x+firstObject.frame.width/2-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height-diffY
+      firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width/2-diffX
-      secondLayerPosY = secondObject.frame.y-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+      secondLayerPosY = secondObjectAbsPos.y-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -851,12 +852,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
     if(direction == "Left"){
       // First Layer Position Start Point Position
-      firstLayerPosX = firstObject.frame.x-diffX
-      firstLayerPosY = firstObject.frame.y+firstObject.frame.height/2-diffY
+      firstLayerPosX = firstObjectAbsPos.x-diffX
+      firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
       // Second Layer Position End Point Position
-      secondLayerPosX = secondObject.frame.x+secondObject.frame.width-diffX
-      secondLayerPosY = secondObject.frame.y+secondObject.frame.height/2-diffY
+      secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
+      secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
 
       // Middle Points
       middlePosX = (firstLayerPosX + secondLayerPosX)/2
@@ -891,6 +892,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     // Providing Settings for the arrow
     line.setName("Arrows")
   }
+
 
   // Style Start
 
