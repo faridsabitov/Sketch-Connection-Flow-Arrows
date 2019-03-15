@@ -436,8 +436,10 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   } else {
     localType = type
   }
-
+  
+  // log(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
   localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
+  
   if(style != null){
     // if we updating connection with previously created objects
     if(getLayerStyles(style) != null){
@@ -445,6 +447,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
     } else {
       localStyle = "Default Style"
     }
+  } else {
+    // We don't have any data from the plugin data
+    localStyle = "Default Style"
   }
   
   updateSpacing(firstObjectID, secondObjectID, localDirection)
@@ -453,9 +458,10 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   let line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentGroup)
   addToArrowsGroup(line, currentGroup)
 
-  if(localStyle != "Default Style"){
-    localStyle = localStyle[0].name()
-  }
+
+  // if(localStyle != "Default Style"){
+  //   localStyle = localStyle[0].name()
+  // }
 
   // Storage for current connection
   let connection = {
@@ -1430,6 +1436,5 @@ function getLayerStyles(name) {
 //   },
 //   "identifier" : "onLayersMoved"
 // }
-
 
 
