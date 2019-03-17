@@ -514,8 +514,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
 
   if (style != null) {
-    log(style); // if we updating connection with previously created objects
-
+    // if we updating connection with previously created objects
     if (getLayerStyles(style) != null && style != "Default Style") {
       localStyle = style;
     } else {
@@ -523,7 +522,11 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
     }
   } else {
     // We don't have any data from the plugin data
-    localStyle = "Default Style";
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
+      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
+    } else {
+      localStyle = "Default Style";
+    }
   }
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
@@ -1027,37 +1030,59 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   } // Style Start
 
 
-  if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
-    // if we have specified options
-    // TODO: Need to refactor here. Local Style is not used at all
-    var _style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+  if (style == null) {
+    // that means we are creating new arrow
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
+      // if we have specified options
+      // TODO: Need to refactor here. Local Style is not used at all
+      var _style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
 
-    if (_style[0] == null) {
+      if (_style[0] == null) {
+        // Default Arrow Style
+        var border = line.style().addStylePartOfType(1);
+        border.color = MSColor.colorWithRGBADictionary({
+          r: 0.89,
+          g: 0.89,
+          b: 0.89,
+          a: 1
+        });
+        border.thickness = 2;
+        line.style().endMarkerType = 2;
+      } else {
+        line.sharedStyle = _style[0];
+      }
+    } else {
       // Default Arrow Style
-      var border = line.style().addStylePartOfType(1);
-      border.color = MSColor.colorWithRGBADictionary({
+      var _border = line.style().addStylePartOfType(1);
+
+      _border.color = MSColor.colorWithRGBADictionary({
         r: 0.89,
         g: 0.89,
         b: 0.89,
         a: 1
       });
-      border.thickness = 2;
+      _border.thickness = 2;
       line.style().endMarkerType = 2;
-    } else {
-      line.sharedStyle = _style[0];
     }
   } else {
-    // Default Arrow Style
-    var _border = line.style().addStylePartOfType(1);
+    // arrow style already provided
+    if (style == "Default Style") {
+      // Default Arrow Style
+      var _border2 = line.style().addStylePartOfType(1);
 
-    _border.color = MSColor.colorWithRGBADictionary({
-      r: 0.89,
-      g: 0.89,
-      b: 0.89,
-      a: 1
-    });
-    _border.thickness = 2;
-    line.style().endMarkerType = 2;
+      _border2.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      _border2.thickness = 2;
+      line.style().endMarkerType = 2;
+    } else {
+      // User provided own style
+      var ownStyle = getLayerStyles(style);
+      line.sharedStyle = ownStyle[0];
+    }
   } // Style End
 
 

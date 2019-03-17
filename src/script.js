@@ -422,7 +422,6 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
   
   if(style != null){
-    log(style)
     // if we updating connection with previously created objects
     if(getLayerStyles(style) != null && style != "Default Style"){
       localStyle = style
@@ -431,7 +430,12 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
     }
   } else {
     // We don't have any data from the plugin data
-    localStyle = "Default Style"
+    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
+      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
+    } else {
+      localStyle = "Default Style"
+    }
+    
   }
   
   
@@ -888,29 +892,43 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
 
   // Style Start
+  if(style == null){
+    // that means we are creating new arrow
+    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
 
-  if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
-    
-    // if we have specified options
-    // TODO: Need to refactor here. Local Style is not used at all
-    let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
-    if(style[0] == null){ 
+      // if we have specified options
+      // TODO: Need to refactor here. Local Style is not used at all
+      let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
+      if(style[0] == null){ 
+        // Default Arrow Style
+        let border = line.style().addStylePartOfType(1)
+        border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+        border.thickness = 2
+        line.style().endMarkerType = 2
+      } else {
+        line.sharedStyle = style[0]
+      }
+    } else {
+      // Default Arrow Style
+      let border = line.style().addStylePartOfType(1)
+      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+      border.thickness = 2
+      line.style().endMarkerType = 2
+    }
+  } else {
+    // arrow style already provided
+    if(style == "Default Style"){
       // Default Arrow Style
       let border = line.style().addStylePartOfType(1)
       border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
       border.thickness = 2
       line.style().endMarkerType = 2
     } else {
-      line.sharedStyle = style[0]
+      // User provided own style
+      let ownStyle = getLayerStyles(style)
+      line.sharedStyle = ownStyle[0]
     }
-  } else {
-    // Default Arrow Style
-    let border = line.style().addStylePartOfType(1)
-    border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
-    border.thickness = 2
-    line.style().endMarkerType = 2
   }
-
   // Style End
 
   return line
