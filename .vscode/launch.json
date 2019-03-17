@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Sketch Plugin",
             "program": "${workspaceFolder}/--run"
         }
     ]

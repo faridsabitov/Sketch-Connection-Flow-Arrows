@@ -13,17 +13,55 @@
   "homepage": "https://spectrum.chat/sketch-arrows",
   "commands": [
     {
-      "name": "Create arrow between selected",
+      "name": "Create Auto Direction arrow",
       "description": "Select more than one layer, to create a link between first object and others",
-      "identifier": "definelink",
+      "identifier": "createAutoArrow",
       "icon": "icon.png",
-      "shortcut": "command shift u",
-      "script": "./script.js"
+      "shortcut": "command control c",
+      "script": "./script.js",
+      "handler": "createAutoArrow"
+    },
+    {
+      "name": "Create arrow to the right",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createRightArrow",
+      "icon": "icon.png",
+      "shortcut": "command control →",
+      "script": "./script.js",
+      "handler": "createRightArrow"
+    },
+    {
+      "name": "Create arrow to the bottom",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createDownArrow",
+      "icon": "icon.png",
+      "shortcut": "command control ↓",
+      "script": "./script.js",
+      "handler": "createDownArrow"
+    },
+    {
+      "name": "Create arrow to the left",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createLeftArrow",
+      "icon": "icon.png",
+      "shortcut": "command control ←",
+      "script": "./script.js",
+      "handler": "createLeftArrow"
+    },
+    {
+      "name": "Create arrow to the top",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createUpArrow",
+      "icon": "icon.png",
+      "shortcut": "command control ↑",
+      "script": "./script.js",
+      "handler": "createUpArrow"
     },
     {
       "name": "Update arrows between selected",
       "description": "Update connection between selected layers",
       "identifier": "updateSelectedArrows",
+      "shortcut": "command control u",
       "script": "./script.js",
       "icon": "icon.png",
       "handler": "updateSelectedArrows"
@@ -32,6 +70,7 @@
       "name": "Update arrows from the selected artboard",
       "description": "Update all the arrows from selected artboard",
       "identifier": "updateArtboardArrows",
+      "shortcut": "command control a",
       "script": "./script.js",
       "icon": "icon.png",
       "handler": "updateArtboardArrows"
@@ -40,6 +79,7 @@
       "name": "Update all arrows",
       "description": "Update all the arrows",
       "identifier": "updateAllArrows",
+      "shortcut": "command control p",
       "script": "./script.js",
       "icon": "icon.png",
       "handler": "updateAllArrows"
@@ -105,13 +145,17 @@
     "title": "👉 Connection Arrows",
     "items": [
       {
-        "title": "Create Connection",
+        "title": "Create or Recreate Connection",
         "items": [
-          "definelink"
+          "createAutoArrow",
+          "createRightArrow",
+          "createDownArrow",
+          "createLeftArrow",
+          "createUpArrow"
         ]
       },
       {
-        "title": "Update Connection",
+        "title": "Update Connection Positions",
         "items": [
           "updateSelectedArrows",
           "updateArtboardArrows",

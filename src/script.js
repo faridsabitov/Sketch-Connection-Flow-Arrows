@@ -26,43 +26,23 @@ if(Settings.settingForKey("arrowDirection")) {
 }
   
 //
-//  Default Function
+//  Create Connection Function
 //
 
-export default function(context) {
+export default function(context) {}
+export function createDefaultArrow(context){start(context, null)}
+export function createAutoArrow(context){start(context, "Auto")}
+export function createRightArrow(context){start(context, "Right")}
+export function createDownArrow(context){start(context, "Down")}
+export function createLeftArrow(context){start(context, "Left")}
+export function createUpArrow(context){start(context, "Up")}
 
-  let selection = context.selection
-
-  if(selection.count() > 1){
-    // Need to find source object by ID first
-    let sourceObjectID = getSourceObjectFromSelection(selection)
-    let currentConnectionsData = newConnectionsData
-
-    for(let g = 0; g < selection.count(); g++) {
-      if(selection[g].objectID() != sourceObjectID){
-        // Then need to create or update connection arrow with each selection
-        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
-        if(connectionIndex != null){
-          // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, null, null, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
-          sketch.UI.message("Current connection is updated 🚀")
-        } else {
-          // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, arrowDirectionSetting)
-          sketch.UI.message("New connection is created 🚀")
-        }
-      }
-    }
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
-  } else {
-    // When user didn't select anything
-    sketch.UI.message("Please select more than two layers")
-  }
-}
 
 //
 // Plugin Commands
 //
+
+
 
 export function updateSelectedArrows(context) {
 
@@ -70,18 +50,20 @@ export function updateSelectedArrows(context) {
 
   if(selection.count() > 1){
     // Need to find source object by ID first
-    let sourceObjectID = getSourceObjectFromSelection(selection)
+    // let sourceObjectID = getSourceObjectFromSelection(selection)
     let currentConnectionsData = newConnectionsData
 
     for(let g = 0; g < selection.count(); g++) {
-      if(selection[g].objectID() != sourceObjectID){
+      if(selection[g].objectID() != selection[0].objectID()){
         // Then need to create or update connection arrow with each selection
-        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
+        let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, connectionIndex)
           sketch.UI.message("Current connection is updated 🚀")
-        } 
+        } else {
+          sketch.UI.message("There is no connection between selected layers on the plugin data")
+        }
       }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
@@ -406,7 +388,6 @@ export function panel(context) {
 
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, connectionIndex) {
   // There might be a situation, when user deleted current group or current group stays on another artboard => In that case need to create another group
-
   // Need to check if we have the layers with such IDs
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
@@ -441,8 +422,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
   
   if(style != null){
+    log(style)
     // if we updating connection with previously created objects
-    if(getLayerStyles(style) != null){
+    if(getLayerStyles(style) != null && style != "Default Style"){
       localStyle = style
     } else {
       localStyle = "Default Style"
@@ -451,6 +433,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
     // We don't have any data from the plugin data
     localStyle = "Default Style"
   }
+  
   
   updateSpacing(firstObjectID, secondObjectID, localDirection)
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
@@ -909,6 +892,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
     
     // if we have specified options
+    // TODO: Need to refactor here. Local Style is not used at all
     let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
     if(style[0] == null){ 
       // Default Arrow Style
@@ -1321,15 +1305,15 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){
   return sourceObjectID
 }
 
-function getSourceObjectFromSelection(selection){
+function getSourceObjectFromSelection(selection, direction){
   let sourceObjectID = selection.firstObject().objectID()
   
-  if(arrowDirectionSetting != "Auto"){
+  if(direction != "Auto"){
     for(let g = 0; g < selection.count(); g++) {
-      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting)
+      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), direction)
     }
   } else {
-    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting)
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), direction)
   }
  
   return sourceObjectID
@@ -1426,6 +1410,38 @@ function getLayerStyles(name) {
 	return styles
 }
 
+function start(context, direction){
+  let selection = context.selection
+  let localDirection
+  if(direction == null){localDirection = arrowDirectionSetting} else {localDirection = direction}
+
+  if(selection.count() > 1){
+    // Need to find source object by ID first
+    let sourceObjectID = getSourceObjectFromSelection(selection, direction)
+    let currentConnectionsData = newConnectionsData
+
+    for(let g = 0; g < selection.count(); g++) {
+      if(selection[g].objectID() != sourceObjectID){
+        // Then need to create or update connection arrow with each selection
+        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
+        if(connectionIndex != null){
+          // Because this is creating flow, we need to take the direction from user settings
+          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, connectionIndex)
+          sketch.UI.message("Current connection is updated 🚀")
+        } else {
+          // There is no connection with this two objects in our database
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection)
+          sketch.UI.message("New connection is created 🚀")
+        }
+      }
+    }
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+  } else {
+    // When user didn't select anything
+    sketch.UI.message("Please select more than two layers")
+  }
+}
+
 // {
 //   "script": "./script.js",
 //   "name" : "onLayersMoved",
@@ -1436,5 +1452,3 @@ function getLayerStyles(name) {
 //   },
 //   "identifier" : "onLayersMoved"
 // }
-
-
