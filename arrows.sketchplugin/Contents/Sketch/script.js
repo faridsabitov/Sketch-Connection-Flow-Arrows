@@ -241,19 +241,16 @@ function updateArtboardArrows(context) {
 function updateAllArrows(context) {
   // TODO
   // TODO: Need to show amount of updated arrows and deleted ones
-  var selection = context.selection;
-  var connections = getConnectionsData();
-  var firstObjectArtboard;
-  var secondObjectArtboard;
+  var currentConnectionsData = newConnectionsData;
 
-  if (connections.length > 0) {
+  if (currentConnectionsData.length > 0) {
     // We have connections in database
-    var updateArrowsCounter = connections.length;
+    var updateArrowsCounter = currentConnectionsData.length;
 
     for (var i = 0; i < updateArrowsCounter; i++) {
       // Need to go through each connection and update arrow position without artboards
       // Need to check if current object don't have the parrent
-      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, i);
+      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, i);
     }
 
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);

@@ -114,18 +114,14 @@ export function updateArtboardArrows(context) {
 
 export function updateAllArrows(context) { // TODO
   // TODO: Need to show amount of updated arrows and deleted ones
-  let selection = context.selection
-  let connections = getConnectionsData()
-  let firstObjectArtboard
-  let secondObjectArtboard
-  
-  if(connections.length > 0){
+  let currentConnectionsData = newConnectionsData
+  if(currentConnectionsData.length > 0){
     // We have connections in database
-    const updateArrowsCounter = connections.length
+    const updateArrowsCounter = currentConnectionsData.length
     for (let i = 0; i < updateArrowsCounter; i ++) {
       // Need to go through each connection and update arrow position without artboards
       // Need to check if current object don't have the parrent
-      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, i)
+      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, i)
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
     sketch.UI.message("All arrows are updated 🚀")
@@ -1214,7 +1210,6 @@ function refactorLines(group){ // Need to finish
 function deleteLine(lineID){
   const lineObject = document.getLayerWithID(lineID)
   let selectedGroup
-
   if(lineObject){
     selectedGroup = lineObject.parent
     lineObject.remove()
