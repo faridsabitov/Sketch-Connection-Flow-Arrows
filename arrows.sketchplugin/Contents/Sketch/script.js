@@ -95,11 +95,17 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
+/*! exports provided: default, createDefaultArrow, createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDefaultArrow", function() { return createDefaultArrow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createAutoArrow", function() { return createAutoArrow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createRightArrow", function() { return createRightArrow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDownArrow", function() { return createDownArrow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLeftArrow", function() { return createLeftArrow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createUpArrow", function() { return createUpArrow; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateSelectedArrows", function() { return updateSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArtboardArrows", function() { return updateArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAllArrows", function() { return updateAllArrows; });
@@ -138,41 +144,29 @@ if (Settings.settingForKey("arrowDirection")) {
 } else {
   arrowDirectionSetting = "Auto";
 } //
-//  Default Function
+//  Create Connection Function
 //
 
 
-/* harmony default export */ __webpack_exports__["default"] = (function (context) {
-  var selection = context.selection;
-
-  if (selection.count() > 1) {
-    // Need to find source object by ID first
-    var sourceObjectID = getSourceObjectFromSelection(selection);
-    var currentConnectionsData = newConnectionsData;
-
-    for (var g = 0; g < selection.count(); g++) {
-      if (selection[g].objectID() != sourceObjectID) {
-        // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
-
-        if (connectionIndex != null) {
-          // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, null, null, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
-        } else {
-          // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, arrowDirectionSetting);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
-        }
-      }
-    }
-
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-  } else {
-    // When user didn't select anything
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
-  }
-}); //
+/* harmony default export */ __webpack_exports__["default"] = (function (context) {});
+function createDefaultArrow(context) {
+  start(context, null);
+}
+function createAutoArrow(context) {
+  start(context, "Auto");
+}
+function createRightArrow(context) {
+  start(context, "Right");
+}
+function createDownArrow(context) {
+  start(context, "Down");
+}
+function createLeftArrow(context) {
+  start(context, "Left");
+}
+function createUpArrow(context) {
+  start(context, "Up");
+} //
 // Plugin Commands
 //
 
@@ -181,17 +175,19 @@ function updateSelectedArrows(context) {
 
   if (selection.count() > 1) {
     // Need to find source object by ID first
-    var sourceObjectID = getSourceObjectFromSelection(selection);
+    // let sourceObjectID = getSourceObjectFromSelection(selection)
     var currentConnectionsData = newConnectionsData;
 
     for (var g = 0; g < selection.count(); g++) {
-      if (selection[g].objectID() != sourceObjectID) {
+      if (selection[g].objectID() != selection[0].objectID()) {
         // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
+        var connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData);
 
         if (connectionIndex != null) {
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex);
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, connectionIndex);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
+        } else {
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no connection between selected layers on the plugin data");
         }
       }
     }
@@ -245,19 +241,16 @@ function updateArtboardArrows(context) {
 function updateAllArrows(context) {
   // TODO
   // TODO: Need to show amount of updated arrows and deleted ones
-  var selection = context.selection;
-  var connections = getConnectionsData();
-  var firstObjectArtboard;
-  var secondObjectArtboard;
+  var currentConnectionsData = newConnectionsData;
 
-  if (connections.length > 0) {
+  if (currentConnectionsData.length > 0) {
     // We have connections in database
-    var updateArrowsCounter = connections.length;
+    var updateArrowsCounter = currentConnectionsData.length;
 
     for (var i = 0; i < updateArrowsCounter; i++) {
       // Need to go through each connection and update arrow position without artboards
       // Need to check if current object don't have the parrent
-      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, i);
+      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, i);
     }
 
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
@@ -358,62 +351,69 @@ function deleteSelectedArrows(context) {
 function settings(context) {
   var alert = COSAlertWindow.new();
   var viewWidth = 300;
-  var viewHeight = 500; // Alert window settingsnp
+  var viewHeight = 450; // Alert window settings
 
   alert = alertSetup(alert, viewWidth, viewHeight);
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
-  alert.addAccessoryView(view); // Label: Arrow Direction
+  alert.addAccessoryView(view); // Label: Arrow Style
 
-  var arrowDirectionLabel = alertLabel("Arrow Direction", true, -1, viewHeight - 17, 330, 20);
-  view.addSubview(arrowDirectionLabel); // Select: Arrow Direction
-
-  var arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
-  setActiveDirectionSetting(arrowDirectionField);
-  view.addSubview(arrowDirectionField); // Label: Auto Direction Info
-
-  var arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight - 84, 300, 40);
-  view.addSubview(arrowDirectionInfoLabel); // Label: Arrow Spacing
-
-  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 110, 330, 20);
-  view.addSubview(arrowSpacingLabel); // Select: Arrow Spacing
-
-  var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
-  setActiveSpacingSetting(arrowSpacingField);
-  view.addSubview(arrowSpacingField); // Label: Auto Spacing Info
-
-  var arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight - 177, 300, 40);
-  view.addSubview(arrowSpacingInfoLabel); // Label: Arrow Style
-
-  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 225, 280, 40);
+  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 40, 280, 40);
   view.addSubview(arrowStyleLabel); // Select: Arrow Style
 
-  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
+  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
   setActiveStyleSetting(arrowStylingField);
   view.addSubview(arrowStylingField); // Label: Arrow Style Info
 
-  var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 265, 300, 40);
+  var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 80, 300, 40);
   view.addSubview(arrowStyleInfoLabel); // Label: Arrow Type
 
-  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 310, 280, 40);
+  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 130, 280, 40);
   view.addSubview(arrowTypeLabel); // Select: Arrow Type
 
-  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 310, 300, 20));
+  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 130, 300, 20));
   setActiveTypeSetting(arrowTypeField);
   view.addSubview(arrowTypeField); // Label: Arrow Type Info
 
-  var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 350, 300, 40);
-  view.addSubview(arrowTypeInfoLabel); // Label: Other Settings
+  var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 170, 300, 40);
+  view.addSubview(arrowTypeInfoLabel); // Label: Arrow Spacing
 
-  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 400, 280, 40);
+  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 200, 330, 20);
+  view.addSubview(arrowSpacingLabel); // Label: Arrow Spacing PX
+
+  var arrowSpacingPxLabel = alertLabel("px", true, 90, viewHeight - 220, 330, 20);
+  view.addSubview(arrowSpacingPxLabel); // Input: Arrow Spacing
+
+  var arrowSpacingField = NSTextField.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 220, 80, 20));
+  var formatter = NSNumberFormatter.alloc().init().autorelease();
+  arrowSpacingField.setStringValue(String(0));
+  arrowSpacingField.setFormatter(formatter);
+  view.addSubview(arrowSpacingField); // Stepper: Arrow Spacing
+
+  var arrowSpacingStepper = NSStepper.alloc().initWithFrame(NSMakeRect(70, viewHeight - 220, 20, 20));
+  arrowSpacingStepper.setMaxValue(1000);
+  arrowSpacingStepper.setMinValue(0);
+  arrowSpacingStepper.setValueWraps(false);
+  arrowSpacingStepper.setAutorepeat(true);
+  arrowSpacingStepper.setCOSJSTargetFunction(function (sender) {
+    var value = 0 + sender.integerValue();
+    arrowSpacingField.setStringValue(String(value));
+  });
+  view.addSubview(arrowSpacingStepper); // view.addSubview(formatter)
+  // Label: Auto Spacing Info
+
+  var arrowSpacingInfoLabel = alertLabel("The second layer will be moved closer based on the value provided here. Keep it 0 if you don't want to have auto spacing feature ", false, -1, viewHeight - 285, 300, 60);
+  view.addSubview(arrowSpacingInfoLabel); // Label: Other Settings
+
+  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 330, 280, 40);
   view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
 
-  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 410, 260, 40);
+  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 340, 260, 40);
   view.addSubview(checkbox); // Label: Auto-Align Info
 
-  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 440, 280, 40);
+  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 370, 280, 40);
   view.addSubview(autoAlignInfoLabel); // Label: Plugin Info
 
-  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 490, 280, 40);
+  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 420, 280, 40);
   view.addSubview(pluginInfoLabel); // Need to check if style is still available
   // Show modal and get the results
 
@@ -519,14 +519,18 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
 
   if (style != null) {
     // if we updating connection with previously created objects
-    if (getLayerStyles(style) != null) {
+    if (getLayerStyles(style) != null && style != "Default Style") {
       localStyle = style;
     } else {
       localStyle = "Default Style";
     }
   } else {
     // We don't have any data from the plugin data
-    localStyle = "Default Style";
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
+      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
+    } else {
+      localStyle = "Default Style";
+    }
   }
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
@@ -1030,36 +1034,59 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   } // Style Start
 
 
-  if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
-    // if we have specified options
-    var _style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+  if (style == null) {
+    // that means we are creating new arrow
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
+      // if we have specified options
+      // TODO: Need to refactor here. Local Style is not used at all
+      var _style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
 
-    if (_style[0] == null) {
+      if (_style[0] == null) {
+        // Default Arrow Style
+        var border = line.style().addStylePartOfType(1);
+        border.color = MSColor.colorWithRGBADictionary({
+          r: 0.89,
+          g: 0.89,
+          b: 0.89,
+          a: 1
+        });
+        border.thickness = 2;
+        line.style().endMarkerType = 2;
+      } else {
+        line.sharedStyle = _style[0];
+      }
+    } else {
       // Default Arrow Style
-      var border = line.style().addStylePartOfType(1);
-      border.color = MSColor.colorWithRGBADictionary({
+      var _border = line.style().addStylePartOfType(1);
+
+      _border.color = MSColor.colorWithRGBADictionary({
         r: 0.89,
         g: 0.89,
         b: 0.89,
         a: 1
       });
-      border.thickness = 2;
+      _border.thickness = 2;
       line.style().endMarkerType = 2;
-    } else {
-      line.sharedStyle = _style[0];
     }
   } else {
-    // Default Arrow Style
-    var _border = line.style().addStylePartOfType(1);
+    // arrow style already provided
+    if (style == "Default Style") {
+      // Default Arrow Style
+      var _border2 = line.style().addStylePartOfType(1);
 
-    _border.color = MSColor.colorWithRGBADictionary({
-      r: 0.89,
-      g: 0.89,
-      b: 0.89,
-      a: 1
-    });
-    _border.thickness = 2;
-    line.style().endMarkerType = 2;
+      _border2.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      _border2.thickness = 2;
+      line.style().endMarkerType = 2;
+    } else {
+      // User provided own style
+      var ownStyle = getLayerStyles(style);
+      line.sharedStyle = ownStyle[0];
+    }
   } // Style End
 
 
@@ -1202,48 +1229,43 @@ function setActiveDirectionSetting(arrowDirectionField) {
     arrowDirectionField.addItemWithTitle("Left");
     arrowDirectionField.addItemWithTitle("Up");
   }
-}
+} // function setActiveSpacingSetting(arrowSpacingField){
+//   let currentSpacing = "Not selected"
+//   if(Settings.settingForKey("arrowSpacing")){
+//     // if there is data in settings
+//     currentSpacing = Settings.settingForKey("arrowSpacing")  
+//     if(currentSpacing == "Not selected"){
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//     if(currentSpacing == "30px"){
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//     if(currentSpacing == "70px"){
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//   } else {
+//     // Show default
+//     arrowSpacingField.addItemWithTitle("Not Selected")
+//     arrowSpacingField.addItemWithTitle("30px")
+//     arrowSpacingField.addItemWithTitle("70px")
+//   }
+// }
 
-function setActiveSpacingSetting(arrowSpacingField) {
-  var currentSpacing = "Not selected";
-
-  if (Settings.settingForKey("arrowSpacing")) {
-    // if there is data in settings
-    currentSpacing = Settings.settingForKey("arrowSpacing");
-
-    if (currentSpacing == "Not selected") {
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(0);
-    }
-
-    if (currentSpacing == "30px") {
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(0);
-    }
-
-    if (currentSpacing == "70px") {
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(0);
-    }
-  } else {
-    // Show default
-    arrowSpacingField.addItemWithTitle("Not Selected");
-    arrowSpacingField.addItemWithTitle("30px");
-    arrowSpacingField.addItemWithTitle("70px");
-  }
-}
 
 function setActiveStyleSetting(arrowStylingField) {
   var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
@@ -1479,15 +1501,15 @@ function defineSourceObject(firstObjectID, secondObjectID, direction) {
   return sourceObjectID;
 }
 
-function getSourceObjectFromSelection(selection) {
+function getSourceObjectFromSelection(selection, direction) {
   var sourceObjectID = selection.firstObject().objectID();
 
-  if (arrowDirectionSetting != "Auto") {
+  if (direction != "Auto") {
     for (var g = 0; g < selection.count(); g++) {
-      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting);
+      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), direction);
     }
   } else {
-    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting);
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), direction);
   }
 
   return sourceObjectID;
@@ -1574,6 +1596,45 @@ function getLayerStyles(name) {
   }
 
   return styles;
+}
+
+function start(context, direction) {
+  var selection = context.selection;
+  var localDirection;
+
+  if (direction == null) {
+    localDirection = arrowDirectionSetting;
+  } else {
+    localDirection = direction;
+  }
+
+  if (selection.count() > 1) {
+    // Need to find source object by ID first
+    var sourceObjectID = getSourceObjectFromSelection(selection, direction);
+    var currentConnectionsData = newConnectionsData;
+
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != sourceObjectID) {
+        // Then need to create or update connection arrow with each selection
+        var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
+
+        if (connectionIndex != null) {
+          // Because this is creating flow, we need to take the direction from user settings
+          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, connectionIndex);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
+        } else {
+          // There is no connection with this two objects in our database
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
+        }
+      }
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+  } else {
+    // When user didn't select anything
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
+  }
 } // {
 //   "script": "./script.js",
 //   "name" : "onLayersMoved",
@@ -1638,7 +1699,12 @@ module.exports = require("sketch/ui");
     exports[key](context);
   }
 }
+that['createAutoArrow'] = __skpm_run.bind(this, 'createAutoArrow');
 that['onRun'] = __skpm_run.bind(this, 'default');
+that['createRightArrow'] = __skpm_run.bind(this, 'createRightArrow');
+that['createDownArrow'] = __skpm_run.bind(this, 'createDownArrow');
+that['createLeftArrow'] = __skpm_run.bind(this, 'createLeftArrow');
+that['createUpArrow'] = __skpm_run.bind(this, 'createUpArrow');
 that['updateSelectedArrows'] = __skpm_run.bind(this, 'updateSelectedArrows');
 that['updateArtboardArrows'] = __skpm_run.bind(this, 'updateArtboardArrows');
 that['updateAllArrows'] = __skpm_run.bind(this, 'updateAllArrows');

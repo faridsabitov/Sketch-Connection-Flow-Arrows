@@ -26,39 +26,16 @@ if(Settings.settingForKey("arrowDirection")) {
 }
   
 //
-//  Default Function
+//  Create Connection Function
 //
 
-export default function(context) {
-
-  let selection = context.selection
-
-  if(selection.count() > 1){
-    // Need to find source object by ID first
-    let sourceObjectID = getSourceObjectFromSelection(selection)
-    let currentConnectionsData = newConnectionsData
-
-    for(let g = 0; g < selection.count(); g++) {
-      if(selection[g].objectID() != sourceObjectID){
-        // Then need to create or update connection arrow with each selection
-        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
-        if(connectionIndex != null){
-          // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, null, null, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
-          sketch.UI.message("Current connection is updated 🚀")
-        } else {
-          // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, arrowDirectionSetting)
-          sketch.UI.message("New connection is created 🚀")
-        }
-      }
-    }
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
-  } else {
-    // When user didn't select anything
-    sketch.UI.message("Please select more than two layers")
-  }
-}
+export default function(context) {}
+export function createDefaultArrow(context){start(context, null)}
+export function createAutoArrow(context){start(context, "Auto")}
+export function createRightArrow(context){start(context, "Right")}
+export function createDownArrow(context){start(context, "Down")}
+export function createLeftArrow(context){start(context, "Left")}
+export function createUpArrow(context){start(context, "Up")}
 
 //
 // Plugin Commands
@@ -70,18 +47,20 @@ export function updateSelectedArrows(context) {
 
   if(selection.count() > 1){
     // Need to find source object by ID first
-    let sourceObjectID = getSourceObjectFromSelection(selection)
+    // let sourceObjectID = getSourceObjectFromSelection(selection)
     let currentConnectionsData = newConnectionsData
 
     for(let g = 0; g < selection.count(); g++) {
-      if(selection[g].objectID() != sourceObjectID){
+      if(selection[g].objectID() != selection[0].objectID()){
         // Then need to create or update connection arrow with each selection
-        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
+        let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, arrowDirectionSetting, currentConnectionsData[connectionIndex].line, connectionIndex)
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, connectionIndex)
           sketch.UI.message("Current connection is updated 🚀")
-        } 
+        } else {
+          sketch.UI.message("There is no connection between selected layers on the plugin data")
+        }
       }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
@@ -132,18 +111,14 @@ export function updateArtboardArrows(context) {
 
 export function updateAllArrows(context) { // TODO
   // TODO: Need to show amount of updated arrows and deleted ones
-  let selection = context.selection
-  let connections = getConnectionsData()
-  let firstObjectArtboard
-  let secondObjectArtboard
-  
-  if(connections.length > 0){
+  let currentConnectionsData = newConnectionsData
+  if(currentConnectionsData.length > 0){
     // We have connections in database
-    const updateArrowsCounter = connections.length
+    const updateArrowsCounter = currentConnectionsData.length
     for (let i = 0; i < updateArrowsCounter; i ++) {
       // Need to go through each connection and update arrow position without artboards
       // Need to check if current object don't have the parrent
-      updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, i)
+      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, i)
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
     sketch.UI.message("All arrows are updated 🚀")
@@ -245,82 +220,88 @@ export function deleteSelectedArrows(context) {
 export function settings(context) {
   let alert = COSAlertWindow.new()
   const viewWidth = 300
-  const viewHeight = 500
+  const viewHeight = 450
   
-  // Alert window settingsnp
+  // Alert window settings
   alert = alertSetup(alert, viewWidth, viewHeight)
   let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight))
   alert.addAccessoryView(view)
 
-  // Label: Arrow Direction
-  let arrowDirectionLabel = alertLabel("Arrow Direction", true, -1, viewHeight - 17, 330, 20)
-  view.addSubview(arrowDirectionLabel)
-    
-  // Select: Arrow Direction
-  let arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20))
-  setActiveDirectionSetting(arrowDirectionField)
-  view.addSubview(arrowDirectionField)
-
-  // Label: Auto Direction Info
-  let arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight-84, 300, 40)
-  view.addSubview(arrowDirectionInfoLabel)
-
-  // Label: Arrow Spacing
-  let arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 110, 330, 20)
-  view.addSubview(arrowSpacingLabel)
-
-  // Select: Arrow Spacing
-  let arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
-  setActiveSpacingSetting(arrowSpacingField)
-  view.addSubview(arrowSpacingField)
-  
-  // Label: Auto Spacing Info
-  let arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight-177, 300, 40)
-  view.addSubview(arrowSpacingInfoLabel)
-
-
   // Label: Arrow Style
-  let arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight-225, 280, 40)
+  let arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight-40, 280, 40)
   view.addSubview(arrowStyleLabel)
 
   // Select: Arrow Style
-  let arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
+  let arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
   setActiveStyleSetting(arrowStylingField)
   view.addSubview(arrowStylingField)
 
   // Label: Arrow Style Info
-  let arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight-265, 300, 40)
+  let arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight-80, 300, 40)
   view.addSubview(arrowStyleInfoLabel)
 
 
   // Label: Arrow Type
-  let arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight-310, 280, 40)
+  let arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight-130, 280, 40)
   view.addSubview(arrowTypeLabel)
 
   // Select: Arrow Type
-  let arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 310, 300, 20));
+  let arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 130, 300, 20));
   setActiveTypeSetting(arrowTypeField)
   view.addSubview(arrowTypeField)
 
   // Label: Arrow Type Info
-  let arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight-350, 300, 40)
+  let arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight-170, 300, 40)
   view.addSubview(arrowTypeInfoLabel)
 
 
+  // Label: Arrow Spacing
+  let arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 200, 330, 20)
+  view.addSubview(arrowSpacingLabel)
+
+  // Label: Arrow Spacing PX
+  let arrowSpacingPxLabel = alertLabel("px", true, 90, viewHeight - 220, 330, 20)
+  view.addSubview(arrowSpacingPxLabel)
+
+  // Input: Arrow Spacing
+  let arrowSpacingField = NSTextField.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 220, 80, 20))
+  var formatter = NSNumberFormatter.alloc().init().autorelease()
+  arrowSpacingField.setStringValue(String(0))
+  arrowSpacingField.setFormatter(formatter)
+  view.addSubview(arrowSpacingField)
+
+  // Stepper: Arrow Spacing
+  let arrowSpacingStepper = NSStepper.alloc().initWithFrame(NSMakeRect(70, viewHeight - 220, 20, 20));
+  arrowSpacingStepper.setMaxValue(1000);
+  arrowSpacingStepper.setMinValue(0);
+  arrowSpacingStepper.setValueWraps(false);
+  arrowSpacingStepper.setAutorepeat(true);
+  arrowSpacingStepper.setCOSJSTargetFunction(function(sender){
+    var value = 0 + sender.integerValue()
+    arrowSpacingField.setStringValue(String(value))
+  })
+  
+  view.addSubview(arrowSpacingStepper)
+  // view.addSubview(formatter)
+  
+  // Label: Auto Spacing Info
+  let arrowSpacingInfoLabel = alertLabel("The second layer will be moved closer based on the value provided here. Keep it 0 if you don't want to have auto spacing feature ", false, -1, viewHeight-285, 300, 60)
+  view.addSubview(arrowSpacingInfoLabel)
+
   // Label: Other Settings
-  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-400, 280, 40)
+  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-330, 280, 40)
   view.addSubview(otherSettingsLabel)
 
   // Checkbox: Auto-Align
-  let checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight-410, 260, 40)
+  let checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight-340, 260, 40)
   view.addSubview(checkbox)
 
   // Label: Auto-Align Info
-  let autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight-440, 280, 40)
+  let autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight-370, 280, 40)
   view.addSubview(autoAlignInfoLabel)
 
   // Label: Plugin Info
-  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-490, 280, 40)
+  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-420, 280, 40)
   view.addSubview(pluginInfoLabel)
 
 
@@ -406,7 +387,6 @@ export function panel(context) {
 
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, connectionIndex) {
   // There might be a situation, when user deleted current group or current group stays on another artboard => In that case need to create another group
-
   // Need to check if we have the layers with such IDs
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
@@ -442,15 +422,21 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
   
   if(style != null){
     // if we updating connection with previously created objects
-    if(getLayerStyles(style) != null){
+    if(getLayerStyles(style) != null && style != "Default Style"){
       localStyle = style
     } else {
       localStyle = "Default Style"
     }
   } else {
     // We don't have any data from the plugin data
-    localStyle = "Default Style"
+    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
+      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
+    } else {
+      localStyle = "Default Style"
+    }
+    
   }
+  
   
   updateSpacing(firstObjectID, secondObjectID, localDirection)
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
@@ -905,28 +891,43 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
 
   // Style Start
+  if(style == null){
+    // that means we are creating new arrow
+    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
 
-  if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
-    
-    // if we have specified options
-    let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
-    if(style[0] == null){ 
+      // if we have specified options
+      // TODO: Need to refactor here. Local Style is not used at all
+      let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
+      if(style[0] == null){ 
+        // Default Arrow Style
+        let border = line.style().addStylePartOfType(1)
+        border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+        border.thickness = 2
+        line.style().endMarkerType = 2
+      } else {
+        line.sharedStyle = style[0]
+      }
+    } else {
+      // Default Arrow Style
+      let border = line.style().addStylePartOfType(1)
+      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+      border.thickness = 2
+      line.style().endMarkerType = 2
+    }
+  } else {
+    // arrow style already provided
+    if(style == "Default Style"){
       // Default Arrow Style
       let border = line.style().addStylePartOfType(1)
       border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
       border.thickness = 2
       line.style().endMarkerType = 2
     } else {
-      line.sharedStyle = style[0]
+      // User provided own style
+      let ownStyle = getLayerStyles(style)
+      line.sharedStyle = ownStyle[0]
     }
-  } else {
-    // Default Arrow Style
-    let border = line.style().addStylePartOfType(1)
-    border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
-    border.thickness = 2
-    line.style().endMarkerType = 2
   }
-
   // Style End
 
   return line
@@ -1072,46 +1073,46 @@ function setActiveDirectionSetting(arrowDirectionField){
   }
 }
 
-function setActiveSpacingSetting(arrowSpacingField){
-  let currentSpacing = "Not selected"
+// function setActiveSpacingSetting(arrowSpacingField){
+//   let currentSpacing = "Not selected"
 
-  if(Settings.settingForKey("arrowSpacing")){
-    // if there is data in settings
-    currentSpacing = Settings.settingForKey("arrowSpacing")  
+//   if(Settings.settingForKey("arrowSpacing")){
+//     // if there is data in settings
+//     currentSpacing = Settings.settingForKey("arrowSpacing")  
     
-    if(currentSpacing == "Not selected"){
-      arrowSpacingField.addItemWithTitle("Not selected")
-      arrowSpacingField.lastItem().setState(1)
-      arrowSpacingField.addItemWithTitle("30px")
-      arrowSpacingField.lastItem().setState(0)
-      arrowSpacingField.addItemWithTitle("70px")
-      arrowSpacingField.lastItem().setState(0)
-    } 
+//     if(currentSpacing == "Not selected"){
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
     
-    if(currentSpacing == "30px"){
-      arrowSpacingField.addItemWithTitle("30px")
-      arrowSpacingField.lastItem().setState(1)
-      arrowSpacingField.addItemWithTitle("70px")
-      arrowSpacingField.lastItem().setState(0)
-      arrowSpacingField.addItemWithTitle("Not selected")
-      arrowSpacingField.lastItem().setState(0)
-    } 
+//     if(currentSpacing == "30px"){
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
 
-    if(currentSpacing == "70px"){
-      arrowSpacingField.addItemWithTitle("70px")
-      arrowSpacingField.lastItem().setState(1)
-      arrowSpacingField.addItemWithTitle("Not selected")
-      arrowSpacingField.lastItem().setState(0)
-      arrowSpacingField.addItemWithTitle("30px")
-      arrowSpacingField.lastItem().setState(0)
-    } 
-  } else {
-    // Show default
-    arrowSpacingField.addItemWithTitle("Not Selected")
-    arrowSpacingField.addItemWithTitle("30px")
-    arrowSpacingField.addItemWithTitle("70px")
-  }
-}
+//     if(currentSpacing == "70px"){
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//   } else {
+//     // Show default
+//     arrowSpacingField.addItemWithTitle("Not Selected")
+//     arrowSpacingField.addItemWithTitle("30px")
+//     arrowSpacingField.addItemWithTitle("70px")
+//   }
+// }
 
 function setActiveStyleSetting(arrowStylingField){
   let docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
@@ -1212,7 +1213,6 @@ function refactorLines(group){ // Need to finish
 function deleteLine(lineID){
   const lineObject = document.getLayerWithID(lineID)
   let selectedGroup
-
   if(lineObject){
     selectedGroup = lineObject.parent
     lineObject.remove()
@@ -1321,15 +1321,15 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){
   return sourceObjectID
 }
 
-function getSourceObjectFromSelection(selection){
+function getSourceObjectFromSelection(selection, direction){
   let sourceObjectID = selection.firstObject().objectID()
   
-  if(arrowDirectionSetting != "Auto"){
+  if(direction != "Auto"){
     for(let g = 0; g < selection.count(); g++) {
-      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), arrowDirectionSetting)
+      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), direction)
     }
   } else {
-    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), arrowDirectionSetting)
+    sourceObjectID = defineSourceObject(sourceObjectID, selection[0].objectID(), direction)
   }
  
   return sourceObjectID
@@ -1426,6 +1426,38 @@ function getLayerStyles(name) {
 	return styles
 }
 
+function start(context, direction){
+  let selection = context.selection
+  let localDirection
+  if(direction == null){localDirection = arrowDirectionSetting} else {localDirection = direction}
+
+  if(selection.count() > 1){
+    // Need to find source object by ID first
+    let sourceObjectID = getSourceObjectFromSelection(selection, direction)
+    let currentConnectionsData = newConnectionsData
+
+    for(let g = 0; g < selection.count(); g++) {
+      if(selection[g].objectID() != sourceObjectID){
+        // Then need to create or update connection arrow with each selection
+        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
+        if(connectionIndex != null){
+          // Because this is creating flow, we need to take the direction from user settings
+          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, connectionIndex)
+          sketch.UI.message("Current connection is updated 🚀")
+        } else {
+          // There is no connection with this two objects in our database
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection)
+          sketch.UI.message("New connection is created 🚀")
+        }
+      }
+    }
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+  } else {
+    // When user didn't select anything
+    sketch.UI.message("Please select more than two layers")
+  }
+}
+
 // {
 //   "script": "./script.js",
 //   "name" : "onLayersMoved",
@@ -1436,5 +1468,3 @@ function getLayerStyles(name) {
 //   },
 //   "identifier" : "onLayersMoved"
 // }
-
-
