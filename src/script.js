@@ -266,16 +266,16 @@ export function settings(context) {
   // Input: Arrow Spacing
   let arrowSpacingField = NSTextField.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 220, 80, 20))
   var formatter = NSNumberFormatter.alloc().init().autorelease()
-  arrowSpacingField.setStringValue(String(0))
+  arrowSpacingField.setStringValue(String(Settings.settingForKey("arrowSpacing")))
   arrowSpacingField.setFormatter(formatter)
   view.addSubview(arrowSpacingField)
 
   // Stepper: Arrow Spacing
   let arrowSpacingStepper = NSStepper.alloc().initWithFrame(NSMakeRect(70, viewHeight - 220, 20, 20));
-  arrowSpacingStepper.setMaxValue(1000);
-  arrowSpacingStepper.setMinValue(0);
-  arrowSpacingStepper.setValueWraps(false);
-  arrowSpacingStepper.setAutorepeat(true);
+  arrowSpacingStepper.setMaxValue(1000)
+  arrowSpacingStepper.setMinValue(0)
+  arrowSpacingStepper.setValueWraps(false)
+  arrowSpacingStepper.setAutorepeat(true)
   arrowSpacingStepper.setCOSJSTargetFunction(function(sender){
     var value = 0 + sender.integerValue()
     arrowSpacingField.setStringValue(String(value))
@@ -313,12 +313,10 @@ export function settings(context) {
   if(modalResponse == NSAlertFirstButtonReturn){
     // When user clicks on "Update Settings"
     // Need to save all this results into the Plugin Settings
-    Settings.setSettingForKey("arrowDirection", alert.views()[0].subviews()[1].title())
-    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[4].title())
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[7].title(), "arrowStyle", docData, pluginKey)
-    Settings.setSettingForKey("arrowType", alert.views()[0].subviews()[10].title())
-    // context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[10].title(), "arrowType", docData, pluginKey)
-    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[13].state())
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[1].title(), "arrowStyle", docData, pluginKey)
+    Settings.setSettingForKey("arrowType", alert.views()[0].subviews()[4].title())
+    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[8].intValue())
+    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[12].state())
     UI.message("Settings are updated 🚀")
   }
 }
@@ -1073,47 +1071,6 @@ function setActiveDirectionSetting(arrowDirectionField){
   }
 }
 
-// function setActiveSpacingSetting(arrowSpacingField){
-//   let currentSpacing = "Not selected"
-
-//   if(Settings.settingForKey("arrowSpacing")){
-//     // if there is data in settings
-//     currentSpacing = Settings.settingForKey("arrowSpacing")  
-    
-//     if(currentSpacing == "Not selected"){
-//       arrowSpacingField.addItemWithTitle("Not selected")
-//       arrowSpacingField.lastItem().setState(1)
-//       arrowSpacingField.addItemWithTitle("30px")
-//       arrowSpacingField.lastItem().setState(0)
-//       arrowSpacingField.addItemWithTitle("70px")
-//       arrowSpacingField.lastItem().setState(0)
-//     } 
-    
-//     if(currentSpacing == "30px"){
-//       arrowSpacingField.addItemWithTitle("30px")
-//       arrowSpacingField.lastItem().setState(1)
-//       arrowSpacingField.addItemWithTitle("70px")
-//       arrowSpacingField.lastItem().setState(0)
-//       arrowSpacingField.addItemWithTitle("Not selected")
-//       arrowSpacingField.lastItem().setState(0)
-//     } 
-
-//     if(currentSpacing == "70px"){
-//       arrowSpacingField.addItemWithTitle("70px")
-//       arrowSpacingField.lastItem().setState(1)
-//       arrowSpacingField.addItemWithTitle("Not selected")
-//       arrowSpacingField.lastItem().setState(0)
-//       arrowSpacingField.addItemWithTitle("30px")
-//       arrowSpacingField.lastItem().setState(0)
-//     } 
-//   } else {
-//     // Show default
-//     arrowSpacingField.addItemWithTitle("Not Selected")
-//     arrowSpacingField.addItemWithTitle("30px")
-//     arrowSpacingField.addItemWithTitle("70px")
-//   }
-// }
-
 function setActiveStyleSetting(arrowStylingField){
   let docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
   let styles = getLayerStyles(null)
@@ -1226,27 +1183,23 @@ function updateSpacing(sourceObjectID, childObjectID, direction){
   let sourceObject = document.getLayerWithID(sourceObjectID)
   let childObject = document.getLayerWithID(childObjectID)
 
-  if(Settings.settingForKey("arrowSpacing")){
+  if(Settings.settingForKey("arrowSpacing") && Settings.settingForKey("arrowSpacing") != 0){
     let currentSpacing = Settings.settingForKey("arrowSpacing")
     
     if(direction == "Right"){
-      if(currentSpacing == "30px"){childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 30}
-      if(currentSpacing == "70px"){childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + 70}
+      childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + currentSpacing
     }
   
     if(direction == "Down"){
-      if(currentSpacing == "30px"){childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 30}
-      if(currentSpacing == "70px"){childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + 70}
+      childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + currentSpacing
     }
   
     if(direction == "Left"){
-      if(currentSpacing == "30px"){childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 30}
-      if(currentSpacing == "70px"){childObject.frame.x = sourceObject.frame.x - childObject.frame.width - 70}
+      childObject.frame.x = sourceObject.frame.x - childObject.frame.width - currentSpacing
     }
   
     if(direction == "Up"){
-      if(currentSpacing == "30px"){childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 30}
-      if(currentSpacing == "70px"){childObject.frame.y = sourceObject.frame.y - childObject.frame.height - 70}
+      childObject.frame.y = sourceObject.frame.y - childObject.frame.height - currentSpacing
     }
   }
 }
