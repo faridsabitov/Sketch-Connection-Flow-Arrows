@@ -351,52 +351,69 @@ function deleteSelectedArrows(context) {
 function settings(context) {
   var alert = COSAlertWindow.new();
   var viewWidth = 300;
-  var viewHeight = 500; // Alert window settings
+  var viewHeight = 450; // Alert window settings
 
   alert = alertSetup(alert, viewWidth, viewHeight);
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
-  alert.addAccessoryView(view); // Label: Arrow Spacing
+  alert.addAccessoryView(view); // Label: Arrow Style
 
-  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 17, 330, 20);
-  view.addSubview(arrowSpacingLabel); // Select: Arrow Spacing
-
-  var arrowSpacingField = NSStepper.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20)); // setActiveSpacingSetting(arrowSpacingField)
-
-  view.addSubview(arrowSpacingField); // Label: Auto Spacing Info
-
-  var arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight - 80, 300, 40);
-  view.addSubview(arrowSpacingInfoLabel); // Label: Arrow Style
-
-  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 110, 280, 40);
+  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 40, 280, 40);
   view.addSubview(arrowStyleLabel); // Select: Arrow Style
 
-  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
+  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
   setActiveStyleSetting(arrowStylingField);
   view.addSubview(arrowStylingField); // Label: Arrow Style Info
 
-  var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 265, 300, 40);
+  var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 80, 300, 40);
   view.addSubview(arrowStyleInfoLabel); // Label: Arrow Type
 
-  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 225, 280, 40);
+  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 130, 280, 40);
   view.addSubview(arrowTypeLabel); // Select: Arrow Type
 
-  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
+  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 130, 300, 20));
   setActiveTypeSetting(arrowTypeField);
   view.addSubview(arrowTypeField); // Label: Arrow Type Info
 
-  var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 350, 300, 40);
-  view.addSubview(arrowTypeInfoLabel); // Label: Other Settings
+  var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 170, 300, 40);
+  view.addSubview(arrowTypeInfoLabel); // Label: Arrow Spacing
 
-  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 310, 280, 40);
+  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 200, 330, 20);
+  view.addSubview(arrowSpacingLabel); // Label: Arrow Spacing PX
+
+  var arrowSpacingPxLabel = alertLabel("px", true, 90, viewHeight - 220, 330, 20);
+  view.addSubview(arrowSpacingPxLabel); // Input: Arrow Spacing
+
+  var arrowSpacingField = NSTextField.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 220, 80, 20));
+  var formatter = NSNumberFormatter.alloc().init().autorelease();
+  arrowSpacingField.setStringValue(String(0));
+  arrowSpacingField.setFormatter(formatter);
+  view.addSubview(arrowSpacingField); // Stepper: Arrow Spacing
+
+  var arrowSpacingStepper = NSStepper.alloc().initWithFrame(NSMakeRect(70, viewHeight - 220, 20, 20));
+  arrowSpacingStepper.setMaxValue(1000);
+  arrowSpacingStepper.setMinValue(0);
+  arrowSpacingStepper.setValueWraps(false);
+  arrowSpacingStepper.setAutorepeat(true);
+  arrowSpacingStepper.setCOSJSTargetFunction(function (sender) {
+    var value = 0 + sender.integerValue();
+    arrowSpacingField.setStringValue(String(value));
+  });
+  view.addSubview(arrowSpacingStepper); // view.addSubview(formatter)
+  // Label: Auto Spacing Info
+
+  var arrowSpacingInfoLabel = alertLabel("The second layer will be moved closer based on the value provided here. Keep it 0 if you don't want to have auto spacing feature ", false, -1, viewHeight - 285, 300, 60);
+  view.addSubview(arrowSpacingInfoLabel); // Label: Other Settings
+
+  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 330, 280, 40);
   view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
 
-  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 410, 260, 40);
+  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 340, 260, 40);
   view.addSubview(checkbox); // Label: Auto-Align Info
 
-  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 440, 280, 40);
+  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 370, 280, 40);
   view.addSubview(autoAlignInfoLabel); // Label: Plugin Info
 
-  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 400, 280, 40);
+  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 420, 280, 40);
   view.addSubview(pluginInfoLabel); // Need to check if style is still available
   // Show modal and get the results
 
@@ -1212,48 +1229,43 @@ function setActiveDirectionSetting(arrowDirectionField) {
     arrowDirectionField.addItemWithTitle("Left");
     arrowDirectionField.addItemWithTitle("Up");
   }
-}
+} // function setActiveSpacingSetting(arrowSpacingField){
+//   let currentSpacing = "Not selected"
+//   if(Settings.settingForKey("arrowSpacing")){
+//     // if there is data in settings
+//     currentSpacing = Settings.settingForKey("arrowSpacing")  
+//     if(currentSpacing == "Not selected"){
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//     if(currentSpacing == "30px"){
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//     if(currentSpacing == "70px"){
+//       arrowSpacingField.addItemWithTitle("70px")
+//       arrowSpacingField.lastItem().setState(1)
+//       arrowSpacingField.addItemWithTitle("Not selected")
+//       arrowSpacingField.lastItem().setState(0)
+//       arrowSpacingField.addItemWithTitle("30px")
+//       arrowSpacingField.lastItem().setState(0)
+//     } 
+//   } else {
+//     // Show default
+//     arrowSpacingField.addItemWithTitle("Not Selected")
+//     arrowSpacingField.addItemWithTitle("30px")
+//     arrowSpacingField.addItemWithTitle("70px")
+//   }
+// }
 
-function setActiveSpacingSetting(arrowSpacingField) {
-  var currentSpacing = "Not selected";
-
-  if (Settings.settingForKey("arrowSpacing")) {
-    // if there is data in settings
-    currentSpacing = Settings.settingForKey("arrowSpacing");
-
-    if (currentSpacing == "Not selected") {
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(0);
-    }
-
-    if (currentSpacing == "30px") {
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(0);
-    }
-
-    if (currentSpacing == "70px") {
-      arrowSpacingField.addItemWithTitle("70px");
-      arrowSpacingField.lastItem().setState(1);
-      arrowSpacingField.addItemWithTitle("Not selected");
-      arrowSpacingField.lastItem().setState(0);
-      arrowSpacingField.addItemWithTitle("30px");
-      arrowSpacingField.lastItem().setState(0);
-    }
-  } else {
-    // Show default
-    arrowSpacingField.addItemWithTitle("Not Selected");
-    arrowSpacingField.addItemWithTitle("30px");
-    arrowSpacingField.addItemWithTitle("70px");
-  }
-}
 
 function setActiveStyleSetting(arrowStylingField) {
   var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);

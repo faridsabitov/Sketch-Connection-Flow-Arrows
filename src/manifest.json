@@ -13,7 +13,7 @@
   "homepage": "https://spectrum.chat/sketch-arrows",
   "commands": [
     {
-      "name": "Create Auto Direction arrow",
+      "name": "Auto Direction arrow",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "createAutoArrow",
       "icon": "icon.png",
@@ -22,7 +22,7 @@
       "handler": "createAutoArrow"
     },
     {
-      "name": "Create arrow to the right",
+      "name": "Arrow to the Right",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "createRightArrow",
       "icon": "icon.png",
@@ -31,7 +31,7 @@
       "handler": "createRightArrow"
     },
     {
-      "name": "Create arrow to the bottom",
+      "name": "Arrow to the Bottom",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "createDownArrow",
       "icon": "icon.png",
@@ -40,7 +40,7 @@
       "handler": "createDownArrow"
     },
     {
-      "name": "Create arrow to the left",
+      "name": "Arrow to the Left",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "createLeftArrow",
       "icon": "icon.png",
@@ -49,7 +49,7 @@
       "handler": "createLeftArrow"
     },
     {
-      "name": "Create arrow to the top",
+      "name": "Arrow to the Top",
       "description": "Select more than one layer, to create a link between first object and others",
       "identifier": "createUpArrow",
       "icon": "icon.png",
@@ -88,6 +88,7 @@
       "name": "Delete arrows between selected",
       "description": "Delete all connections between selected ones",
       "identifier": "deleteSelectedArrows",
+      "shortcut": "command control ⌫",
       "script": "./script.js",
       "icon": "icon.png",
       "handler": "deleteSelectedArrows"
@@ -148,6 +149,7 @@
         "title": "Create or Recreate Connection",
         "items": [
           "createAutoArrow",
+          "-",
           "createRightArrow",
           "createDownArrow",
           "createLeftArrow",
