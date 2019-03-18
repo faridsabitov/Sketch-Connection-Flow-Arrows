@@ -37,12 +37,9 @@ export function createDownArrow(context){start(context, "Down")}
 export function createLeftArrow(context){start(context, "Left")}
 export function createUpArrow(context){start(context, "Up")}
 
-
 //
 // Plugin Commands
 //
-
-
 
 export function updateSelectedArrows(context) {
 
@@ -225,44 +222,31 @@ export function settings(context) {
   const viewWidth = 300
   const viewHeight = 500
   
-  // Alert window settingsnp
+  // Alert window settings
   alert = alertSetup(alert, viewWidth, viewHeight)
   let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight))
   alert.addAccessoryView(view)
 
-  // Label: Arrow Direction
-  let arrowDirectionLabel = alertLabel("Arrow Direction", true, -1, viewHeight - 17, 330, 20)
-  view.addSubview(arrowDirectionLabel)
-    
-  // Select: Arrow Direction
-  let arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20))
-  setActiveDirectionSetting(arrowDirectionField)
-  view.addSubview(arrowDirectionField)
-
-  // Label: Auto Direction Info
-  let arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight-84, 300, 40)
-  view.addSubview(arrowDirectionInfoLabel)
-
   // Label: Arrow Spacing
-  let arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 110, 330, 20)
+  let arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 17, 330, 20)
   view.addSubview(arrowSpacingLabel)
 
   // Select: Arrow Spacing
-  let arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
-  setActiveSpacingSetting(arrowSpacingField)
+  let arrowSpacingField = NSStepper.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
+  // setActiveSpacingSetting(arrowSpacingField)
   view.addSubview(arrowSpacingField)
   
   // Label: Auto Spacing Info
-  let arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight-177, 300, 40)
+  let arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight-80, 300, 40)
   view.addSubview(arrowSpacingInfoLabel)
 
 
   // Label: Arrow Style
-  let arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight-225, 280, 40)
+  let arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight-110, 280, 40)
   view.addSubview(arrowStyleLabel)
 
   // Select: Arrow Style
-  let arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
+  let arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
   setActiveStyleSetting(arrowStylingField)
   view.addSubview(arrowStylingField)
 
@@ -272,11 +256,11 @@ export function settings(context) {
 
 
   // Label: Arrow Type
-  let arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight-310, 280, 40)
+  let arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight-225, 280, 40)
   view.addSubview(arrowTypeLabel)
 
   // Select: Arrow Type
-  let arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 310, 300, 20));
+  let arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
   setActiveTypeSetting(arrowTypeField)
   view.addSubview(arrowTypeField)
 
@@ -286,7 +270,7 @@ export function settings(context) {
 
 
   // Label: Other Settings
-  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-400, 280, 40)
+  let otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight-310, 280, 40)
   view.addSubview(otherSettingsLabel)
 
   // Checkbox: Auto-Align
@@ -298,7 +282,7 @@ export function settings(context) {
   view.addSubview(autoAlignInfoLabel)
 
   // Label: Plugin Info
-  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-490, 280, 40)
+  let pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight-400, 280, 40)
   view.addSubview(pluginInfoLabel)
 
 

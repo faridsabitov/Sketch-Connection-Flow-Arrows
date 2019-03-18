@@ -351,53 +351,43 @@ function deleteSelectedArrows(context) {
 function settings(context) {
   var alert = COSAlertWindow.new();
   var viewWidth = 300;
-  var viewHeight = 500; // Alert window settingsnp
+  var viewHeight = 500; // Alert window settings
 
   alert = alertSetup(alert, viewWidth, viewHeight);
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
-  alert.addAccessoryView(view); // Label: Arrow Direction
+  alert.addAccessoryView(view); // Label: Arrow Spacing
 
-  var arrowDirectionLabel = alertLabel("Arrow Direction", true, -1, viewHeight - 17, 330, 20);
-  view.addSubview(arrowDirectionLabel); // Select: Arrow Direction
-
-  var arrowDirectionField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
-  setActiveDirectionSetting(arrowDirectionField);
-  view.addSubview(arrowDirectionField); // Label: Auto Direction Info
-
-  var arrowDirectionInfoLabel = alertLabel("Auto mode will draw arrow based on location of the second object", false, -1, viewHeight - 84, 300, 40);
-  view.addSubview(arrowDirectionInfoLabel); // Label: Arrow Spacing
-
-  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 110, 330, 20);
+  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 17, 330, 20);
   view.addSubview(arrowSpacingLabel); // Select: Arrow Spacing
 
-  var arrowSpacingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
-  setActiveSpacingSetting(arrowSpacingField);
+  var arrowSpacingField = NSStepper.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20)); // setActiveSpacingSetting(arrowSpacingField)
+
   view.addSubview(arrowSpacingField); // Label: Auto Spacing Info
 
-  var arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight - 177, 300, 40);
+  var arrowSpacingInfoLabel = alertLabel("If you will select spacing, the second layer position will be moved closer", false, -1, viewHeight - 80, 300, 40);
   view.addSubview(arrowSpacingInfoLabel); // Label: Arrow Style
 
-  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 225, 280, 40);
+  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 110, 280, 40);
   view.addSubview(arrowStyleLabel); // Select: Arrow Style
 
-  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
+  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 133, 300, 20));
   setActiveStyleSetting(arrowStylingField);
   view.addSubview(arrowStylingField); // Label: Arrow Style Info
 
   var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 265, 300, 40);
   view.addSubview(arrowStyleInfoLabel); // Label: Arrow Type
 
-  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 310, 280, 40);
+  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 225, 280, 40);
   view.addSubview(arrowTypeLabel); // Select: Arrow Type
 
-  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 310, 300, 20));
+  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 225, 300, 20));
   setActiveTypeSetting(arrowTypeField);
   view.addSubview(arrowTypeField); // Label: Arrow Type Info
 
   var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 350, 300, 40);
   view.addSubview(arrowTypeInfoLabel); // Label: Other Settings
 
-  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 400, 280, 40);
+  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 310, 280, 40);
   view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
 
   var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 410, 260, 40);
@@ -406,7 +396,7 @@ function settings(context) {
   var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 440, 280, 40);
   view.addSubview(autoAlignInfoLabel); // Label: Plugin Info
 
-  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 490, 280, 40);
+  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 400, 280, 40);
   view.addSubview(pluginInfoLabel); // Need to check if style is still available
   // Show modal and get the results
 
