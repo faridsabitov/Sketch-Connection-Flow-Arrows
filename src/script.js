@@ -56,7 +56,7 @@ export function updateSelectedArrows(context) {
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, connectionIndex)
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
           sketch.UI.message("Current connection is updated 🚀")
         } else {
           sketch.UI.message("There is no connection between selected layers on the plugin data")
@@ -93,7 +93,7 @@ export function updateArtboardArrows(context) {
         
         if (firstObjectArtboard == selection[0].objectID()){
           if (secondObjectArtboard == selection[0].objectID()){
-            updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, i)
+            updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, connections[i].condition, i)
           } else {newConnectionsData.push(connections[i])}
         } else {
           // If not just saving it
@@ -118,7 +118,7 @@ export function updateAllArrows(context) { // TODO
     for (let i = 0; i < updateArrowsCounter; i ++) {
       // Need to go through each connection and update arrow position without artboards
       // Need to check if current object don't have the parrent
-      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, i)
+      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, currentConnectionsData[i].condition, i)
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
     sketch.UI.message("All arrows are updated 🚀")
@@ -383,7 +383,7 @@ export function panel(context) {
 // Functions
 //
 
-function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, connectionIndex) {
+function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, connectionIndex) {
   // There might be a situation, when user deleted current group or current group stays on another artboard => In that case need to create another group
   // Need to check if we have the layers with such IDs
   let firstObject = document.getLayerWithID(firstObjectID)
@@ -395,11 +395,11 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
   if(firstObject && secondObject){
     // If we have all the objects, we can recreate the line
-    createArrow(firstObjectID, secondObjectID, style, type, direction)
+    createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID)
   } 
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction) {
+function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID) {
   // Process of creating new connection  
   let localDirection, localStyle, localType
   if(direction == "Auto"){
@@ -452,6 +452,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction) {
     firstObject : firstObjectID,
     secondObject : secondObjectID,
     style : localStyle,
+    condition : conditionID,
     type : localType,
     direction: localDirection,
     line : line.objectID()
@@ -1395,11 +1396,11 @@ function start(context, direction){
         let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, connectionIndex)
+          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
           sketch.UI.message("Current connection is updated 🚀")
         } else {
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection)
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null)
           sketch.UI.message("New connection is created 🚀")
         }
       }
@@ -1421,3 +1422,87 @@ function start(context, direction){
 //   },
 //   "identifier" : "onLayersMoved"
 // }
+
+// let sketch = require('sketch')
+// let libraries = sortJSON(sketch.getLibraries(),'name')
+// log(sketch.getLibraries())
+
+let outputSymbols
+
+let libraries = sketch.getLibraries()
+
+// var SymbolMaster = require('sketch/dom').SymbolMaster
+
+var symbolReferences = libraries[0].getImportableSymbolReferencesForDocument(document)
+
+log(symbolReferences)
+var symbolMaster = symbolReferences[0].import()
+
+// console.log(symbolMaster)
+
+var instance = symbolMaster.createNewInstance()
+console.log(instance)
+
+
+instance.parent = currentParentGroup
+
+// currentParentGroup.addLayers(instance)
+
+// var sharedStyle = sharedStyleReference.import()
+
+log(symbolMaster)
+
+// for(let g = 0; g < libraries.length; g++) {
+//   if(libraries[g].id =="A322B40D-E464-42EB-9AEA-28AAD0C7F33D"){
+//     // We have the library
+
+//     let selectedLibraryPath = NSURL.fileURLWithPath(libraries[g].sketchObject.locationOnDisk().path())
+
+//     log(selectedLibraryPath)
+
+//     sketch.Document.open(selectedLibraryPath,(err,library) => {
+//       if (err) {
+//         sketch.UI.alert(pluginName,'Unable to open the selected library file.');
+//       }
+
+//       if (library) {
+//         var librarySource = library;
+
+//         library.close();
+
+//         // let libraryPages = [library.pages[1]]
+//         var page = document.selectedPage
+//         librarySource.pages.forEach(function(page){
+//           // if (page.id == libraryPages[symbolScopeSelect.indexOfSelectedItem() - 1]) {
+//             outputSymbols = page.sketchObject.symbols()
+//             log(page)
+
+//           // }
+//         });
+        
+//       }
+//     });
+
+
+
+//   }
+// }
+
+
+// outputSymbols.forEach(function(symbol){
+//   log('wdedwed')
+//   var symbolMaster = (librarySelectValue == 0) ? symbol : importForeignSymbol(symbol,selectedLibrary.sketchObject).symbolMaster(),
+//     symbolInstance = symbolMaster.newSymbolInstance();
+
+//   symbolInstance.frame().setX(symbolMaster.frame().x());
+//   symbolInstance.frame().setY(symbolMaster.frame().y());
+
+//   outputPage.sketchObject.insertLayer_atIndex(symbolInstance,nil);
+// });
+
+// function importForeignSymbol(symbol,library) {
+// 	var objectReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(symbol,library);
+
+// 	return AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(objectReference,data);
+// }
+
