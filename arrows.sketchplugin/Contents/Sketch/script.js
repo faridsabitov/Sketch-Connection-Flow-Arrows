@@ -549,9 +549,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection);
-  var currentGroup = checkForArrowGroup();
-  var line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentGroup);
-  addToArrowsGroup(line, currentGroup); // if(localStyle != "Default Style"){
+  var currentArrowsGroup = checkForGroup("Arrows");
+  var line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, conditionID);
+  addToArrowsGroup(line, currentArrowsGroup); // if(localStyle != "Default Style"){
   //   localStyle = localStyle[0].name()
   // }
   // Storage for current connection
@@ -569,11 +569,11 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   newConnectionsData.push(connection);
 }
 
-function checkForArrowGroup() {
+function checkForGroup(groupName) {
   var currentGroup = null; // Checking all the groups that we have
 
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
-    if (currentParentGroup.layers()[i].name() == "Arrows") {
+    if (currentParentGroup.layers()[i].name() == groupName) {
       // If we already have "Arrow" group we need to save it's folder
       currentGroup = currentParentGroup.layers()[i];
       refactorLines(currentGroup);
@@ -636,7 +636,7 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup) {
+function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup, conditionID) {
   var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY, line;
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
@@ -1046,8 +1046,11 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
 
     line.setName("Arrows");
-  } // Style Start
+  }
 
+  if (conditionID != null) {
+    addCondition("Answer YES", x, y);
+  }
 
   if (style == null) {
     // that means we are creating new arrow
@@ -1102,8 +1105,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       var ownStyle = getLayerStyles(style);
       line.sharedStyle = ownStyle[0];
     }
-  } // Style End
-
+  }
 
   return line;
 }
@@ -1124,7 +1126,7 @@ function addToArrowsGroup(line, currentGroup) {
     }); // Moving this group to the bottom of the page
 
     group.moveToBack();
-    currentGroup = checkForArrowGroup();
+    currentGroup = checkForGroup("Arrows");
     currentGroup.fixGeometryWithOptions(1);
   }
 }
@@ -1151,12 +1153,12 @@ function findConnectionData(firstObjectID, secondObjectID, data) {
 
   if (pluginData) {
     // If we have database, need to check for connections
-    for (var y = 0; y < data.length; y++) {
-      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
+    for (var _y = 0; _y < data.length; _y++) {
+      if (firstObjectID == data[_y].firstObject || firstObjectID == data[_y].secondObject) {
         // if we found that we have this object in connection database already
-        if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
+        if (secondObjectID == data[_y].firstObject || secondObjectID == data[_y].secondObject) {
           // if we found that we have this object in connection database already
-          arrayNumber = y;
+          arrayNumber = _y;
         }
       }
     }
@@ -1647,6 +1649,32 @@ function getConditionID(keyword) {
 
 
   return conditionID;
+}
+
+function addCondition(keyword) {
+  var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
+  var conditionObject, symbolReferences; // let keyword = "#condition"
+  // log(libraries.length)
+
+  for (var g = 0; g < libraries.length; g++) {
+    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
+
+    for (var i = 0; i < symbolReferences.length; i++) {
+      if (symbolReferences[i].name.includes(keyword)) {
+        conditionObject = symbolReferences[i];
+      }
+    }
+  }
+
+  if (conditionObject == null) {
+    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
+  } else {
+    var symbolMaster = conditionObject.import();
+    var instance = symbolMaster.createNewInstance();
+    instance.parent = currentParentGroup;
+  }
+
+  return conditionObject;
 }
 
 /***/ }),

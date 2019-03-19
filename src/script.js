@@ -442,9 +442,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   
   updateSpacing(firstObjectID, secondObjectID, localDirection)
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
-  let currentGroup = checkForArrowGroup()
-  let line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentGroup)
-  addToArrowsGroup(line, currentGroup)
+  let currentArrowsGroup = checkForGroup("Arrows")
+  let line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, conditionID)
+  addToArrowsGroup(line, currentArrowsGroup)
 
 
   // if(localStyle != "Default Style"){
@@ -465,11 +465,11 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   newConnectionsData.push(connection)
 }
 
-function checkForArrowGroup() {
+function checkForGroup(groupName) {
   let currentGroup = null
   // Checking all the groups that we have
   for(let i = 0; i < currentParentGroup.layers().count(); i++){
-    if(currentParentGroup.layers()[i].name() == "Arrows") {
+    if(currentParentGroup.layers()[i].name() == groupName) {
       // If we already have "Arrow" group we need to save it's folder
       currentGroup = currentParentGroup.layers()[i]
       refactorLines(currentGroup)
@@ -531,7 +531,7 @@ function getDirection(firstObjectID, secondObjectID){
   return direction
 }
 
-function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup){
+function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup, conditionID){
   let firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY, line
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
@@ -892,8 +892,11 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     line.setName("Arrows")
   }
 
+  if(conditionID != null){
+    addCondition("Answer YES", x, y)
+  }
 
-  // Style Start
+
   if(style == null){
     // that means we are creating new arrow
     if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
@@ -931,7 +934,6 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       line.sharedStyle = ownStyle[0]
     }
   }
-  // Style End
 
   return line
 }
@@ -951,7 +953,7 @@ function addToArrowsGroup(line, currentGroup){
     })
     // Moving this group to the bottom of the page
     group.moveToBack()
-    currentGroup = checkForArrowGroup()
+    currentGroup = checkForGroup("Arrows")
     currentGroup.fixGeometryWithOptions(1)
   }
 
@@ -1478,6 +1480,35 @@ function getConditionID(keyword){
 
   return conditionID
 }
+
+function addCondition(keyword){
+  let libraries = sketch.getLibraries()
+  let conditionObject, symbolReferences
+  // let keyword = "#condition"
+
+  // log(libraries.length)
+
+  for(let g = 0; g < libraries.length; g++) {
+    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
+
+    for(let i = 0; i < symbolReferences.length; i++) {
+      if(symbolReferences[i].name.includes(keyword)){
+        conditionObject = symbolReferences[i]
+      }
+    }
+  }
+
+  if(conditionObject == null){
+    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here')
+  } else {
+    let symbolMaster = conditionObject.import()
+    let instance = symbolMaster.createNewInstance()
+    instance.parent = currentParentGroup
+  }
+
+  return conditionObject
+}
+
 
 
 
