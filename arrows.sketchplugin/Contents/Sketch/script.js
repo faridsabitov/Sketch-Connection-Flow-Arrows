@@ -95,7 +95,7 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: default, createDefaultArrow, createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
+/*! exports provided: default, createDefaultArrow, createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -106,6 +106,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDownArrow", function() { return createDownArrow; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLeftArrow", function() { return createLeftArrow; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createUpArrow", function() { return createUpArrow; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createRightArrowWithCondition", function() { return createRightArrowWithCondition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDownArrowWithCondition", function() { return createDownArrowWithCondition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLeftArrowWithCondition", function() { return createLeftArrowWithCondition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createUpArrowWithCondition", function() { return createUpArrowWithCondition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateSelectedArrows", function() { return updateSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArtboardArrows", function() { return updateArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAllArrows", function() { return updateAllArrows; });
@@ -156,16 +160,28 @@ function createAutoArrow(context) {
   start(context, "Auto");
 }
 function createRightArrow(context) {
-  start(context, "Right");
+  start(context, "Right", false);
 }
 function createDownArrow(context) {
-  start(context, "Down");
+  start(context, "Down", false);
 }
 function createLeftArrow(context) {
-  start(context, "Left");
+  start(context, "Left", false);
 }
 function createUpArrow(context) {
-  start(context, "Up");
+  start(context, "Up", false);
+}
+function createRightArrowWithCondition(context) {
+  start(context, "Right", true);
+}
+function createDownArrowWithCondition(context) {
+  start(context, "Down", true);
+}
+function createLeftArrowWithCondition(context) {
+  start(context, "Left", true);
+}
+function createUpArrowWithCondition(context) {
+  start(context, "Up", true);
 } //
 // Plugin Commands
 //
@@ -1537,7 +1553,7 @@ function getLayerStyles(name) {
   return styles;
 }
 
-function start(context, direction) {
+function start(context, direction, condition) {
   var selection = context.selection;
   var localDirection;
 
@@ -1559,11 +1575,29 @@ function start(context, direction) {
 
         if (connectionIndex != null) {
           // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
+          if (condition == true) {
+            var libraryConditionID = getConditionID("Answer YES"); // Need to remake the arrow condition
+
+            if (currentConnectionsData[connectionIndex].condition) {
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, libraryConditionID, connectionIndex);
+            } else {
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
+            }
+          } else {
+            updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
+          }
+
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
         } else {
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null);
+          if (condition == true) {
+            var _libraryConditionID = getConditionID("Answer YES");
+
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, _libraryConditionID);
+          } else {
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null);
+          }
+
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         }
       }
@@ -1584,59 +1618,36 @@ function start(context, direction) {
 //   },
 //   "identifier" : "onLayersMoved"
 // }
-// let sketch = require('sketch')
-// let libraries = sortJSON(sketch.getLibraries(),'name')
-// log(sketch.getLibraries())
 
 
-var outputSymbols;
-var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries(); // var SymbolMaster = require('sketch/dom').SymbolMaster
+function getConditionID(keyword) {
+  var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
+  var conditionID, symbolReferences; // let keyword = "#condition"
+  // log(libraries.length)
 
-var symbolReferences = libraries[0].getImportableSymbolReferencesForDocument(document);
-log(symbolReferences);
-var symbolMaster = symbolReferences[0].import(); // console.log(symbolMaster)
+  for (var g = 0; g < libraries.length; g++) {
+    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
 
-var instance = symbolMaster.createNewInstance();
-console.log(instance);
-instance.parent = currentParentGroup; // currentParentGroup.addLayers(instance)
-// var sharedStyle = sharedStyleReference.import()
+    for (var i = 0; i < symbolReferences.length; i++) {
+      if (symbolReferences[i].name.includes(keyword)) {
+        conditionID = symbolReferences[i].id;
+      }
+    }
+  }
 
-log(symbolMaster); // for(let g = 0; g < libraries.length; g++) {
-//   if(libraries[g].id =="A322B40D-E464-42EB-9AEA-28AAD0C7F33D"){
-//     // We have the library
-//     let selectedLibraryPath = NSURL.fileURLWithPath(libraries[g].sketchObject.locationOnDisk().path())
-//     log(selectedLibraryPath)
-//     sketch.Document.open(selectedLibraryPath,(err,library) => {
-//       if (err) {
-//         sketch.UI.alert(pluginName,'Unable to open the selected library file.');
-//       }
-//       if (library) {
-//         var librarySource = library;
-//         library.close();
-//         // let libraryPages = [library.pages[1]]
-//         var page = document.selectedPage
-//         librarySource.pages.forEach(function(page){
-//           // if (page.id == libraryPages[symbolScopeSelect.indexOfSelectedItem() - 1]) {
-//             outputSymbols = page.sketchObject.symbols()
-//             log(page)
-//           // }
-//         });
-//       }
-//     });
-//   }
-// }
-// outputSymbols.forEach(function(symbol){
-//   log('wdedwed')
-//   var symbolMaster = (librarySelectValue == 0) ? symbol : importForeignSymbol(symbol,selectedLibrary.sketchObject).symbolMaster(),
-//     symbolInstance = symbolMaster.newSymbolInstance();
-//   symbolInstance.frame().setX(symbolMaster.frame().x());
-//   symbolInstance.frame().setY(symbolMaster.frame().y());
-//   outputPage.sketchObject.insertLayer_atIndex(symbolInstance,nil);
-// });
-// function importForeignSymbol(symbol,library) {
-// 	var objectReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(symbol,library);
-// 	return AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(objectReference,data);
-// }
+  if (conditionID == null) {
+    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
+  } // symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
+  // log(symbolReferences)
+  // var symbolMaster = symbolReferences[0].import()
+  // var instance = symbolMaster.createNewInstance()
+  // console.log(instance)
+  // instance.parent = currentParentGroup
+  // log(symbolMaster)
+
+
+  return conditionID;
+}
 
 /***/ }),
 
@@ -1697,6 +1708,10 @@ that['createRightArrow'] = __skpm_run.bind(this, 'createRightArrow');
 that['createDownArrow'] = __skpm_run.bind(this, 'createDownArrow');
 that['createLeftArrow'] = __skpm_run.bind(this, 'createLeftArrow');
 that['createUpArrow'] = __skpm_run.bind(this, 'createUpArrow');
+that['createRightArrowWithCondition'] = __skpm_run.bind(this, 'createRightArrowWithCondition');
+that['createDownArrowWithCondition'] = __skpm_run.bind(this, 'createDownArrowWithCondition');
+that['createLeftArrowWithCondition'] = __skpm_run.bind(this, 'createLeftArrowWithCondition');
+that['createUpArrowWithCondition'] = __skpm_run.bind(this, 'createUpArrowWithCondition');
 that['updateSelectedArrows'] = __skpm_run.bind(this, 'updateSelectedArrows');
 that['updateArtboardArrows'] = __skpm_run.bind(this, 'updateArtboardArrows');
 that['updateAllArrows'] = __skpm_run.bind(this, 'updateAllArrows');

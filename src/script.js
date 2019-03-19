@@ -32,11 +32,15 @@ if(Settings.settingForKey("arrowDirection")) {
 export default function(context) {}
 export function createDefaultArrow(context){start(context, null)}
 export function createAutoArrow(context){start(context, "Auto")}
-export function createRightArrow(context){start(context, "Right")}
-export function createDownArrow(context){start(context, "Down")}
-export function createLeftArrow(context){start(context, "Left")}
-export function createUpArrow(context){start(context, "Up")}
+export function createRightArrow(context){start(context, "Right", false)}
+export function createDownArrow(context){start(context, "Down", false)}
+export function createLeftArrow(context){start(context, "Left", false)}
+export function createUpArrow(context){start(context, "Up", false)}
 
+export function createRightArrowWithCondition(context){start(context, "Right", true)}
+export function createDownArrowWithCondition(context){start(context, "Down", true)}
+export function createLeftArrowWithCondition(context){start(context, "Left", true)}
+export function createUpArrowWithCondition(context){start(context, "Up", true)}
 //
 // Plugin Commands
 //
@@ -388,7 +392,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   // Need to check if we have the layers with such IDs
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
-
+  
   // Need to delete data first, because we will have a new line
   deleteLine(lineID)
   newConnectionsData = deleteConnectionFromData(connectionIndex)
@@ -1380,7 +1384,7 @@ function getLayerStyles(name) {
 	return styles
 }
 
-function start(context, direction){
+function start(context, direction, condition){
   let selection = context.selection
   let localDirection
   if(direction == null){localDirection = arrowDirectionSetting} else {localDirection = direction}
@@ -1396,11 +1400,26 @@ function start(context, direction){
         let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
-          updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
+          if(condition == true){
+            let libraryConditionID = getConditionID("Answer YES")
+            // Need to remake the arrow condition
+            if(currentConnectionsData[connectionIndex].condition){
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, libraryConditionID, connectionIndex)
+            } else {
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
+            }
+          } else {
+            updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
+          }
           sketch.UI.message("Current connection is updated 🚀")
         } else {
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null)
+          if(condition == true){
+            let libraryConditionID = getConditionID("Answer YES")
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, libraryConditionID)
+          } else {
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null)
+          }
           sketch.UI.message("New connection is created 🚀")
         }
       }
@@ -1423,86 +1442,44 @@ function start(context, direction){
 //   "identifier" : "onLayersMoved"
 // }
 
-// let sketch = require('sketch')
-// let libraries = sortJSON(sketch.getLibraries(),'name')
-// log(sketch.getLibraries())
+function getConditionID(keyword){
+  let libraries = sketch.getLibraries()
+  let conditionID, symbolReferences
+  // let keyword = "#condition"
 
-let outputSymbols
+  // log(libraries.length)
 
-let libraries = sketch.getLibraries()
+  for(let g = 0; g < libraries.length; g++) {
+    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
 
-// var SymbolMaster = require('sketch/dom').SymbolMaster
+    for(let i = 0; i < symbolReferences.length; i++) {
+      if(symbolReferences[i].name.includes(keyword)){
+        conditionID = symbolReferences[i].id 
+      }
+    }
+  }
 
-var symbolReferences = libraries[0].getImportableSymbolReferencesForDocument(document)
+  if(conditionID == null){
+    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here')
+  }
 
-log(symbolReferences)
-var symbolMaster = symbolReferences[0].import()
+  // symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
 
-// console.log(symbolMaster)
-
-var instance = symbolMaster.createNewInstance()
-console.log(instance)
+  // log(symbolReferences)
+  // var symbolMaster = symbolReferences[0].import()
 
 
-instance.parent = currentParentGroup
+  // var instance = symbolMaster.createNewInstance()
+  // console.log(instance)
 
-// currentParentGroup.addLayers(instance)
 
-// var sharedStyle = sharedStyleReference.import()
+  // instance.parent = currentParentGroup
+  // log(symbolMaster)
 
-log(symbolMaster)
-
-// for(let g = 0; g < libraries.length; g++) {
-//   if(libraries[g].id =="A322B40D-E464-42EB-9AEA-28AAD0C7F33D"){
-//     // We have the library
-
-//     let selectedLibraryPath = NSURL.fileURLWithPath(libraries[g].sketchObject.locationOnDisk().path())
-
-//     log(selectedLibraryPath)
-
-//     sketch.Document.open(selectedLibraryPath,(err,library) => {
-//       if (err) {
-//         sketch.UI.alert(pluginName,'Unable to open the selected library file.');
-//       }
-
-//       if (library) {
-//         var librarySource = library;
-
-//         library.close();
-
-//         // let libraryPages = [library.pages[1]]
-//         var page = document.selectedPage
-//         librarySource.pages.forEach(function(page){
-//           // if (page.id == libraryPages[symbolScopeSelect.indexOfSelectedItem() - 1]) {
-//             outputSymbols = page.sketchObject.symbols()
-//             log(page)
-
-//           // }
-//         });
-        
-//       }
-//     });
+  return conditionID
+}
 
 
 
-//   }
-// }
 
-
-// outputSymbols.forEach(function(symbol){
-//   log('wdedwed')
-//   var symbolMaster = (librarySelectValue == 0) ? symbol : importForeignSymbol(symbol,selectedLibrary.sketchObject).symbolMaster(),
-//     symbolInstance = symbolMaster.newSymbolInstance();
-
-//   symbolInstance.frame().setX(symbolMaster.frame().x());
-//   symbolInstance.frame().setY(symbolMaster.frame().y());
-
-//   outputPage.sketchObject.insertLayer_atIndex(symbolInstance,nil);
-// });
-
-// function importForeignSymbol(symbol,library) {
-// 	var objectReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(symbol,library);
-
-// 	return AppController.sharedInstance().librariesController().importShareableObjectReference_intoDocument(objectReference,data);
-// }
 

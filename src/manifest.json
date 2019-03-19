@@ -58,6 +58,42 @@
       "handler": "createUpArrow"
     },
     {
+      "name": "Arrow to the Right with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createRightArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift →",
+      "script": "./script.js",
+      "handler": "createRightArrowWithCondition"
+    },
+    {
+      "name": "Arrow to the Bottom with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createDownArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift ↓",
+      "script": "./script.js",
+      "handler": "createDownArrowWithCondition"
+    },
+    {
+      "name": "Arrow to the Left with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createLeftArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift ←",
+      "script": "./script.js",
+      "handler": "createLeftArrowWithCondition"
+    },
+    {
+      "name": "Arrow to the Top with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createUpArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift ↑",
+      "script": "./script.js",
+      "handler": "createUpArrowWithCondition"
+    },
+    {
       "name": "Update arrows between selected",
       "description": "Update connection between selected layers",
       "identifier": "updateSelectedArrows",
@@ -153,7 +189,12 @@
           "createRightArrow",
           "createDownArrow",
           "createLeftArrow",
-          "createUpArrow"
+          "createUpArrow",
+          "-",
+          "createRightArrowWithCondition",
+          "createDownArrowWithCondition",
+          "createLeftArrowWithCondition",
+          "createUpArrowWithCondition"
         ]
       },
       {
