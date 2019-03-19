@@ -659,21 +659,60 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   } // Drawing a line
 
 
-  var path = NSBezierPath.bezierPath();
+  var path = NSBezierPath.bezierPath(); // Getting all the positions
+
+  if (direction == "Up") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
+    firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
+    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  if (direction == "Right") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
+    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x - diffX;
+    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  if (direction == "Down") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
+    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
+    secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  if (direction == "Left") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x - diffX;
+    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
+    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
 
   if (type == "Angled" || type == null) {
     // Based on direction, we need to specify connection points
     if (direction == "Up") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-      firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
@@ -681,16 +720,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     if (direction == "Right") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
@@ -698,16 +728,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     if (direction == "Down") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-      secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
@@ -715,22 +736,12 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     if (direction == "Left") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    } //TODO: Provide a separate file with all the stylings
-    // Painting the line
+    } // Painting the line
 
 
     line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
@@ -745,61 +756,25 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   if (type == "Straight") {
     // Based on direction, we need to specify connection points
     if (direction == "Up") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-      firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
     }
 
     if (direction == "Right") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
     }
 
     if (direction == "Down") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-      secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
     }
 
     if (direction == "Left") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
     } // Painting the line
@@ -811,18 +786,8 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   }
 
   if (type == "Curved") {
-    // Based on direction, we need to specify connection points
     if (direction == "Up") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-      firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
@@ -871,16 +836,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     if (direction == "Right") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
@@ -929,16 +885,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     if (direction == "Down") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-      secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
@@ -987,16 +934,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     if (direction == "Left") {
-      // First Layer Position Start Point Position
-      firstLayerPosX = firstObjectAbsPos.x - diffX;
-      firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-      secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
-      secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-      middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-      middlePosY = (firstLayerPosY + secondLayerPosY) / 2; // Connecting points
-
+      // Connecting points
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
@@ -1049,7 +987,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
   }
 
   if (conditionID != null) {
-    addCondition("Answer YES", x, y);
+    addCondition("Answer YES", middlePosX, middlePosY);
   }
 
   if (style == null) {
@@ -1153,12 +1091,12 @@ function findConnectionData(firstObjectID, secondObjectID, data) {
 
   if (pluginData) {
     // If we have database, need to check for connections
-    for (var _y = 0; _y < data.length; _y++) {
-      if (firstObjectID == data[_y].firstObject || firstObjectID == data[_y].secondObject) {
+    for (var y = 0; y < data.length; y++) {
+      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
         // if we found that we have this object in connection database already
-        if (secondObjectID == data[_y].firstObject || secondObjectID == data[_y].secondObject) {
+        if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
           // if we found that we have this object in connection database already
-          arrayNumber = _y;
+          arrayNumber = y;
         }
       }
     }
@@ -1651,7 +1589,7 @@ function getConditionID(keyword) {
   return conditionID;
 }
 
-function addCondition(keyword) {
+function addCondition(keyword, x, y) {
   var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
   var conditionObject, symbolReferences; // let keyword = "#condition"
   // log(libraries.length)
@@ -1672,6 +1610,8 @@ function addCondition(keyword) {
     var symbolMaster = conditionObject.import();
     var instance = symbolMaster.createNewInstance();
     instance.parent = currentParentGroup;
+    instance.frame.x = x - instance.frame.width / 2;
+    instance.frame.y = y - instance.frame.height / 2;
   }
 
   return conditionObject;
