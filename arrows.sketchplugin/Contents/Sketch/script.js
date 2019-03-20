@@ -511,7 +511,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   }
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID) {
+function createArrow(firstObjectID, secondObjectID, style, type, direction, condition) {
   // Process of creating new connection  
   var localDirection, localStyle, localType;
 
@@ -550,7 +550,8 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection);
   var currentArrowsGroup = checkForGroup("Arrows");
-  var line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, conditionID);
+  var line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, condition);
+  log(line);
   addToArrowsGroup(line, currentArrowsGroup); // if(localStyle != "Default Style"){
   //   localStyle = localStyle[0].name()
   // }
@@ -636,8 +637,9 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup, conditionID) {
-  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY, line;
+function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup, condition) {
+  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY;
+  var line = [];
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
   var firstObjectAbsPos = firstObject.frame.changeBasis({
@@ -744,13 +746,13 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     } // Painting the line
 
 
-    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
+    line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
 
-    var points = line.layers().firstObject().points();
+    var points = line[0].layers().firstObject().points();
     points[1].cornerRadius = 20;
     points[2].cornerRadius = 20; // Providing Settings for the arrow
 
-    line.setName("Arrow");
+    line[0].setName("Arrow");
   }
 
   if (type == "Straight") {
@@ -780,9 +782,9 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     } // Painting the line
 
 
-    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
+    line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
 
-    line.setName("Arrow");
+    line[0].setName("Arrow");
   }
 
   if (type == "Curved") {
@@ -791,9 +793,9 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
 
-      var _points = line.layers().firstObject().points();
+      var _points = line[0].layers().firstObject().points();
 
       _points[0].curveMode = _points[1].curveMode = 4;
       _points[0].hasCurveFrom = _points[1].hasCurveTo = true;
@@ -840,9 +842,9 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
 
-      var _points2 = line.layers().firstObject().points();
+      var _points2 = line[0].layers().firstObject().points();
 
       _points2[0].curveMode = _points2[1].curveMode = 4;
       _points2[0].hasCurveFrom = _points2[1].hasCurveTo = true;
@@ -889,9 +891,9 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
 
-      var _points3 = line.layers().firstObject().points();
+      var _points3 = line[0].layers().firstObject().points();
 
       _points3[0].curveMode = _points3[1].curveMode = 4;
       _points3[0].hasCurveFrom = _points3[1].hasCurveTo = true;
@@ -938,9 +940,9 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
       path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
 
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
 
-      var _points4 = line.layers().firstObject().points();
+      var _points4 = line[0].layers().firstObject().points();
 
       _points4[0].curveMode = _points4[1].curveMode = 4;
       _points4[0].hasCurveFrom = _points4[1].hasCurveTo = true;
@@ -983,11 +985,11 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     } // Providing Settings for the arrow
 
 
-    line.setName("Arrows");
+    line[0].setName("Arrows");
   }
 
-  if (conditionID != null) {
-    addCondition("Answer YES", middlePosX, middlePosY);
+  if (condition != false) {
+    line[1] = addCondition("Answer YES", middlePosX, middlePosY);
   }
 
   if (style == null) {
@@ -999,7 +1001,7 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
 
       if (_style[0] == null) {
         // Default Arrow Style
-        var border = line.style().addStylePartOfType(1);
+        var border = line[0].style().addStylePartOfType(1);
         border.color = MSColor.colorWithRGBADictionary({
           r: 0.89,
           g: 0.89,
@@ -1007,13 +1009,13 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
           a: 1
         });
         border.thickness = 2;
-        line.style().endMarkerType = 2;
+        line[0].style().endMarkerType = 2;
       } else {
-        line.sharedStyle = _style[0];
+        line[0].sharedStyle = _style[0];
       }
     } else {
       // Default Arrow Style
-      var _border = line.style().addStylePartOfType(1);
+      var _border = line[0].style().addStylePartOfType(1);
 
       _border.color = MSColor.colorWithRGBADictionary({
         r: 0.89,
@@ -1022,13 +1024,13 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
         a: 1
       });
       _border.thickness = 2;
-      line.style().endMarkerType = 2;
+      line[0].style().endMarkerType = 2;
     }
   } else {
     // arrow style already provided
     if (style == "Default Style") {
       // Default Arrow Style
-      var _border2 = line.style().addStylePartOfType(1);
+      var _border2 = line[0].style().addStylePartOfType(1);
 
       _border2.color = MSColor.colorWithRGBADictionary({
         r: 0.89,
@@ -1037,11 +1039,11 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
         a: 1
       });
       _border2.thickness = 2;
-      line.style().endMarkerType = 2;
+      line[0].style().endMarkerType = 2;
     } else {
       // User provided own style
       var ownStyle = getLayerStyles(style);
-      line.sharedStyle = ownStyle[0];
+      line[0].sharedStyle = ownStyle[0];
     }
   }
 
@@ -1516,12 +1518,11 @@ function start(context, direction, condition) {
         if (connectionIndex != null) {
           // Because this is creating flow, we need to take the direction from user settings
           if (condition == true) {
-            var libraryConditionID = getConditionID("Answer YES"); // Need to remake the arrow condition
-
+            // Need to remake the arrow condition
             if (currentConnectionsData[connectionIndex].condition) {
-              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, libraryConditionID, connectionIndex);
-            } else {
               updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
+            } else {
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, true, connectionIndex);
             }
           } else {
             updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
@@ -1531,11 +1532,9 @@ function start(context, direction, condition) {
         } else {
           // There is no connection with this two objects in our database
           if (condition == true) {
-            var _libraryConditionID = getConditionID("Answer YES");
-
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, _libraryConditionID);
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, true);
           } else {
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null);
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, false);
           }
 
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
@@ -1591,8 +1590,7 @@ function getConditionID(keyword) {
 
 function addCondition(keyword, x, y) {
   var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
-  var conditionObject, symbolReferences; // let keyword = "#condition"
-  // log(libraries.length)
+  var conditionObject, symbolReferences;
 
   for (var g = 0; g < libraries.length; g++) {
     symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);

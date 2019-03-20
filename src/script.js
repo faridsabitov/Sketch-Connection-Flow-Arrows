@@ -403,7 +403,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   } 
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID) {
+function createArrow(firstObjectID, secondObjectID, style, type, direction, condition) {
   // Process of creating new connection  
   let localDirection, localStyle, localType
   if(direction == "Auto"){
@@ -443,7 +443,8 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   updateSpacing(firstObjectID, secondObjectID, localDirection)
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
   let currentArrowsGroup = checkForGroup("Arrows")
-  let line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, conditionID)
+  let line = drawLine(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, condition)
+  log(line)
   addToArrowsGroup(line, currentArrowsGroup)
 
 
@@ -531,8 +532,9 @@ function getDirection(firstObjectID, secondObjectID){
   return direction
 }
 
-function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup, conditionID){
-  let firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY, line
+function drawLine(firstObjectID, secondObjectID, style, type, direction, currentGroup, condition){
+  let firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY
+  let line = []
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
 
@@ -644,16 +646,16 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     // Painting the line
-    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+    line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
 
 
     // Making middle points rounded
-    let points = line.layers().firstObject().points()
+    let points = line[0].layers().firstObject().points()
     points[1].cornerRadius = 20
     points[2].cornerRadius = 20
 
     // Providing Settings for the arrow
-    line.setName("Arrow")
+    line[0].setName("Arrow")
   }
 
   if(type == "Straight"){
@@ -683,10 +685,10 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     // Painting the line
-    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+    line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
       
     // Providing Settings for the arrow
-    line.setName("Arrow")
+    line[0].setName("Arrow")
   }
 
   if(type == "Curved"){
@@ -696,8 +698,8 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
 
       // Painting the line
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = line.layers().firstObject().points()
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+      let points = line[0].layers().firstObject().points()
 
       points[0].curveMode = points[1].curveMode = 4
       points[0].hasCurveFrom = points[1].hasCurveTo = true
@@ -723,8 +725,8 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
 
       // Painting the line
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = line.layers().firstObject().points()
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+      let points = line[0].layers().firstObject().points()
 
       points[0].curveMode = points[1].curveMode = 4
       points[0].hasCurveFrom = points[1].hasCurveTo = true
@@ -750,8 +752,8 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
 
       // Painting the line
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = line.layers().firstObject().points()
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+      let points = line[0].layers().firstObject().points()
 
       points[0].curveMode = points[1].curveMode = 4
       points[0].hasCurveFrom = points[1].hasCurveTo = true
@@ -777,8 +779,8 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
 
       // Painting the line
-      line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = line.layers().firstObject().points()
+      line[0] = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+      let points = line[0].layers().firstObject().points()
 
       points[0].curveMode = points[1].curveMode = 4
       points[0].hasCurveFrom = points[1].hasCurveTo = true
@@ -799,11 +801,11 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
     }
 
     // Providing Settings for the arrow
-    line.setName("Arrows")
+    line[0].setName("Arrows")
   }
 
-  if(conditionID != null){
-    addCondition("Answer YES", middlePosX, middlePosY)
+  if(condition != false){
+    line[1] = addCondition("Answer YES", middlePosX, middlePosY)
   }
 
 
@@ -816,32 +818,32 @@ function drawLine(firstObjectID, secondObjectID, style, type, direction, current
       let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
       if(style[0] == null){ 
         // Default Arrow Style
-        let border = line.style().addStylePartOfType(1)
+        let border = line[0].style().addStylePartOfType(1)
         border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
         border.thickness = 2
-        line.style().endMarkerType = 2
+        line[0].style().endMarkerType = 2
       } else {
-        line.sharedStyle = style[0]
+        line[0].sharedStyle = style[0]
       }
     } else {
       // Default Arrow Style
-      let border = line.style().addStylePartOfType(1)
+      let border = line[0].style().addStylePartOfType(1)
       border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
       border.thickness = 2
-      line.style().endMarkerType = 2
+      line[0].style().endMarkerType = 2
     }
   } else {
     // arrow style already provided
     if(style == "Default Style"){
       // Default Arrow Style
-      let border = line.style().addStylePartOfType(1)
+      let border = line[0].style().addStylePartOfType(1)
       border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
       border.thickness = 2
-      line.style().endMarkerType = 2
+      line[0].style().endMarkerType = 2
     } else {
       // User provided own style
       let ownStyle = getLayerStyles(style)
-      line.sharedStyle = ownStyle[0]
+      line[0].sharedStyle = ownStyle[0]
     }
   }
 
@@ -1313,12 +1315,11 @@ function start(context, direction, condition){
         if(connectionIndex != null){
           // Because this is creating flow, we need to take the direction from user settings
           if(condition == true){
-            let libraryConditionID = getConditionID("Answer YES")
             // Need to remake the arrow condition
             if(currentConnectionsData[connectionIndex].condition){
-              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, libraryConditionID, connectionIndex)
-            } else {
               updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
+            } else {
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, true, connectionIndex)
             }
           } else {
             updateArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
@@ -1327,10 +1328,9 @@ function start(context, direction, condition){
         } else {
           // There is no connection with this two objects in our database
           if(condition == true){
-            let libraryConditionID = getConditionID("Answer YES")
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, libraryConditionID)
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, true)
           } else {
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, null)
+            createArrow(sourceObjectID, selection[g].objectID(), null, null, localDirection, false)
           }
           sketch.UI.message("New connection is created 🚀")
         }
@@ -1394,9 +1394,6 @@ function getConditionID(keyword){
 function addCondition(keyword, x, y){
   let libraries = sketch.getLibraries()
   let conditionObject, symbolReferences
-  // let keyword = "#condition"
-
-  // log(libraries.length)
 
   for(let g = 0; g < libraries.length; g++) {
     symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
