@@ -131,8 +131,7 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui"); // var SharedStyle =
 var pluginKey = "flowArrows";
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 var docData = context.document.documentData();
-var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey); // TODO: Need to refactor
-
+var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
 var newConnectionsData = getConnectionsData(); // Settings
@@ -144,7 +143,7 @@ var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings"); //
 
 /* harmony default export */ __webpack_exports__["default"] = (function (context) {});
 function createAutoArrow(context) {
-  start(context, "Auto");
+  start(context, "Auto", false);
 }
 function createRightArrow(context) {
   start(context, "Right", false);
@@ -542,7 +541,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   addToArrowsGroup(arrow.line, currentArrowsGroup);
   var conditionID;
 
-  if (arrow.condition.length > 1) {
+  if (arrow.condition != null) {
     conditionID = arrow.condition.id;
   } else {
     conditionID = null;
@@ -1067,14 +1066,12 @@ function addToArrowsGroup(line, currentGroup) {
 }
 
 function getConnectionsData() {
+  //Refactored
   var dataArray = [];
-  var pluginDataConnections = [];
 
   if (pluginData) {
-    pluginDataConnections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-
-    for (var i = 0; i < pluginDataConnections.length; i++) {
-      dataArray.push(pluginDataConnections[i]);
+    for (var i = 0; i < pluginData.length; i++) {
+      dataArray.push(pluginData[i]);
     }
   }
 
@@ -1260,7 +1257,7 @@ function deleteConnectionFromData(arrayNumber) {
 
   if (pluginData) {
     // If we have database
-    var connections = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+    var connections = pluginData;
 
     for (var i = 0; i < connections.length; i++) {
       // Updating all connections without deleted one
@@ -1350,13 +1347,10 @@ function autoAlignLayer(sourceObjectID, childObjectID, direction) {
 }
 
 function defineSourceObject(firstObjectID, secondObjectID, direction) {
+  //Refactored
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
   var sourceObjectID;
-
-  if (direction == "Auto") {
-    sourceObjectID = firstObject.id;
-  }
 
   if (direction == "Right") {
     if (firstObject.frame.x <= secondObject.frame.x) {
@@ -1394,6 +1388,7 @@ function defineSourceObject(firstObjectID, secondObjectID, direction) {
 }
 
 function getSourceObjectFromSelection(selection, direction) {
+  //Refactored
   var sourceObjectID = selection.firstObject().objectID();
 
   if (direction != "Auto") {
@@ -1494,40 +1489,44 @@ function start(context, direction, condition) {
   if (selection.count() > 1) {
     // Need to find source object by ID first
     var sourceObjectID = getSourceObjectFromSelection(selection, direction);
-    var currentConnectionsData = newConnectionsData;
+    var currentConnectionsData = newConnectionsData; // Need to refactor
 
     for (var g = 0; g < selection.count(); g++) {
       if (selection[g].objectID() != sourceObjectID) {
         // Then need to create or update connection arrow with each selection
         var connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData);
 
-        if (connectionIndex != null) {
+        if (connectionIndex == null) {
+          // There is no connection with this two objects in our database
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, condition);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
+        } else {
           // Because this is creating flow, we need to take the direction from user settings
           if (condition == true) {
             // Need to remake the arrow condition
+            // There might be a situation, when user recreates arrow with condition or not
             if (currentConnectionsData[connectionIndex].condition) {
               updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
             } else {
-              updateArrow(sourceObjectID, selection[g].objectID(), null, null, dDirection, currentConnectionsData[connectionIndex].line, true, connectionIndex);
+              updateArrow(sourceObjectID, selection[g].objectID(), null, null, dDirection, currentConnectionsData[connectionIndex].line, condition, connectionIndex);
             }
           } else {
-            updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
+            // If no condition, we need to delete
+            if (currentConnectionsData[connectionIndex].condition != null) {
+              // Need to delete previous condition first
+              /////// Looks like there is a problem with saving the connection
+              document.getLayerWithID(currentConnectionsData[connectionIndex].condition).remove();
+            }
+
+            updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, condition, connectionIndex);
           }
 
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
-        } else {
-          // There is no connection with this two objects in our database
-          if (condition == true) {
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, true);
-          } else {
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, false);
-          }
-
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         }
       }
     }
 
+    log(newConnectionsData);
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
