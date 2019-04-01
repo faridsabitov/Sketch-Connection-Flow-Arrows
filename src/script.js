@@ -400,31 +400,19 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
 function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
   // Process of creating new connection  
-  let localStyle
-  let localType = type == null ? localType = Settings.settingForKey("arrowType") : localType = type
-  let localDirection = direction == "Auto" ? localDirection = getDirection(firstObjectID, secondObjectID) : localDirection = direction
+  let localType = type == null ? Settings.settingForKey("arrowType") : type
+  let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction
   
-  
-  if(style != null){
-    // if we updating connection with previously created objects
-    localStyle = getLayerStyles(style) != null && style != "Default Style" ? localStyle = style : ocalStyle = "Default Style"
-  } else {
-    // We don't have any data from the plugin data
-    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : localStyle = "Default Style"    
-  }
-  
-  
+  // Main Operations based on the settings
   updateSpacing(firstObjectID, secondObjectID, localDirection)
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
-  let currentArrowsGroup = checkForGroup("Arrows")
-  let arrow = drawConnection(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, isCondition)
-  // log(arrow)
+  
+  let currentArrowsGroup = checkForGroup("Arrows") // Need to refactor
+  let arrow = drawConnection(firstObjectID, secondObjectID, style, localType, localDirection, currentArrowsGroup, isCondition)
+  
   addToArrowsGroup(arrow.line, currentArrowsGroup)
 
-
-
   let conditionID = arrow.condition != null && arrow.condition.length > 0 ? arrow.condition.id : null
-
 
   // Storage for current connection
   let connection = {
@@ -442,14 +430,15 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
 
 function checkForGroup(groupName) {
   let currentGroup = null
+
   // Checking all the groups that we have
   for(let i = 0; i < currentParentGroup.layers().count(); i++){
     if(currentParentGroup.layers()[i].name() == groupName) {
       // If we already have "Arrow" group we need to save it's folder
       currentGroup = currentParentGroup.layers()[i]
-      refactorLines(currentGroup)
     } 
   }
+
   return currentGroup
 }
 
@@ -496,6 +485,7 @@ function drawConnection(firstObjectID, secondObjectID, style, type, direction, c
   let connection = {line: [], condition: []}
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
+
 
   let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup})
   let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup})
@@ -765,6 +755,16 @@ function drawConnection(firstObjectID, secondObjectID, style, type, direction, c
 
   if(condition != false){
     connection.condition = addCondition("#con", middlePosX, middlePosY)
+  }
+
+
+  
+
+  if(style != null){
+    localStyle = getLayerStyles(style) != null && style != "Default Style" ? style : "Default Style"
+  } else {
+    // We don't have any data from the plugin data
+    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : "Default Style"    
   }
 
 

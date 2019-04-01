@@ -505,23 +505,14 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
 function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
   // Process of creating new connection  
-  var localStyle;
-  var localType = type == null ? localType = Settings.settingForKey("arrowType") : localType = type;
-  var localDirection = direction == "Auto" ? localDirection = getDirection(firstObjectID, secondObjectID) : localDirection = direction;
-
-  if (style != null) {
-    // if we updating connection with previously created objects
-    localStyle = getLayerStyles(style) != null && style != "Default Style" ? localStyle = style : ocalStyle = "Default Style";
-  } else {
-    // We don't have any data from the plugin data
-    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : localStyle = "Default Style";
-  }
+  var localType = type == null ? Settings.settingForKey("arrowType") : type;
+  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection);
-  var currentArrowsGroup = checkForGroup("Arrows");
-  var arrow = drawConnection(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, isCondition); // log(arrow)
+  var currentArrowsGroup = checkForGroup("Arrows"); // Need to refactor
 
+  var arrow = drawConnection(firstObjectID, secondObjectID, style, localType, localDirection, currentArrowsGroup, isCondition);
   addToArrowsGroup(arrow.line, currentArrowsGroup);
   var conditionID = arrow.condition != null && arrow.condition.length > 0 ? arrow.condition.id : null; // Storage for current connection
 
@@ -545,7 +536,6 @@ function checkForGroup(groupName) {
     if (currentParentGroup.layers()[i].name() == groupName) {
       // If we already have "Arrow" group we need to save it's folder
       currentGroup = currentParentGroup.layers()[i];
-      refactorLines(currentGroup);
     }
   }
 
@@ -946,6 +936,13 @@ function drawConnection(firstObjectID, secondObjectID, style, type, direction, c
 
   if (condition != false) {
     connection.condition = addCondition("#con", middlePosX, middlePosY);
+  }
+
+  if (style != null) {
+    localStyle = getLayerStyles(style) != null && style != "Default Style" ? style : "Default Style";
+  } else {
+    // We don't have any data from the plugin data
+    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : "Default Style";
   }
 
   if (style == null) {
