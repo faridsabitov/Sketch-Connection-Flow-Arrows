@@ -482,40 +482,33 @@ function panel(context) {
 // Functions
 //
 
-function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, connectionIndex) {
-  // There might be a situation, when user deleted current group or current group stays on another artboard => In that case need to create another group
+function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
+  // Refactored
   // Need to check if we have the layers with such IDs
   var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID); // Need to delete data first, because we will have a new line
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var conditionObject = document.getLayerWithID(conditionID); // Need to delete data first, because we will have a new line
 
   deleteLine(lineID);
+
+  if (!isCondition && conditionObject) {
+    conditionObject.remove();
+  }
+
   newConnectionsData = deleteConnectionFromData(connectionIndex);
 
   if (firstObject && secondObject) {
     // If we have all the objects, we can recreate the line
-    createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID);
+    createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition);
   }
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, condition) {
+function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
   // Process of creating new connection  
-  var localDirection, localStyle, localType;
-
-  if (direction == "Auto") {
-    // If direction is auto, we need to specify direction ourselves
-    localDirection = getDirection(firstObjectID, secondObjectID);
-  } else {
-    localDirection = direction;
-  }
-
-  if (type == null) {
-    localType = Settings.settingForKey("arrowType");
-  } else {
-    localType = type;
-  } // log(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
-
-
-  localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+  var localStyle;
+  var localType = type == null ? localType = Settings.settingForKey("arrowType") : localType = type;
+  var localDirection = direction == "Auto" ? localDirection = getDirection(firstObjectID, secondObjectID) : localDirection = direction;
+  var conditionID = arrow.condition != null ? arrow.condition.id : null;
 
   if (style != null) {
     // if we updating connection with previously created objects
@@ -536,17 +529,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection);
   var currentArrowsGroup = checkForGroup("Arrows");
-  var arrow = drawConnection(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, condition);
-  log(arrow);
-  addToArrowsGroup(arrow.line, currentArrowsGroup);
-  var conditionID;
+  var arrow = drawConnection(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, isCondition); // log(arrow)
 
-  if (arrow.condition != null) {
-    conditionID = arrow.condition.id;
-  } else {
-    conditionID = null;
-  } // Storage for current connection
-
+  addToArrowsGroup(arrow.line, currentArrowsGroup); // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
@@ -576,6 +561,7 @@ function checkForGroup(groupName) {
 }
 
 function getDirection(firstObjectID, secondObjectID) {
+  // Refactored
   // Get direction from the source object
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
@@ -593,35 +579,19 @@ function getDirection(firstObjectID, secondObjectID) {
     // Right Half
     if (secondObjectMidY > firstObjectMidY) {
       // Bottom quarter
-      if (diffX > diffY) {
-        direction = "Down";
-      } else {
-        direction = "Right";
-      }
+      direction = diffX > diffY ? "Down" : "Right";
     } else {
       // Top quarter
-      if (absDiffX > absDiffY) {
-        direction = "Right";
-      } else {
-        direction = "Up";
-      }
+      direction = absDiffX > absDiffY ? "Right" : "Up";
     }
   } else {
     // Left Half
     if (secondObjectMidY > firstObjectMidY) {
       // Bottom quarter
-      if (absDiffX > absDiffY) {
-        direction = "Left";
-      } else {
-        direction = "Down";
-      }
+      direction = absDiffX > absDiffY ? "Left" : "Down";
     } else {
       // Top quarter
-      if (diffX > diffY) {
-        direction = "Left";
-      } else {
-        direction = "Up";
-      }
+      direction = diffX > diffY ? "Left" : "Up";
     }
   }
 
@@ -1252,7 +1222,8 @@ function setActiveTypeSetting(arrowTypeField) {
   }
 }
 
-function deleteConnectionFromData(arrayNumber) {
+function deleteConnectionFromData(connectionIndex) {
+  // Refactored
   var newConnections = [];
 
   if (pluginData) {
@@ -1261,7 +1232,7 @@ function deleteConnectionFromData(arrayNumber) {
 
     for (var i = 0; i < connections.length; i++) {
       // Updating all connections without deleted one
-      if (i != arrayNumber) {
+      if (i != connectionIndex) {
         newConnections.push(connections[i]);
       }
     }
@@ -1277,6 +1248,7 @@ function refactorLines(group) {
 }
 
 function deleteLine(lineID) {
+  // refactored
   var lineObject = document.getLayerWithID(lineID);
   var selectedGroup;
 
@@ -1483,10 +1455,10 @@ function getLayerStyles(name) {
   return styles;
 }
 
-function start(context, direction, condition) {
+function start(context, direction, isCondition) {
   var selection = context.selection;
 
-  if (selection.count() > 1) {
+  if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
     // Need to find source object by ID first
     var sourceObjectID = getSourceObjectFromSelection(selection, direction);
     var currentConnectionsData = newConnectionsData; // Need to refactor
@@ -1498,39 +1470,20 @@ function start(context, direction, condition) {
 
         if (connectionIndex == null) {
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, condition);
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, isCondition);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
-          // Because this is creating flow, we need to take the direction from user settings
-          if (condition == true) {
-            // Need to remake the arrow condition
-            // There might be a situation, when user recreates arrow with condition or not
-            if (currentConnectionsData[connectionIndex].condition) {
-              updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex);
-            } else {
-              updateArrow(sourceObjectID, selection[g].objectID(), null, null, dDirection, currentConnectionsData[connectionIndex].line, condition, connectionIndex);
-            }
-          } else {
-            // If no condition, we need to delete
-            if (currentConnectionsData[connectionIndex].condition != null) {
-              // Need to delete previous condition first
-              /////// Looks like there is a problem with saving the connection
-              document.getLayerWithID(currentConnectionsData[connectionIndex].condition).remove();
-            }
-
-            updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, condition, connectionIndex);
-          }
-
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🚀");
+          // Need to remake the arrow condition
+          updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, isCondition, connectionIndex);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
         }
       }
     }
 
-    log(newConnectionsData);
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
   }
 } // {
 //   "script": "./script.js",
