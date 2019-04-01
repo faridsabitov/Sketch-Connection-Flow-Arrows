@@ -401,27 +401,16 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
   // Process of creating new connection  
   let localStyle
-
   let localType = type == null ? localType = Settings.settingForKey("arrowType") : localType = type
   let localDirection = direction == "Auto" ? localDirection = getDirection(firstObjectID, secondObjectID) : localDirection = direction
-  let conditionID = arrow.condition != null ? arrow.condition.id : null
   
-
+  
   if(style != null){
     // if we updating connection with previously created objects
-    if(getLayerStyles(style) != null && style != "Default Style"){
-      localStyle = style
-    } else {
-      localStyle = "Default Style"
-    }
+    localStyle = getLayerStyles(style) != null && style != "Default Style" ? localStyle = style : ocalStyle = "Default Style"
   } else {
     // We don't have any data from the plugin data
-    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
-      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
-    } else {
-      localStyle = "Default Style"
-    }
-    
+    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : localStyle = "Default Style"    
   }
   
   
@@ -432,6 +421,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
   // log(arrow)
   addToArrowsGroup(arrow.line, currentArrowsGroup)
 
+
+
+  let conditionID = arrow.condition != null && arrow.condition.length > 0 ? arrow.condition.id : null
 
 
   // Storage for current connection
@@ -845,7 +837,6 @@ function getConnectionsData(){ //Refactored
       dataArray.push(pluginData[i])
     }
   } 
-
   return dataArray
 }
 
@@ -1234,22 +1225,16 @@ function alertCheckbox(message, state, x, y, width, height){
   return checkbox
 }
 
-function getLayerStyles(name) {
+function getLayerStyles(name) { // Refactored
   let allStyles = docData.allLayerStyles()
   let keyword = "$arrow"
   let styles = []
-  if(name == null) {
-    for(let i = 0; i < allStyles.count(); i++){
-      if(allStyles[i].name().includes(keyword)){
-        styles.push(allStyles[i]);
-      }
-    }
-  } else {
-    // Searching only for name
-    for(let i = 0; i < allStyles.count(); i++){
-      if(allStyles[i].name() == name){
-        styles.push(allStyles[i]);
-      }
+
+  for(let i = 0; i < allStyles.count(); i++){
+    if(name == null) {
+      if(allStyles[i].name().includes(keyword)){styles.push(allStyles[i])}
+    } else {
+      if(allStyles[i].name() == name){styles.push(allStyles[i])}
     }
   }
 	return styles

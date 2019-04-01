@@ -508,22 +508,13 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
   var localStyle;
   var localType = type == null ? localType = Settings.settingForKey("arrowType") : localType = type;
   var localDirection = direction == "Auto" ? localDirection = getDirection(firstObjectID, secondObjectID) : localDirection = direction;
-  var conditionID = arrow.condition != null ? arrow.condition.id : null;
 
   if (style != null) {
     // if we updating connection with previously created objects
-    if (getLayerStyles(style) != null && style != "Default Style") {
-      localStyle = style;
-    } else {
-      localStyle = "Default Style";
-    }
+    localStyle = getLayerStyles(style) != null && style != "Default Style" ? localStyle = style : ocalStyle = "Default Style";
   } else {
     // We don't have any data from the plugin data
-    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
-      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
-    } else {
-      localStyle = "Default Style";
-    }
+    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : localStyle = "Default Style";
   }
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
@@ -531,7 +522,8 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
   var currentArrowsGroup = checkForGroup("Arrows");
   var arrow = drawConnection(firstObjectID, secondObjectID, localStyle, localType, localDirection, currentArrowsGroup, isCondition); // log(arrow)
 
-  addToArrowsGroup(arrow.line, currentArrowsGroup); // Storage for current connection
+  addToArrowsGroup(arrow.line, currentArrowsGroup);
+  var conditionID = arrow.condition != null && arrow.condition.length > 0 ? arrow.condition.id : null; // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
@@ -1433,21 +1425,19 @@ function alertCheckbox(message, state, x, y, width, height) {
 }
 
 function getLayerStyles(name) {
+  // Refactored
   var allStyles = docData.allLayerStyles();
   var keyword = "$arrow";
   var styles = [];
 
-  if (name == null) {
-    for (var i = 0; i < allStyles.count(); i++) {
+  for (var i = 0; i < allStyles.count(); i++) {
+    if (name == null) {
       if (allStyles[i].name().includes(keyword)) {
         styles.push(allStyles[i]);
       }
-    }
-  } else {
-    // Searching only for name
-    for (var _i3 = 0; _i3 < allStyles.count(); _i3++) {
-      if (allStyles[_i3].name() == name) {
-        styles.push(allStyles[_i3]);
+    } else {
+      if (allStyles[i].name() == name) {
+        styles.push(allStyles[i]);
       }
     }
   }
