@@ -399,36 +399,31 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 }
 
 function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {  
+  let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction
+
   // Main Operations based on the settings
   updateSpacing(firstObjectID, secondObjectID, localDirection)
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
 
-  // Process of creating new connection  
-  let localType = type == null ? Settings.settingForKey("arrowType") : type
-  let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction
-
-  let currentArrowsGroup = checkForGroup("Arrows") // Need to refactor
-  let arrow = drawConnection(firstObjectID, secondObjectID, style, localType, localDirection, currentArrowsGroup, isCondition)
+  // Making an Arrow 
+  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, direction, isCondition)
   
-  addToArrowsGroup(arrow.line, currentArrowsGroup)
-
-  let conditionID = arrow.condition != null && arrow.condition.length > 0 ? arrow.condition.id : null
-
   // Storage for current connection
   let connection = {
     firstObject : firstObjectID,
     secondObject : secondObjectID,
-    style : localStyle,
-    condition : conditionID,
-    type : localType,
+    style : arrow.style,
+    condition : arrow.conditionID,
+    type : arrow.type,
     direction: localDirection,
     line : arrow.line.objectID()
   }
+
   // Need to save this data to the global array
   newConnectionsData.push(connection)
 }
 
-function checkForGroup(groupName) {
+function checkForGroup(groupName) { // refactored
   let currentGroup = null
 
   // Checking all the groups that we have
@@ -480,334 +475,39 @@ function getDirection(firstObjectID, secondObjectID){ // Refactored
   return direction
 }
 
-function drawConnection(firstObjectID, secondObjectID, style, type, direction, currentGroup, condition){
-  let firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY
-  let connection = {line: [], condition: []}
+function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, condition){ // Refactored
+  // Process of creating new connection  
+  let localType = type == null ? Settings.settingForKey("arrowType") : type
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
-
-
-  let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup})
-  let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup})
-
-  if(currentGroup){
-    //if we already have a group, need to specify the difference
-    diffX = currentGroup.frame().x()
-    diffY = currentGroup.frame().y()
-  } else {
-    diffX = 0
-    diffY = 0
+  let connectionPos = getConnectionPos(firstObject, secondObject, currentGroup, localDirection)
+  let connection = {
+    line: [], 
+    conditionID: [],
+    type: [],
+    style: []
   }
 
-  // Drawing a line
-  let path = NSBezierPath.bezierPath()
+  // Type  
+  if(localType == "Angled" || localType == null){ connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
+  if(localType == "Straight"){ connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
+  if(localType == "Curved"){ connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
 
-  getConnectionPos(direction)
+  // Condition
+  connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null
 
-  // // Getting all the positions
-  // if(direction == "Up"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y-diffY
+  // Style
+  connection.style = styleLine(connection.line, style)
 
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
-
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-
-  // if(direction == "Right"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
-
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
-    
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-
-  // if(direction == "Down"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
-
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y-diffY
-
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-
-  // if(direction == "Left"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
-
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
-
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-
-  if(type == "Angled" || type == null){
-    // Based on direction, we need to specify connection points
-    
-    if(direction == "Up"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(firstLayerPosX,middlePosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,middlePosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    if(direction == "Right"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(middlePosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(middlePosX,secondLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    if(direction == "Down"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(firstLayerPosX,middlePosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,middlePosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    if(direction == "Left"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(middlePosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(middlePosX,secondLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    // Painting the line
-    connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-
-
-    // Making middle points rounded
-    let points = connection.line.layers().firstObject().points()
-    points[1].cornerRadius = 20
-    points[2].cornerRadius = 20
-
-    // Providing Settings for the arrow
-    connection.line.setName("Arrow")
-  }
-
-  if(type == "Straight"){
-    // Based on direction, we need to specify connection points
-    if(direction == "Up"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    if(direction == "Right"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    if(direction == "Down"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    if(direction == "Left"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-    }
-
-    // Painting the line
-    connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      
-    // Providing Settings for the arrow
-    connection.line.setName("Arrow")
-  }
-
-  if(type == "Curved"){
-    if(direction == "Up"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-
-      // Painting the line
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = connection.line.layers().firstObject().points()
-
-      points[0].curveMode = points[1].curveMode = 4
-      points[0].hasCurveFrom = points[1].hasCurveTo = true
-
-      if(firstLayerPosX<secondLayerPosX){
-        points[0].curveFrom = {x: 0, y: 0.5}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 1,y: 0.5}
-      } else {
-        points[0].curveFrom = {x: 1, y: 0.5}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 0,y: 0.5}
-      }
-    }
-
-    if(direction == "Right"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-
-      // Painting the line
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = connection.line.layers().firstObject().points()
-
-      points[0].curveMode = points[1].curveMode = 4
-      points[0].hasCurveFrom = points[1].hasCurveTo = true
-
-      if(firstLayerPosY<secondLayerPosY){
-        points[0].curveFrom = {x: 0.5, y: 0}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 0.5,y: 1}
-      } else {
-        points[0].curveFrom = {x: 0.5, y: 1}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 0.5,y: 0}
-      }
-    }
-
-    if(direction == "Down"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-
-      // Painting the line
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = connection.line.layers().firstObject().points()
-
-      points[0].curveMode = points[1].curveMode = 4
-      points[0].hasCurveFrom = points[1].hasCurveTo = true
-
-      if(firstLayerPosX<secondLayerPosX){
-        points[0].curveFrom = {x: 0, y: 0.5}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 1,y: 0.5}
-      } else {
-        points[0].curveFrom = {x: 1, y: 0.5}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 0,y: 0.5}
-      }
-    }
-
-    if(direction == "Left"){
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
-      path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
-
-      // Painting the line
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
-      let points = connection.line.layers().firstObject().points()
-
-      points[0].curveMode = points[1].curveMode = 4
-      points[0].hasCurveFrom = points[1].hasCurveTo = true
-
-      if(firstLayerPosY<secondLayerPosY){
-        points[0].curveFrom = {x: 0.5, y: 0}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 0.5,y: 1}
-      } else {
-        points[0].curveFrom = {x: 0.5, y: 1}
-        points[0].curveTo = {x: -0.5,y:1}
-
-        points[1].curveFrom = {x: 1,y: 1}
-        points[1].curveTo = {x: 0.5,y: 0}
-      }
-    }
-
-    // Providing Settings for the arrow
-    connection.line.setName("Arrows")
-  }
-
-  if(condition != false){
-    connection.condition = addCondition("#con", middlePosX, middlePosY)
-  }
-
-  if(style != null){
-    localStyle = getLayerStyles(style) != null && style != "Default Style" ? style : "Default Style"
-  } else {
-    // We don't have any data from the plugin data
-    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : "Default Style"    
-  }
-
-  if(style == null){
-    // that means we are creating new arrow
-    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
-
-      // if we have specified options
-      // TODO: Need to refactor here. Local Style is not used at all
-      let style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
-      if(style[0] == null){ 
-        // Default Arrow Style
-        let border = connection.line.style().addStylePartOfType(1)
-        border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
-        border.thickness = 2
-        connection.line.style().endMarkerType = 2
-      } else {
-        connection.line.sharedStyle = style[0]
-      }
-    } else {
-      // Default Arrow Style
-      let border = connection.line.style().addStylePartOfType(1)
-      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
-      border.thickness = 2
-      connection.line.style().endMarkerType = 2
-    }
-  } else {
-    // arrow style already provided
-    if(style == "Default Style"){
-      // Default Arrow Style
-      let border = connection.line.style().addStylePartOfType(1)
-      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
-      border.thickness = 2
-      connection.line.style().endMarkerType = 2
-    } else {
-      // User provided own style
-      let ownStyle = getLayerStyles(style)
-      connection.line.sharedStyle = ownStyle[0]
-    }
-  }
+  // Add to group
+  addToArrowsGroup(connection.line)
 
   return connection
 }
 
-function addToArrowsGroup(line, currentGroup){
+function addToArrowsGroup(line){
+  let currentGroup = checkForGroup("Arrows")
+
   if(currentGroup){
     currentGroup.addLayers([line])
     currentGroup.fixGeometryWithOptions(1)
@@ -826,6 +526,30 @@ function addToArrowsGroup(line, currentGroup){
     currentGroup.fixGeometryWithOptions(1)
   }
 }
+
+function addToConditionGroup(condition){
+  let currentGroup = checkForGroup("Conditions") 
+
+  if(currentGroup){
+    currentGroup.addLayers([condition])
+    currentGroup.fixGeometryWithOptions(1)
+  } else {
+    // If we don't have a group
+    let Group = require('sketch/dom').Group
+    let group = new Group({
+      parent: currentParentGroup,
+      name: 'Conditions',
+      locked: false,
+      layers: [condition]
+    })
+    // Moving this group to the bottom of the page
+    group.moveToBack()
+    currentGroup = checkForGroup("Conditions") // There is a problem, that's why duplicated for now
+    currentGroup.fixGeometryWithOptions(1)
+  }
+}
+
+
 
 function getConnectionsData(){ //Refactored
   let dataArray = []
@@ -1269,55 +993,7 @@ function start(context, direction, isCondition){
   }
 }
 
-// {
-//   "script": "./script.js",
-//   "name" : "onLayersMoved",
-//   "handlers" : {
-//     "actions": {
-//       "LayersMoved.finish": "onLayersMoved"
-//     }
-//   },
-//   "identifier" : "onLayersMoved"
-// }
-
-function getConditionID(keyword){
-  let libraries = sketch.getLibraries()
-  let conditionID, symbolReferences
-  // let keyword = "#condition"
-
-  // log(libraries.length)
-
-  for(let g = 0; g < libraries.length; g++) {
-    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
-
-    for(let i = 0; i < symbolReferences.length; i++) {
-      if(symbolReferences[i].name.includes(keyword)){
-        conditionID = symbolReferences[i].id 
-      }
-    }
-  }
-
-  if(conditionID == null){
-    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here')
-  }
-
-  // symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
-
-  // log(symbolReferences)
-  // var symbolMaster = symbolReferences[0].import()
-
-
-  // var instance = symbolMaster.createNewInstance()
-  // console.log(instance)
-
-
-  // instance.parent = currentParentGroup
-  // log(symbolMaster)
-
-  return conditionID
-}
-
-function addCondition(keyword, x, y){
+function addCondition(keyword, x, y){ // Refactored
   let libraries = sketch.getLibraries()
   let conditionObject, symbolReferences
 
@@ -1336,16 +1012,37 @@ function addCondition(keyword, x, y){
   } else {
     let symbolMaster = conditionObject.import()
     let instance = symbolMaster.createNewInstance()
-    instance.parent = currentParentGroup
+    addToConditionGroup(instance)
     instance.frame.x = x - instance.frame.width / 2 
     instance.frame.y = y - instance.frame.height / 2
   }
 
-  return conditionObject
+  return conditionObject.id
 }
 
-function getConnectionPos(direction){
-  let connectionPos = {firstLayerPosX: null, firstLayerPosY: null, secondLayerPosX: null, secondLayerPosY: null, middlePosX: null, middlePosY: null, diffX: null, diffY: null}
+function getConnectionPos(firstObject, secondObject, currentGroup, direction){ // Refactored
+
+  let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup})
+  let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup})
+  let diffX, diffY
+
+  if(currentGroup){
+    diffX = currentGroup.frame().x()
+    diffY = currentGroup.frame().y()
+  } else {
+    diffX = 0
+    diffY = 0
+  }
+
+  let connectionPos = {
+    firstLayerPosX: null, 
+    firstLayerPosY: null, 
+    secondLayerPosX: null, 
+    secondLayerPosY: null, 
+    middlePosX: null, 
+    middlePosY: null
+  }
+
   // Getting all the positions
   if(direction == "Up"){
     // First Layer Position Start Point Position
@@ -1353,58 +1050,282 @@ function getConnectionPos(direction){
     connectionPos.firstLayerPosY = firstObjectAbsPos.y-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
-    secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
 
     // Middle Points
-    middlePosX = (firstLayerPosX + secondLayerPosX)/2
-    middlePosY = (firstLayerPosY + secondLayerPosY)/2
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2
   }
 
   if(direction == "Right"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
-    firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObjectAbsPos.x-diffX
-    secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x-diffX
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
     
     // Middle Points
-    middlePosX = (firstLayerPosX + secondLayerPosX)/2
-    middlePosY = (firstLayerPosY + secondLayerPosY)/2
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2
   }
 
   if(direction == "Down"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
-    firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
-    secondLayerPosY = secondObjectAbsPos.y-diffY
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y-diffY
 
     // Middle Points
-    middlePosX = (firstLayerPosX + secondLayerPosX)/2
-    middlePosY = (firstLayerPosY + secondLayerPosY)/2
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2
   }
 
   if(direction == "Left"){
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x-diffX
-    firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x-diffX
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
 
     // Second Layer Position End Point Position
-    secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
-    secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
 
     // Middle Points
-    middlePosX = (firstLayerPosX + secondLayerPosX)/2
-    middlePosY = (firstLayerPosY + secondLayerPosY)/2
+    middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2
+    middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2
   }
+
   return connectionPos
 }
 
+function drawStraightLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, direction){ // Refactored
+  let path = NSBezierPath.bezierPath()
+  
+  if(direction == "Up"){
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+  }
+
+  if(direction == "Right"){
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+  }
+
+  if(direction == "Down"){
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+  }
+
+  if(direction == "Left"){
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+  }
+
+  let line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+  line.setName("Straight Arrow")
+
+  return line
+}
+
+function drawAngledLine(firstLayerPosX, firstLayerPosY, middlePosX, middlePosY, secondLayerPosX, secondLayerPosY, direction){ // Refactored
+  let path = NSBezierPath.bezierPath()
+
+  if(direction == "Up"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY))
+    path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY))
+  }
+
+  if(direction == "Right"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY))
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY))
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY))
+  }
+
+  if(direction == "Down"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY))
+    path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY))
+  }
+
+  if(direction == "Left"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY))
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY))
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY))
+  }
+
+  let line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+  let points = line.layers().firstObject().points()
+  points[1].cornerRadius = 20
+  points[2].cornerRadius = 20
+  line.setName("Angled Arrow")
+
+  return line
+}
+
+function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, direction){ // Refactored
+  let path = NSBezierPath.bezierPath()
+  let line
+
+  if(direction == "Up"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+
+    // Painting the line
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+    let points = line.layers().firstObject().points()
+
+    points[0].curveMode = points[1].curveMode = 4
+    points[0].hasCurveFrom = points[1].hasCurveTo = true
+
+    if(firstLayerPosX<secondLayerPosX){
+      points[0].curveFrom = {x: 0, y: 0.5}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 1,y: 0.5}
+    } else {
+      points[0].curveFrom = {x: 1, y: 0.5}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 0,y: 0.5}
+    }
+  }
+
+  if(direction == "Right"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+
+    // Painting the line
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+    let points = line.layers().firstObject().points()
+
+    points[0].curveMode = points[1].curveMode = 4
+    points[0].hasCurveFrom = points[1].hasCurveTo = true
+
+    if(firstLayerPosY<secondLayerPosY){
+      points[0].curveFrom = {x: 0.5, y: 0}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 0.5,y: 1}
+    } else {
+      points[0].curveFrom = {x: 0.5, y: 1}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 0.5,y: 0}
+    }
+  }
+
+  if(direction == "Down"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+
+    // Painting the line
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+    let points = line.layers().firstObject().points()
+
+    points[0].curveMode = points[1].curveMode = 4
+    points[0].hasCurveFrom = points[1].hasCurveTo = true
+
+    if(firstLayerPosX<secondLayerPosX){
+      points[0].curveFrom = {x: 0, y: 0.5}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 1,y: 0.5}
+    } else {
+      points[0].curveFrom = {x: 1, y: 0.5}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 0,y: 0.5}
+    }
+  }
+
+  if(direction == "Left"){
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX,firstLayerPosY))
+    path.lineToPoint(NSMakePoint(secondLayerPosX,secondLayerPosY))
+
+    // Painting the line
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path))
+    let points = line.layers().firstObject().points()
+
+    points[0].curveMode = points[1].curveMode = 4
+    points[0].hasCurveFrom = points[1].hasCurveTo = true
+
+    if(firstLayerPosY<secondLayerPosY){
+      points[0].curveFrom = {x: 0.5, y: 0}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 0.5,y: 1}
+    } else {
+      points[0].curveFrom = {x: 0.5, y: 1}
+      points[0].curveTo = {x: -0.5,y:1}
+
+      points[1].curveFrom = {x: 1,y: 1}
+      points[1].curveTo = {x: 0.5,y: 0}
+    }
+  }
+
+  // Providing Settings for the arrow
+  line.setName("Curved Arrow")
+
+  return line
+}
+
+function styleLine(line, style){ // Refactored
+  let localStyle
+
+
+  if(style != null){
+    if(getLayerStyles(style) != null && style != "Default Style"){
+      localStyle = style
+      let ownStyle = getLayerStyles(style)
+      line.sharedStyle = ownStyle[0]
+    } else {
+      localStyle = "Default Style"
+      let border = line.style().addStylePartOfType(1)
+      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+      border.thickness = 2
+      line.style().endMarkerType = 2
+    }
+  } else {
+    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
+      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
+      let ownStyle = getLayerStyles(style)
+      line.sharedStyle = ownStyle[0]
+    } else {
+      localStyle = "Default Style"
+      let border = line.style().addStylePartOfType(1)
+      border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
+      border.thickness = 2
+      line.style().endMarkerType = 2
+    } 
+  }
+
+  return localStyle
+}
 
 
 

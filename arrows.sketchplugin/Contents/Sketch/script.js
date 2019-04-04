@@ -504,24 +504,19 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 }
 
 function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
-  // Main Operations based on the settings
+  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
+
   updateSpacing(firstObjectID, secondObjectID, localDirection);
-  autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Process of creating new connection  
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
 
-  var localType = type == null ? Settings.settingForKey("arrowType") : type;
-  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction;
-  var currentArrowsGroup = checkForGroup("Arrows"); // Need to refactor
-
-  var arrow = drawConnection(firstObjectID, secondObjectID, style, localType, localDirection, currentArrowsGroup, isCondition);
-  addToArrowsGroup(arrow.line, currentArrowsGroup);
-  var conditionID = arrow.condition != null && arrow.condition.length > 0 ? arrow.condition.id : null; // Storage for current connection
+  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, direction, isCondition); // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
     secondObject: secondObjectID,
-    style: localStyle,
-    condition: conditionID,
-    type: localType,
+    style: arrow.style,
+    condition: arrow.conditionID,
+    type: arrow.type,
     direction: localDirection,
     line: arrow.line.objectID() // Need to save this data to the global array
 
@@ -530,6 +525,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
 }
 
 function checkForGroup(groupName) {
+  // refactored
   var currentGroup = null; // Checking all the groups that we have
 
   for (var i = 0; i < currentParentGroup.layers().count(); i++) {
@@ -580,427 +576,45 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function drawConnection(firstObjectID, secondObjectID, style, type, direction, currentGroup, condition) {
-  var firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, middlePosX, middlePosY, diffX, diffY;
-  var connection = {
-    line: [],
-    condition: []
-  };
+function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, condition) {
+  // Refactored
+  // Process of creating new connection  
+  var localType = type == null ? Settings.settingForKey("arrowType") : type;
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
-  var firstObjectAbsPos = firstObject.frame.changeBasis({
-    from: firstObject.parent,
-    to: currentParentGroup
-  });
-  var secondObjectAbsPos = secondObject.frame.changeBasis({
-    from: secondObject.parent,
-    to: currentParentGroup
-  });
+  var connectionPos = getConnectionPos(firstObject, secondObject, currentGroup, localDirection);
+  var connection = {
+    line: [],
+    conditionID: [],
+    type: [],
+    style: [] // Type  
 
-  if (currentGroup) {
-    //if we already have a group, need to specify the difference
-    diffX = currentGroup.frame().x();
-    diffY = currentGroup.frame().y();
-  } else {
-    diffX = 0;
-    diffY = 0;
-  } // Drawing a line
+  };
 
-
-  var path = NSBezierPath.bezierPath();
-  getConnectionPos(direction); // // Getting all the positions
-  // if(direction == "Up"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y-diffY
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-  // if(direction == "Right"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-  // if(direction == "Down"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y-diffY
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-  // if(direction == "Left"){
-  //   // First Layer Position Start Point Position
-  //   firstLayerPosX = firstObjectAbsPos.x-diffX
-  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
-  //   // Second Layer Position End Point Position
-  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
-  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
-  //   // Middle Points
-  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
-  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
-  // }
-
-  if (type == "Angled" || type == null) {
-    // Based on direction, we need to specify connection points
-    if (direction == "Up") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    }
-
-    if (direction == "Right") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    }
-
-    if (direction == "Down") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    }
-
-    if (direction == "Left") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    } // Painting the line
-
-
-    connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Making middle points rounded
-
-    var points = connection.line.layers().firstObject().points();
-    points[1].cornerRadius = 20;
-    points[2].cornerRadius = 20; // Providing Settings for the arrow
-
-    connection.line.setName("Arrow");
+  if (localType == "Angled" || localType == null) {
+    connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);
   }
 
-  if (type == "Straight") {
-    // Based on direction, we need to specify connection points
-    if (direction == "Up") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    }
-
-    if (direction == "Right") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    }
-
-    if (direction == "Down") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    }
-
-    if (direction == "Left") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
-    } // Painting the line
-
-
-    connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path)); // Providing Settings for the arrow
-
-    connection.line.setName("Arrow");
+  if (localType == "Straight") {
+    connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);
   }
 
-  if (type == "Curved") {
-    if (direction == "Up") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
-
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
-
-      var _points = connection.line.layers().firstObject().points();
-
-      _points[0].curveMode = _points[1].curveMode = 4;
-      _points[0].hasCurveFrom = _points[1].hasCurveTo = true;
-
-      if (firstLayerPosX < secondLayerPosX) {
-        _points[0].curveFrom = {
-          x: 0,
-          y: 0.5
-        };
-        _points[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points[1].curveTo = {
-          x: 1,
-          y: 0.5
-        };
-      } else {
-        _points[0].curveFrom = {
-          x: 1,
-          y: 0.5
-        };
-        _points[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points[1].curveTo = {
-          x: 0,
-          y: 0.5
-        };
-      }
-    }
-
-    if (direction == "Right") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
-
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
-
-      var _points2 = connection.line.layers().firstObject().points();
-
-      _points2[0].curveMode = _points2[1].curveMode = 4;
-      _points2[0].hasCurveFrom = _points2[1].hasCurveTo = true;
-
-      if (firstLayerPosY < secondLayerPosY) {
-        _points2[0].curveFrom = {
-          x: 0.5,
-          y: 0
-        };
-        _points2[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points2[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points2[1].curveTo = {
-          x: 0.5,
-          y: 1
-        };
-      } else {
-        _points2[0].curveFrom = {
-          x: 0.5,
-          y: 1
-        };
-        _points2[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points2[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points2[1].curveTo = {
-          x: 0.5,
-          y: 0
-        };
-      }
-    }
-
-    if (direction == "Down") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
-
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
-
-      var _points3 = connection.line.layers().firstObject().points();
-
-      _points3[0].curveMode = _points3[1].curveMode = 4;
-      _points3[0].hasCurveFrom = _points3[1].hasCurveTo = true;
-
-      if (firstLayerPosX < secondLayerPosX) {
-        _points3[0].curveFrom = {
-          x: 0,
-          y: 0.5
-        };
-        _points3[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points3[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points3[1].curveTo = {
-          x: 1,
-          y: 0.5
-        };
-      } else {
-        _points3[0].curveFrom = {
-          x: 1,
-          y: 0.5
-        };
-        _points3[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points3[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points3[1].curveTo = {
-          x: 0,
-          y: 0.5
-        };
-      }
-    }
-
-    if (direction == "Left") {
-      // Connecting points
-      path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
-      path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
-
-      connection.line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
-
-      var _points4 = connection.line.layers().firstObject().points();
-
-      _points4[0].curveMode = _points4[1].curveMode = 4;
-      _points4[0].hasCurveFrom = _points4[1].hasCurveTo = true;
-
-      if (firstLayerPosY < secondLayerPosY) {
-        _points4[0].curveFrom = {
-          x: 0.5,
-          y: 0
-        };
-        _points4[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points4[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points4[1].curveTo = {
-          x: 0.5,
-          y: 1
-        };
-      } else {
-        _points4[0].curveFrom = {
-          x: 0.5,
-          y: 1
-        };
-        _points4[0].curveTo = {
-          x: -0.5,
-          y: 1
-        };
-        _points4[1].curveFrom = {
-          x: 1,
-          y: 1
-        };
-        _points4[1].curveTo = {
-          x: 0.5,
-          y: 0
-        };
-      }
-    } // Providing Settings for the arrow
+  if (localType == "Curved") {
+    connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);
+  } // Condition
 
 
-    connection.line.setName("Arrows");
-  }
+  connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null; // Style
 
-  if (condition != false) {
-    connection.condition = addCondition("#con", middlePosX, middlePosY);
-  }
+  connection.style = styleLine(connection.line, style); // Add to group
 
-  if (style != null) {
-    localStyle = getLayerStyles(style) != null && style != "Default Style" ? style : "Default Style";
-  } else {
-    // We don't have any data from the plugin data
-    localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) ? context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) : "Default Style";
-  }
-
-  if (style == null) {
-    // that means we are creating new arrow
-    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
-      // if we have specified options
-      // TODO: Need to refactor here. Local Style is not used at all
-      var _style = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
-
-      if (_style[0] == null) {
-        // Default Arrow Style
-        var border = connection.line.style().addStylePartOfType(1);
-        border.color = MSColor.colorWithRGBADictionary({
-          r: 0.89,
-          g: 0.89,
-          b: 0.89,
-          a: 1
-        });
-        border.thickness = 2;
-        connection.line.style().endMarkerType = 2;
-      } else {
-        connection.line.sharedStyle = _style[0];
-      }
-    } else {
-      // Default Arrow Style
-      var _border = connection.line.style().addStylePartOfType(1);
-
-      _border.color = MSColor.colorWithRGBADictionary({
-        r: 0.89,
-        g: 0.89,
-        b: 0.89,
-        a: 1
-      });
-      _border.thickness = 2;
-      connection.line.style().endMarkerType = 2;
-    }
-  } else {
-    // arrow style already provided
-    if (style == "Default Style") {
-      // Default Arrow Style
-      var _border2 = connection.line.style().addStylePartOfType(1);
-
-      _border2.color = MSColor.colorWithRGBADictionary({
-        r: 0.89,
-        g: 0.89,
-        b: 0.89,
-        a: 1
-      });
-      _border2.thickness = 2;
-      connection.line.style().endMarkerType = 2;
-    } else {
-      // User provided own style
-      var ownStyle = getLayerStyles(style);
-      connection.line.sharedStyle = ownStyle[0];
-    }
-  }
-
+  addToArrowsGroup(connection.line);
   return connection;
 }
 
-function addToArrowsGroup(line, currentGroup) {
+function addToArrowsGroup(line) {
+  var currentGroup = checkForGroup("Arrows");
+
   if (currentGroup) {
     currentGroup.addLayers([line]);
     currentGroup.fixGeometryWithOptions(1);
@@ -1017,6 +631,30 @@ function addToArrowsGroup(line, currentGroup) {
 
     group.moveToBack();
     currentGroup = checkForGroup("Arrows");
+    currentGroup.fixGeometryWithOptions(1);
+  }
+}
+
+function addToConditionGroup(condition) {
+  var currentGroup = checkForGroup("Conditions");
+
+  if (currentGroup) {
+    currentGroup.addLayers([condition]);
+    currentGroup.fixGeometryWithOptions(1);
+  } else {
+    // If we don't have a group
+    var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+
+    var group = new Group({
+      parent: currentParentGroup,
+      name: 'Conditions',
+      locked: false,
+      layers: [condition]
+    }); // Moving this group to the bottom of the page
+
+    group.moveToBack();
+    currentGroup = checkForGroup("Conditions"); // There is a problem, that's why duplicated for now
+
     currentGroup.fixGeometryWithOptions(1);
   }
 }
@@ -1469,48 +1107,10 @@ function start(context, direction, isCondition) {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
   }
-} // {
-//   "script": "./script.js",
-//   "name" : "onLayersMoved",
-//   "handlers" : {
-//     "actions": {
-//       "LayersMoved.finish": "onLayersMoved"
-//     }
-//   },
-//   "identifier" : "onLayersMoved"
-// }
-
-
-function getConditionID(keyword) {
-  var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
-  var conditionID, symbolReferences; // let keyword = "#condition"
-  // log(libraries.length)
-
-  for (var g = 0; g < libraries.length; g++) {
-    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
-
-    for (var i = 0; i < symbolReferences.length; i++) {
-      if (symbolReferences[i].name.includes(keyword)) {
-        conditionID = symbolReferences[i].id;
-      }
-    }
-  }
-
-  if (conditionID == null) {
-    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
-  } // symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
-  // log(symbolReferences)
-  // var symbolMaster = symbolReferences[0].import()
-  // var instance = symbolMaster.createNewInstance()
-  // console.log(instance)
-  // instance.parent = currentParentGroup
-  // log(symbolMaster)
-
-
-  return conditionID;
 }
 
 function addCondition(keyword, x, y) {
+  // Refactored
   var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
   var conditionObject, symbolReferences;
 
@@ -1529,24 +1129,41 @@ function addCondition(keyword, x, y) {
   } else {
     var symbolMaster = conditionObject.import();
     var instance = symbolMaster.createNewInstance();
-    instance.parent = currentParentGroup;
+    addToConditionGroup(instance);
     instance.frame.x = x - instance.frame.width / 2;
     instance.frame.y = y - instance.frame.height / 2;
   }
 
-  return conditionObject;
+  return conditionObject.id;
 }
 
-function getConnectionPos(direction) {
+function getConnectionPos(firstObject, secondObject, currentGroup, direction) {
+  // Refactored
+  var firstObjectAbsPos = firstObject.frame.changeBasis({
+    from: firstObject.parent,
+    to: currentParentGroup
+  });
+  var secondObjectAbsPos = secondObject.frame.changeBasis({
+    from: secondObject.parent,
+    to: currentParentGroup
+  });
+  var diffX, diffY;
+
+  if (currentGroup) {
+    diffX = currentGroup.frame().x();
+    diffY = currentGroup.frame().y();
+  } else {
+    diffX = 0;
+    diffY = 0;
+  }
+
   var connectionPos = {
     firstLayerPosX: null,
     firstLayerPosY: null,
     secondLayerPosX: null,
     secondLayerPosY: null,
     middlePosX: null,
-    middlePosY: null,
-    diffX: null,
-    diffY: null // Getting all the positions
+    middlePosY: null // Getting all the positions
 
   };
 
@@ -1555,50 +1172,374 @@ function getConnectionPos(direction) {
     connectionPos.firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
     connectionPos.firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
 
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX) / 2;
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY) / 2;
   }
 
   if (direction == "Right") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
-    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObjectAbsPos.x - diffX;
-    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x - diffX;
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
 
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX) / 2;
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY) / 2;
   }
 
   if (direction == "Down") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-    secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
 
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX) / 2;
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY) / 2;
   }
 
   if (direction == "Left") {
     // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x - diffX;
-    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x - diffX;
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
 
-    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
-    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
+    connectionPos.secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
+    connectionPos.secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
 
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+    middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX) / 2;
+    middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY) / 2;
   }
 
   return connectionPos;
+}
+
+function drawStraightLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, direction) {
+  // Refactored
+  var path = NSBezierPath.bezierPath();
+
+  if (direction == "Up") {
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Right") {
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Down") {
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Left") {
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+  line.setName("Straight Arrow");
+  return line;
+}
+
+function drawAngledLine(firstLayerPosX, firstLayerPosY, middlePosX, middlePosY, secondLayerPosX, secondLayerPosY, direction) {
+  // Refactored
+  var path = NSBezierPath.bezierPath();
+
+  if (direction == "Up") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Right") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Down") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(firstLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, middlePosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  if (direction == "Left") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(middlePosX, secondLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY));
+  }
+
+  var line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+  var points = line.layers().firstObject().points();
+  points[1].cornerRadius = 20;
+  points[2].cornerRadius = 20;
+  line.setName("Angled Arrow");
+  return line;
+}
+
+function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondLayerPosY, direction) {
+  // Refactored
+  var path = NSBezierPath.bezierPath();
+  var line;
+
+  if (direction == "Up") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+    var points = line.layers().firstObject().points();
+    points[0].curveMode = points[1].curveMode = 4;
+    points[0].hasCurveFrom = points[1].hasCurveTo = true;
+
+    if (firstLayerPosX < secondLayerPosX) {
+      points[0].curveFrom = {
+        x: 0,
+        y: 0.5
+      };
+      points[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      points[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      points[1].curveTo = {
+        x: 1,
+        y: 0.5
+      };
+    } else {
+      points[0].curveFrom = {
+        x: 1,
+        y: 0.5
+      };
+      points[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      points[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      points[1].curveTo = {
+        x: 0,
+        y: 0.5
+      };
+    }
+  }
+
+  if (direction == "Right") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+    var _points = line.layers().firstObject().points();
+
+    _points[0].curveMode = _points[1].curveMode = 4;
+    _points[0].hasCurveFrom = _points[1].hasCurveTo = true;
+
+    if (firstLayerPosY < secondLayerPosY) {
+      _points[0].curveFrom = {
+        x: 0.5,
+        y: 0
+      };
+      _points[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      _points[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      _points[1].curveTo = {
+        x: 0.5,
+        y: 1
+      };
+    } else {
+      _points[0].curveFrom = {
+        x: 0.5,
+        y: 1
+      };
+      _points[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      _points[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      _points[1].curveTo = {
+        x: 0.5,
+        y: 0
+      };
+    }
+  }
+
+  if (direction == "Down") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+    var _points2 = line.layers().firstObject().points();
+
+    _points2[0].curveMode = _points2[1].curveMode = 4;
+    _points2[0].hasCurveFrom = _points2[1].hasCurveTo = true;
+
+    if (firstLayerPosX < secondLayerPosX) {
+      _points2[0].curveFrom = {
+        x: 0,
+        y: 0.5
+      };
+      _points2[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      _points2[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      _points2[1].curveTo = {
+        x: 1,
+        y: 0.5
+      };
+    } else {
+      _points2[0].curveFrom = {
+        x: 1,
+        y: 0.5
+      };
+      _points2[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      _points2[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      _points2[1].curveTo = {
+        x: 0,
+        y: 0.5
+      };
+    }
+  }
+
+  if (direction == "Left") {
+    // Connecting points
+    path.moveToPoint(NSMakePoint(firstLayerPosX, firstLayerPosY));
+    path.lineToPoint(NSMakePoint(secondLayerPosX, secondLayerPosY)); // Painting the line
+
+    line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
+
+    var _points3 = line.layers().firstObject().points();
+
+    _points3[0].curveMode = _points3[1].curveMode = 4;
+    _points3[0].hasCurveFrom = _points3[1].hasCurveTo = true;
+
+    if (firstLayerPosY < secondLayerPosY) {
+      _points3[0].curveFrom = {
+        x: 0.5,
+        y: 0
+      };
+      _points3[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      _points3[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      _points3[1].curveTo = {
+        x: 0.5,
+        y: 1
+      };
+    } else {
+      _points3[0].curveFrom = {
+        x: 0.5,
+        y: 1
+      };
+      _points3[0].curveTo = {
+        x: -0.5,
+        y: 1
+      };
+      _points3[1].curveFrom = {
+        x: 1,
+        y: 1
+      };
+      _points3[1].curveTo = {
+        x: 0.5,
+        y: 0
+      };
+    }
+  } // Providing Settings for the arrow
+
+
+  line.setName("Curved Arrow");
+  return line;
+}
+
+function styleLine(line, style) {
+  // Refactored
+  var localStyle;
+
+  if (style != null) {
+    if (getLayerStyles(style) != null && style != "Default Style") {
+      localStyle = style;
+      var ownStyle = getLayerStyles(style);
+      line.sharedStyle = ownStyle[0];
+    } else {
+      localStyle = "Default Style";
+      var border = line.style().addStylePartOfType(1);
+      border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  } else {
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)) {
+      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
+
+      var _ownStyle = getLayerStyles(style);
+
+      line.sharedStyle = _ownStyle[0];
+    } else {
+      localStyle = "Default Style";
+
+      var _border = line.style().addStylePartOfType(1);
+
+      _border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      _border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  }
+
+  return localStyle;
 }
 
 /***/ }),
