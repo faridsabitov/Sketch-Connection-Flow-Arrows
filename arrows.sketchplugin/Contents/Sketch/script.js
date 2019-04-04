@@ -504,12 +504,12 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 }
 
 function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
-  // Process of creating new connection  
-  var localType = type == null ? Settings.settingForKey("arrowType") : type;
-  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
-
+  // Main Operations based on the settings
   updateSpacing(firstObjectID, secondObjectID, localDirection);
-  autoAlignLayer(firstObjectID, secondObjectID, localDirection);
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Process of creating new connection  
+
+  var localType = type == null ? Settings.settingForKey("arrowType") : type;
+  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction;
   var currentArrowsGroup = checkForGroup("Arrows"); // Need to refactor
 
   var arrow = drawConnection(firstObjectID, secondObjectID, style, localType, localDirection, currentArrowsGroup, isCondition);
@@ -607,55 +607,52 @@ function drawConnection(firstObjectID, secondObjectID, style, type, direction, c
   } // Drawing a line
 
 
-  var path = NSBezierPath.bezierPath(); // Getting all the positions
-
-  if (direction == "Up") {
-    // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-    firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
-
-    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
-
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
-  }
-
-  if (direction == "Right") {
-    // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
-    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-    secondLayerPosX = secondObjectAbsPos.x - diffX;
-    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
-  }
-
-  if (direction == "Down") {
-    // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
-    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
-
-    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
-    secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
-
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
-  }
-
-  if (direction == "Left") {
-    // First Layer Position Start Point Position
-    firstLayerPosX = firstObjectAbsPos.x - diffX;
-    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
-
-    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
-    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
-
-    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
-    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
-  }
+  var path = NSBezierPath.bezierPath();
+  getConnectionPos(direction); // // Getting all the positions
+  // if(direction == "Up"){
+  //   // First Layer Position Start Point Position
+  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+  //   firstLayerPosY = firstObjectAbsPos.y-diffY
+  //   // Second Layer Position End Point Position
+  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY
+  //   // Middle Points
+  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
+  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
+  // }
+  // if(direction == "Right"){
+  //   // First Layer Position Start Point Position
+  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width-diffX
+  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
+  //   // Second Layer Position End Point Position
+  //   secondLayerPosX = secondObjectAbsPos.x-diffX
+  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
+  //   // Middle Points
+  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
+  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
+  // }
+  // if(direction == "Down"){
+  //   // First Layer Position Start Point Position
+  //   firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX
+  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY
+  //   // Second Layer Position End Point Position
+  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX
+  //   secondLayerPosY = secondObjectAbsPos.y-diffY
+  //   // Middle Points
+  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
+  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
+  // }
+  // if(direction == "Left"){
+  //   // First Layer Position Start Point Position
+  //   firstLayerPosX = firstObjectAbsPos.x-diffX
+  //   firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height/2-diffY
+  //   // Second Layer Position End Point Position
+  //   secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width-diffX
+  //   secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
+  //   // Middle Points
+  //   middlePosX = (firstLayerPosX + secondLayerPosX)/2
+  //   middlePosY = (firstLayerPosY + secondLayerPosY)/2
+  // }
 
   if (type == "Angled" || type == null) {
     // Based on direction, we need to specify connection points
@@ -1538,6 +1535,70 @@ function addCondition(keyword, x, y) {
   }
 
   return conditionObject;
+}
+
+function getConnectionPos(direction) {
+  var connectionPos = {
+    firstLayerPosX: null,
+    firstLayerPosY: null,
+    secondLayerPosX: null,
+    secondLayerPosY: null,
+    middlePosX: null,
+    middlePosY: null,
+    diffX: null,
+    diffY: null // Getting all the positions
+
+  };
+
+  if (direction == "Up") {
+    // First Layer Position Start Point Position
+    connectionPos.firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
+    connectionPos.firstLayerPosY = firstObjectAbsPos.y - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
+    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  if (direction == "Right") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width - diffX;
+    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x - diffX;
+    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  if (direction == "Down") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x + firstObjectAbsPos.width / 2 - diffX;
+    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width / 2 - diffX;
+    secondLayerPosY = secondObjectAbsPos.y - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  if (direction == "Left") {
+    // First Layer Position Start Point Position
+    firstLayerPosX = firstObjectAbsPos.x - diffX;
+    firstLayerPosY = firstObjectAbsPos.y + firstObjectAbsPos.height / 2 - diffY; // Second Layer Position End Point Position
+
+    secondLayerPosX = secondObjectAbsPos.x + secondObjectAbsPos.width - diffX;
+    secondLayerPosY = secondObjectAbsPos.y + secondObjectAbsPos.height / 2 - diffY; // Middle Points
+
+    middlePosX = (firstLayerPosX + secondLayerPosX) / 2;
+    middlePosY = (firstLayerPosY + secondLayerPosY) / 2;
+  }
+
+  return connectionPos;
 }
 
 /***/ }),
