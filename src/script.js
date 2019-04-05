@@ -389,7 +389,11 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   
   // Need to delete data first, because we will have a new line
   deleteLine(lineID)
-  if(!isCondition && conditionObject){conditionObject.remove()}
+  if(!isCondition && conditionObject){
+    conditionObject.remove()
+  }
+  log(conditionID)
+
   newConnectionsData = deleteConnectionFromData(connectionIndex)
 
   if(firstObject && secondObject){
@@ -398,7 +402,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   } 
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {  
+function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {  // Refactored
   let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction
 
   // Main Operations based on the settings
@@ -429,7 +433,6 @@ function checkForGroup(groupName) { // refactored
   // Checking all the groups that we have
   for(let i = 0; i < currentParentGroup.layers().count(); i++){
     if(currentParentGroup.layers()[i].name() == groupName) {
-      // If we already have "Arrow" group we need to save it's folder
       currentGroup = currentParentGroup.layers()[i]
     } 
   }
@@ -480,14 +483,14 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
   let localType = type == null ? Settings.settingForKey("arrowType") : type
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
-  let connectionPos = getConnectionPos(firstObject, secondObject, currentGroup, localDirection)
+  let connectionPos = getConnectionPos(firstObject, secondObject, localDirection)
   let connection = {
     line: [], 
     conditionID: [],
     type: [],
     style: []
   }
-
+  
   // Type  
   if(localType == "Angled" || localType == null){ connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
   if(localType == "Straight"){ connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
@@ -507,7 +510,7 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
 function addToArrowsGroup(line){
   let currentGroup = checkForGroup("Arrows")
-
+  log("Arr "+line)
   if(currentGroup){
     currentGroup.addLayers([line])
     currentGroup.fixGeometryWithOptions(1)
@@ -529,7 +532,7 @@ function addToArrowsGroup(line){
 
 function addToConditionGroup(condition){
   let currentGroup = checkForGroup("Conditions") 
-
+  log("Con "+condition)
   if(currentGroup){
     currentGroup.addLayers([condition])
     currentGroup.fixGeometryWithOptions(1)
@@ -539,17 +542,18 @@ function addToConditionGroup(condition){
     let group = new Group({
       parent: currentParentGroup,
       name: 'Conditions',
-      locked: false,
       layers: [condition]
     })
     // Moving this group to the bottom of the page
     group.moveToBack()
-    currentGroup = checkForGroup("Conditions") // There is a problem, that's why duplicated for now
+    group.adjustToFit()
+    currentGroup = checkForGroup("Conditions") 
+    // log("g "+group)
+    log("Cg "+currentGroup)
+    
     currentGroup.fixGeometryWithOptions(1)
   }
 }
-
-
 
 function getConnectionsData(){ //Refactored
   let dataArray = []
@@ -582,88 +586,6 @@ function findConnectionData(firstObjectID, secondObjectID, data){
     }
   }
   return arrayNumber
-}
-
-function setActiveDirectionSetting(arrowDirectionField){
-  let currentDirection = "Auto"
-
-  if(Settings.settingForKey("arrowDirection")){
-    // if there is data in settings
-    currentDirection = Settings.settingForKey("arrowDirection")  
-    
-    if(currentDirection == "Auto"){
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-    
-    if(currentDirection == "Right"){
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-
-    if(currentDirection == "Down"){
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-
-    if(currentDirection == "Left"){
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-
-    if(currentDirection == "Up"){
-      arrowDirectionField.addItemWithTitle("Up")
-      arrowDirectionField.lastItem().setState(1)
-      arrowDirectionField.addItemWithTitle("Auto")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Right")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Down")
-      arrowDirectionField.lastItem().setState(0)
-      arrowDirectionField.addItemWithTitle("Left")
-      arrowDirectionField.lastItem().setState(0)
-    } 
-
-  } else {
-    // Show default
-    arrowDirectionField.addItemWithTitle("Auto")
-    arrowDirectionField.addItemWithTitle("Right")
-    arrowDirectionField.addItemWithTitle("Down")
-    arrowDirectionField.addItemWithTitle("Left")
-    arrowDirectionField.addItemWithTitle("Up")
-  }
 }
 
 function setActiveStyleSetting(arrowStylingField){
@@ -754,12 +676,6 @@ function deleteConnectionFromData(connectionIndex){ // Refactored
     }
   }
   return newConnections
-}
-
-function refactorLines(group){ // Need to finish
-  for(let i = 0; i < group.layers().length; i++){
-    // Here we need to go through each data in our database and delete line if there is no data
-  }
 }
 
 function deleteLine(lineID){ // refactored
@@ -877,34 +793,6 @@ function getSourceObjectFromSelection(selection, direction){ //Refactored
   return sourceObjectID
 }
 
-function confirmationAlert(alert, message) {
-    // Title
-    alert.setMessageText("Would you like to delete all the arrows from "+message)
-
-    // Creating dialog buttons
-    alert.addButtonWithTitle("Delete Arrows")
-    alert.addButtonWithTitle("Cancel")
-  
-    // Creating the view
-    const viewWidth = 300
-    const viewHeight = 40
-  
-    let view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight))
-    alert.addAccessoryView(view)
-  
-    // Label
-    var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(-1, viewHeight - 40, 330, 40))
-  
-    infoLabel.setStringValue("ℹ️ You can select layers, artboards to delete all the arrows from selected one only")
-    infoLabel.setSelectable(false)
-    infoLabel.setDrawsBackground(false)
-    infoLabel.setBezeled(false)
-  
-    view.addSubview(infoLabel)
-
-    return alert
-}
-
 function alertSetup(alert, viewWidth, viewHeight){
   // Title
   alert.setMessageText("Arrow Plugin Settings")
@@ -1012,6 +900,7 @@ function addCondition(keyword, x, y){ // Refactored
   } else {
     let symbolMaster = conditionObject.import()
     let instance = symbolMaster.createNewInstance()
+    instance.parent = currentParentGroup
     addToConditionGroup(instance)
     instance.frame.x = x - instance.frame.width / 2 
     instance.frame.y = y - instance.frame.height / 2
@@ -1020,10 +909,11 @@ function addCondition(keyword, x, y){ // Refactored
   return conditionObject.id
 }
 
-function getConnectionPos(firstObject, secondObject, currentGroup, direction){ // Refactored
+function getConnectionPos(firstObject, secondObject, direction){ // Refactored
 
   let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup})
   let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup})
+  let currentGroup = checkForGroup("Arrows") 
   let diffX, diffY
 
   if(currentGroup){
@@ -1096,8 +986,8 @@ function getConnectionPos(firstObject, secondObject, currentGroup, direction){ /
     connectionPos.secondLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height/2-diffY
 
     // Middle Points
-    middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2
-    middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2
+    connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2
+    connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2
   }
 
   return connectionPos
@@ -1296,14 +1186,16 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 
 function styleLine(line, style){ // Refactored
   let localStyle
-
-
-  if(style != null){
+  
+  if(style != null){ 
+    // For updates
     if(getLayerStyles(style) != null && style != "Default Style"){
+      // If style is specified
       localStyle = style
       let ownStyle = getLayerStyles(style)
       line.sharedStyle = ownStyle[0]
     } else {
+      // if there is no specific style
       localStyle = "Default Style"
       let border = line.style().addStylePartOfType(1)
       border.color = MSColor.colorWithRGBADictionary({r: 0.89, g: 0.89, b: 0.89, a: 1})
@@ -1311,10 +1203,12 @@ function styleLine(line, style){ // Refactored
       line.style().endMarkerType = 2
     }
   } else {
-    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)){
-      localStyle = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey)
-      let ownStyle = getLayerStyles(style)
-      line.sharedStyle = ownStyle[0]
+    // For creating new
+    if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style"){
+      // we have settins almost all the time and it's not default
+      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey))
+      line.sharedStyle = localStyle[0]
+      localStyle = localStyle[0].name()
     } else {
       localStyle = "Default Style"
       let border = line.style().addStylePartOfType(1)
