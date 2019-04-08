@@ -52,18 +52,8 @@ export function updateSelectedArrows(context) {
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
-          let str = currentConnectionsData[connectionIndex].condition
-          log(typeof str)
-          // Problem her is that we need to know is there a condition or not
-          // Also, we need to check, what if user will change override of the layer
-          // All the styles too
-          
-          if(currentConnectionsData[connectionIndex].condition) {
-            log("hewr")
-          }
-          // let isCondition = 
-
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, isCondition, connectionIndex)
+          log(currentConnectionsData)
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex)
           sketch.UI.message("Current connection is updated 🤘")
         } else {
           sketch.UI.message("There is no connection between selected layers on the plugin data")
@@ -418,6 +408,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
 
   // Making an Arrow 
   let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, isCondition)
+  log(arrow.conditionID)
   
   // Storage for current connection
   let connection = {
@@ -425,6 +416,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
     secondObject : secondObjectID,
     style : arrow.style,
     condition : arrow.conditionID,
+    isCondition : isCondition,
     type : arrow.type,
     direction: localDirection,
     line : arrow.line.objectID()
@@ -502,6 +494,7 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
   if(localType == "Angled" || localType == null){ connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
   if(localType == "Straight"){ connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
   if(localType == "Curved"){ connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
+
 
   // Condition
   connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null

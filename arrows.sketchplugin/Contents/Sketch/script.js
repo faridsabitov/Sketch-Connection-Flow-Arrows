@@ -120,8 +120,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "panel", function() { return panel; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
  // const { toArray } = require('util')
 //
 //  Variables
@@ -187,17 +185,8 @@ function updateSelectedArrows(context) {
         var connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData);
 
         if (connectionIndex != null) {
-          var str = currentConnectionsData[connectionIndex].condition;
-          log(_typeof(str)); // Problem her is that we need to know is there a condition or not
-          // Also, we need to check, what if user will change override of the layer
-          // All the styles too
-
-          if (currentConnectionsData[connectionIndex].condition) {
-            log("hewr");
-          } // let isCondition = 
-
-
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, isCondition, connectionIndex);
+          log(currentConnectionsData);
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
         } else {
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no connection between selected layers on the plugin data");
@@ -521,13 +510,15 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
 
-  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, isCondition); // Storage for current connection
+  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, isCondition);
+  log(arrow.conditionID); // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
     secondObject: secondObjectID,
     style: arrow.style,
     condition: arrow.conditionID,
+    isCondition: isCondition,
     type: arrow.type,
     direction: localDirection,
     line: arrow.line.objectID() // Need to save this data to the global array
