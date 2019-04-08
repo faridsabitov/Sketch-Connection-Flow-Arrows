@@ -491,11 +491,10 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
   deleteLine(lineID);
 
-  if (!isCondition && conditionObject) {
+  if (conditionObject) {
     conditionObject.remove();
   }
 
-  log(conditionID);
   newConnectionsData = deleteConnectionFromData(connectionIndex);
 
   if (firstObject && secondObject) {
@@ -615,13 +614,11 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
 function addToArrowsGroup(line) {
   var currentGroup = checkForGroup("Arrows");
-  log("Arr " + line);
 
   if (currentGroup) {
     currentGroup.addLayers([line]);
     currentGroup.fixGeometryWithOptions(1);
   } else {
-    // If we don't have a group
     var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
     var group = new Group({
@@ -629,37 +626,37 @@ function addToArrowsGroup(line) {
       name: 'Arrows',
       locked: true,
       layers: [line]
-    }); // Moving this group to the bottom of the page
-
+    });
     group.moveToBack();
-    currentGroup = checkForGroup("Arrows");
-    currentGroup.fixGeometryWithOptions(1);
+    group.adjustToFit();
   }
 }
 
-function addToConditionGroup(condition) {
-  var currentGroup = checkForGroup("Conditions");
-  log("Con " + condition);
+function addToConditionGroup(condition, x, y) {
+  // Refactored
+  var conGroup = checkForGroup("Conditions");
+  var arGroup = checkForGroup("Arrows");
+  var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
+  var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
 
-  if (currentGroup) {
-    currentGroup.addLayers([condition]);
-    currentGroup.fixGeometryWithOptions(1);
+  if (conGroup) {
+    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
+    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
+    condition.parent = conGroup;
+    conGroup.fixGeometryWithOptions(1);
   } else {
-    // If we don't have a group
+    condition.frame.x = x - condition.frame.width / 2;
+    condition.frame.y = y - condition.frame.height / 2;
+
     var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
     var group = new Group({
       parent: currentParentGroup,
       name: 'Conditions',
       layers: [condition]
-    }); // Moving this group to the bottom of the page
-
+    });
     group.moveToBack();
     group.adjustToFit();
-    currentGroup = checkForGroup("Conditions"); // log("g "+group)
-
-    log("Cg " + currentGroup);
-    currentGroup.fixGeometryWithOptions(1);
   }
 }
 
@@ -1008,30 +1005,29 @@ function start(context, direction, isCondition) {
 function addCondition(keyword, x, y) {
   // Refactored
   var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
-  var conditionObject, symbolReferences;
+  var libraryObject, symbolReferences, symbol;
 
   for (var g = 0; g < libraries.length; g++) {
     symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
 
     for (var i = 0; i < symbolReferences.length; i++) {
       if (symbolReferences[i].name.includes(keyword)) {
-        conditionObject = symbolReferences[i];
+        libraryObject = symbolReferences[i];
       }
     }
   }
 
-  if (conditionObject == null) {
+  if (libraryObject == null) {
+    symbol = null;
     UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
   } else {
-    var symbolMaster = conditionObject.import();
-    var instance = symbolMaster.createNewInstance();
-    instance.parent = currentParentGroup;
-    addToConditionGroup(instance);
-    instance.frame.x = x - instance.frame.width / 2;
-    instance.frame.y = y - instance.frame.height / 2;
+    var symbolMaster = libraryObject.import();
+    symbol = symbolMaster.createNewInstance();
+    addToConditionGroup(symbol, x, y);
+    symbol = symbol.id;
   }
 
-  return conditionObject.id;
+  return symbol;
 }
 
 function getConnectionPos(firstObject, secondObject, direction) {

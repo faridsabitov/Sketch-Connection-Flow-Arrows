@@ -389,10 +389,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   
   // Need to delete data first, because we will have a new line
   deleteLine(lineID)
-  if(!isCondition && conditionObject){
-    conditionObject.remove()
-  }
-  log(conditionID)
+  if(conditionObject){conditionObject.remove()}
 
   newConnectionsData = deleteConnectionFromData(connectionIndex)
 
@@ -510,12 +507,10 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
 function addToArrowsGroup(line){
   let currentGroup = checkForGroup("Arrows")
-  log("Arr "+line)
   if(currentGroup){
     currentGroup.addLayers([line])
     currentGroup.fixGeometryWithOptions(1)
   } else {
-    // If we don't have a group
     let Group = require('sketch/dom').Group
     let group = new Group({
       parent: currentParentGroup,
@@ -523,35 +518,34 @@ function addToArrowsGroup(line){
       locked: true,
       layers: [line]
     })
-    // Moving this group to the bottom of the page
     group.moveToBack()
-    currentGroup = checkForGroup("Arrows")
-    currentGroup.fixGeometryWithOptions(1)
+    group.adjustToFit()
+    
   }
 }
 
-function addToConditionGroup(condition){
-  let currentGroup = checkForGroup("Conditions") 
-  log("Con "+condition)
-  if(currentGroup){
-    currentGroup.addLayers([condition])
-    currentGroup.fixGeometryWithOptions(1)
+function addToConditionGroup(condition, x, y){ // Refactored
+  let conGroup = checkForGroup("Conditions") 
+  let arGroup = checkForGroup("Arrows") 
+  let arGroupX = arGroup != null ? arGroup.frame().x() : 0
+  let arGroupY = arGroup != null ? arGroup.frame().y() : 0
+  
+  if(conGroup){
+    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX) 
+    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY) 
+    condition.parent = conGroup
+    conGroup.fixGeometryWithOptions(1)
   } else {
-    // If we don't have a group
+    condition.frame.x = x - condition.frame.width / 2 
+    condition.frame.y = y - condition.frame.height / 2
     let Group = require('sketch/dom').Group
     let group = new Group({
       parent: currentParentGroup,
       name: 'Conditions',
       layers: [condition]
     })
-    // Moving this group to the bottom of the page
     group.moveToBack()
     group.adjustToFit()
-    currentGroup = checkForGroup("Conditions") 
-    // log("g "+group)
-    log("Cg "+currentGroup)
-    
-    currentGroup.fixGeometryWithOptions(1)
   }
 }
 
@@ -883,30 +877,28 @@ function start(context, direction, isCondition){
 
 function addCondition(keyword, x, y){ // Refactored
   let libraries = sketch.getLibraries()
-  let conditionObject, symbolReferences
+  let libraryObject, symbolReferences, symbol
 
   for(let g = 0; g < libraries.length; g++) {
     symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document)
-
     for(let i = 0; i < symbolReferences.length; i++) {
       if(symbolReferences[i].name.includes(keyword)){
-        conditionObject = symbolReferences[i]
+        libraryObject = symbolReferences[i]
       }
     }
   }
 
-  if(conditionObject == null){
+  if(libraryObject == null){
+    symbol = null
     UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here')
   } else {
-    let symbolMaster = conditionObject.import()
-    let instance = symbolMaster.createNewInstance()
-    instance.parent = currentParentGroup
-    addToConditionGroup(instance)
-    instance.frame.x = x - instance.frame.width / 2 
-    instance.frame.y = y - instance.frame.height / 2
+    let symbolMaster = libraryObject.import()
+    symbol = symbolMaster.createNewInstance()
+    addToConditionGroup(symbol, x, y)
+    symbol = symbol.id
   }
 
-  return conditionObject.id
+  return symbol
 }
 
 function getConnectionPos(firstObject, secondObject, direction){ // Refactored
