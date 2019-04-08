@@ -40,13 +40,11 @@ export function createUpArrowWithCondition(context){start(context, "Up", true)}
 //
 
 export function updateSelectedArrows(context) {
-
   let selection = context.selection
 
-  if(selection.count() > 1){
+  if(selection.count() > 1 && selection[0].class() != "MSArtboardGroup"){
     // Need to find source object by ID first
-    // let sourceObjectID = getSourceObjectFromSelection(selection)
-    let currentConnectionsData = newConnectionsData
+    let currentConnectionsData = newConnectionsData // Need to refactor
 
     for(let g = 0; g < selection.count(); g++) {
       if(selection[g].objectID() != selection[0].objectID()){
@@ -54,17 +52,29 @@ export function updateSelectedArrows(context) {
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
-          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, connectionIndex)
-          sketch.UI.message("Current connection is updated 🚀")
+          let str = currentConnectionsData[connectionIndex].condition
+          log(typeof str)
+          // Problem her is that we need to know is there a condition or not
+          // Also, we need to check, what if user will change override of the layer
+          // All the styles too
+          
+          if(currentConnectionsData[connectionIndex].condition) {
+            log("hewr")
+          }
+          // let isCondition = 
+
+          updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, isCondition, connectionIndex)
+          sketch.UI.message("Current connection is updated 🤘")
         } else {
           sketch.UI.message("There is no connection between selected layers on the plugin data")
         }
       }
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+    
   } else {
     // When user didn't select anything
-    sketch.UI.message("Please select more than two layers")
+    sketch.UI.message("Please select more than two layers. Artboards are coming soon 🥳")
   }
 }
 
@@ -407,7 +417,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
 
   // Making an Arrow 
-  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, direction, isCondition)
+  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, isCondition)
   
   // Storage for current connection
   let connection = {
@@ -529,7 +539,7 @@ function addToConditionGroup(condition, x, y){ // Refactored
   let arGroup = checkForGroup("Arrows") 
   let arGroupX = arGroup != null ? arGroup.frame().x() : 0
   let arGroupY = arGroup != null ? arGroup.frame().y() : 0
-  
+
   if(conGroup){
     condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX) 
     condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY) 
