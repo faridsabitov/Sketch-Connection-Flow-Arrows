@@ -491,27 +491,29 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
   deleteLine(lineID);
 
-  if (conditionObject) {
-    conditionObject.remove();
+  if (conditionID) {
+    if (conditionObject) {
+      conditionObject.remove();
+    }
   }
 
   newConnectionsData = deleteConnectionFromData(connectionIndex);
 
   if (firstObject && secondObject) {
     // If we have all the objects, we can recreate the line
-    createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition);
+    createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition);
   }
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {
+function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {
   // Refactored
   var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
 
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
 
-  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, isCondition);
-  log(arrow.conditionID); // Storage for current connection
+  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition); // log(arrow.conditionID)
+  // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
@@ -521,10 +523,12 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
     isCondition: isCondition,
     type: arrow.type,
     direction: localDirection,
-    line: arrow.line.objectID() // Need to save this data to the global array
-
+    line: arrow.line.objectID()
   };
+  log(connection); // Need to save this data to the global array
+
   newConnectionsData.push(connection);
+  log(newConnectionsData);
 }
 
 function checkForGroup(groupName) {
@@ -578,10 +582,9 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, condition) {
+function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, condition) {
   // Refactored
   // Process of creating new connection  
-  var localType = type == null ? Settings.settingForKey("arrowType") : type;
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
   var connectionPos = getConnectionPos(firstObject, secondObject, localDirection);
@@ -592,21 +595,32 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
     style: [] // Type  
 
   };
+  connection.type = type == null ? Settings.settingForKey("arrowType") : type;
 
-  if (localType == "Angled" || localType == null) {
+  if (connection.type == "Angled" || connection.type == null) {
     connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);
   }
 
-  if (localType == "Straight") {
+  if (connection.type == "Straight") {
     connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);
   }
 
-  if (localType == "Curved") {
+  if (connection.type == "Curved") {
     connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);
   } // Condition
 
 
-  connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null; // Style
+  if (condition != false) {
+    if (conditionID) {
+      connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
+    } else {
+      connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY);
+    }
+  } else {
+    connection.conditionID = null;
+  } // connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null
+  // Style
+
 
   connection.style = styleLine(connection.line, style); // Add to group
 
@@ -987,7 +1001,7 @@ function start(context, direction, isCondition) {
 
         if (connectionIndex == null) {
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, isCondition);
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
           // Need to remake the arrow condition
@@ -1030,6 +1044,28 @@ function addCondition(keyword, x, y) {
   }
 
   return symbol;
+}
+
+function updateCondition(conditionID, x, y) {
+  // Refactored
+  var condition = document.getLayerWithID(conditionID);
+  var conGroup = checkForGroup("Conditions");
+  var arGroup = checkForGroup("Arrows");
+  var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
+  var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
+  log(condition.x());
+
+  if (conGroup) {
+    condition.frame.x = x - condition.frame().width() / 2 - (conGroup.frame().x() - arGroupX);
+    condition.frame.y = y - condition.frame().height() / 2 - (conGroup.frame().y() - arGroupY);
+    conGroup.fixGeometryWithOptions(1);
+  } else {
+    condition.frame.x = x - condition.frame().width() / 2;
+    condition.frame.y = y - condition.frame().height() / 2;
+  }
+
+  log(condition.id);
+  return condition.id;
 }
 
 function getConnectionPos(firstObject, secondObject, direction) {

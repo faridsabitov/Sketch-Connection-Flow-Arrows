@@ -389,17 +389,19 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   
   // Need to delete data first, because we will have a new line
   deleteLine(lineID)
-  if(conditionObject){conditionObject.remove()}
-
+  if(conditionID){
+    if(conditionObject){conditionObject.remove()}
+  }
+  
   newConnectionsData = deleteConnectionFromData(connectionIndex)
 
   if(firstObject && secondObject){
     // If we have all the objects, we can recreate the line
-    createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition)
+    createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition)
   } 
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, isCondition) {  // Refactored
+function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {  // Refactored
   let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction
 
   // Main Operations based on the settings
@@ -407,8 +409,8 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
   autoAlignLayer(firstObjectID, secondObjectID, localDirection)
 
   // Making an Arrow 
-  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, isCondition)
-  log(arrow.conditionID)
+  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition)
+  // log(arrow.conditionID)
   
   // Storage for current connection
   let connection = {
@@ -422,8 +424,11 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, isCo
     line : arrow.line.objectID()
   }
 
+  log(connection)
+
   // Need to save this data to the global array
   newConnectionsData.push(connection)
+  log(newConnectionsData)
 }
 
 function checkForGroup(groupName) { // refactored
@@ -477,9 +482,8 @@ function getDirection(firstObjectID, secondObjectID){ // Refactored
   return direction
 }
 
-function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, condition){ // Refactored
+function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, condition){ // Refactored
   // Process of creating new connection  
-  let localType = type == null ? Settings.settingForKey("arrowType") : type
   let firstObject = document.getLayerWithID(firstObjectID)
   let secondObject = document.getLayerWithID(secondObjectID)
   let connectionPos = getConnectionPos(firstObject, secondObject, localDirection)
@@ -489,22 +493,31 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
     type: [],
     style: []
   }
-  
-  // Type  
-  if(localType == "Angled" || localType == null){ connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
-  if(localType == "Straight"){ connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
-  if(localType == "Curved"){ connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
 
+  // Type  
+  connection.type = type == null ? Settings.settingForKey("arrowType") : type
+  if(connection.type == "Angled" || connection.type == null){ connection.line = drawAngledLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.middlePosX, connectionPos.middlePosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
+  if(connection.type == "Straight"){ connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
+  if(connection.type == "Curved"){ connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
 
   // Condition
-  connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null
+  if(condition != false){
+    if(conditionID){
+      connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY)
+    } else {
+      connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY)
+    }
+  } else {
+    connection.conditionID = null
+  }
+  // connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null
 
   // Style
   connection.style = styleLine(connection.line, style)
 
   // Add to group
   addToArrowsGroup(connection.line)
-
+  
   return connection
 }
 
@@ -862,7 +875,7 @@ function start(context, direction, isCondition){
         
         if(connectionIndex == null){
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, isCondition)
+          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition)
           sketch.UI.message("New connection is created 🚀")
         } else {
           // Need to remake the arrow condition
@@ -902,6 +915,29 @@ function addCondition(keyword, x, y){ // Refactored
   }
 
   return symbol
+}
+
+function updateCondition(conditionID, x, y){ // Refactored
+  let condition = document.getLayerWithID(conditionID)
+  let conGroup = checkForGroup("Conditions") 
+  let arGroup = checkForGroup("Arrows") 
+  let arGroupX = arGroup != null ? arGroup.frame().x() : 0
+  let arGroupY = arGroup != null ? arGroup.frame().y() : 0
+
+  log(condition.x())
+
+  if(conGroup){
+    condition.frame.x = x - condition.frame().width() / 2 - (conGroup.frame().x() - arGroupX) 
+    condition.frame.y = y - condition.frame().height() / 2 - (conGroup.frame().y() - arGroupY) 
+    conGroup.fixGeometryWithOptions(1)
+  } else {
+    condition.frame.x = x - condition.frame().width() / 2 
+    condition.frame.y = y - condition.frame().height() / 2
+  }
+
+  log(condition.id)
+
+  return condition.id
 }
 
 function getConnectionPos(firstObject, secondObject, direction){ // Refactored
