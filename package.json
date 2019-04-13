@@ -26,5 +26,8 @@
   "devDependencies": {
     "@skpm/builder": "0.5.14"
   },
-  "author": "Farid Sabitov <farid.sabitov.design@gmail.com>"
+  "author": "Farid Sabitov <farid.sabitov.design@gmail.com>",
+  "dependencies": {
+    "sketch-module-google-analytics": "^0.2.1"
+  }
 }

@@ -611,7 +611,7 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
 
   if (condition != false) {
-    if (conditionID) {
+    if (conditionID != "<null>") {
       connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
     } else {
       connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY);
@@ -674,6 +674,8 @@ function addToConditionGroup(condition, x, y) {
     group.moveToBack();
     group.adjustToFit();
   }
+
+  return condition.id;
 }
 
 function getConnectionsData() {
@@ -1039,8 +1041,7 @@ function addCondition(keyword, x, y) {
   } else {
     var symbolMaster = libraryObject.import();
     symbol = symbolMaster.createNewInstance();
-    addToConditionGroup(symbol, x, y);
-    symbol = symbol.id;
+    symbol = addToConditionGroup(symbol, x, y);
   }
 
   return symbol;
@@ -1053,7 +1054,7 @@ function updateCondition(conditionID, x, y) {
   var arGroup = checkForGroup("Arrows");
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-  log(condition.x());
+  log(condition);
 
   if (conGroup) {
     condition.frame.x = x - condition.frame().width() / 2 - (conGroup.frame().x() - arGroupX);
@@ -1475,7 +1476,12 @@ function styleLine(line, style) {
   }
 
   return localStyle;
-}
+} // const track = require("sketch-module-google-analytics")
+// track("UA-138226597-1", "event", {
+//   ec: "command", 
+//   ea: "start", 
+//   ev: "my-command"
+// });
 
 /***/ }),
 
