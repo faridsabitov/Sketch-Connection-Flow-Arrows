@@ -185,7 +185,6 @@ function updateSelectedArrows(context) {
         var connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData);
 
         if (connectionIndex != null) {
-          log(currentConnectionsData);
           updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
         } else {
@@ -313,7 +312,7 @@ function deleteArtboardArrows(context) {
 }
 function deleteSelectedArrows(context) {
   var selection = context.selection;
-  var firstObject, secondObject; // Need to delete all the arrows only from selected artboard
+  var firstObject, secondObject;
 
   if (selection.count() == 2) {
     for (var g = 0; g < selection.count(); g++) {
@@ -491,7 +490,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
   deleteLine(lineID);
 
-  if (conditionID) {
+  if (conditionID && !isCondition) {
     if (conditionObject) {
       conditionObject.remove();
     }
@@ -512,8 +511,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   updateSpacing(firstObjectID, secondObjectID, localDirection);
   autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
 
-  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition); // log(arrow.conditionID)
-  // Storage for current connection
+  var arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition); // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
@@ -523,12 +521,10 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
     isCondition: isCondition,
     type: arrow.type,
     direction: localDirection,
-    line: arrow.line.objectID()
-  };
-  log(connection); // Need to save this data to the global array
+    line: arrow.line.objectID() // Need to save this data to the global array
 
+  };
   newConnectionsData.push(connection);
-  log(newConnectionsData);
 }
 
 function checkForGroup(groupName) {
@@ -1054,18 +1050,16 @@ function updateCondition(conditionID, x, y) {
   var arGroup = checkForGroup("Arrows");
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-  log(condition);
 
   if (conGroup) {
-    condition.frame.x = x - condition.frame().width() / 2 - (conGroup.frame().x() - arGroupX);
-    condition.frame.y = y - condition.frame().height() / 2 - (conGroup.frame().y() - arGroupY);
+    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
+    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
     conGroup.fixGeometryWithOptions(1);
   } else {
-    condition.frame.x = x - condition.frame().width() / 2;
-    condition.frame.y = y - condition.frame().height() / 2;
+    condition.frame.x = x - condition.frame.width / 2;
+    condition.frame.y = y - condition.frame.height / 2;
   }
 
-  log(condition.id);
   return condition.id;
 }
 

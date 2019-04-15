@@ -52,7 +52,6 @@ export function updateSelectedArrows(context) {
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
         if(connectionIndex != null){
-          log(currentConnectionsData)
           updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex)
           sketch.UI.message("Current connection is updated 🤘")
         } else {
@@ -179,14 +178,13 @@ export function deleteSelectedArrows(context) {
   let selection = context.selection
   let firstObject, secondObject
 
-  // Need to delete all the arrows only from selected artboard
   if(selection.count() == 2){
 
     for(let g = 0; g < selection.count(); g++) {
 
       if(selection[g].objectID() != selection[0].objectID()){ // It will never check 3rd connection
-        let connections = getConnectionsData()
         
+        let connections = getConnectionsData() 
         let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections)
         
         if(connectionIndex != null){
@@ -389,7 +387,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
   
   // Need to delete data first, because we will have a new line
   deleteLine(lineID)
-  if(conditionID){
+  if(conditionID && !isCondition){
     if(conditionObject){conditionObject.remove()}
   }
   
@@ -410,7 +408,6 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
 
   // Making an Arrow 
   let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition)
-  // log(arrow.conditionID)
   
   // Storage for current connection
   let connection = {
@@ -424,11 +421,8 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
     line : arrow.line.objectID()
   }
 
-  log(connection)
-
   // Need to save this data to the global array
   newConnectionsData.push(connection)
-  log(newConnectionsData)
 }
 
 function checkForGroup(groupName) { // refactored
@@ -923,19 +917,14 @@ function updateCondition(conditionID, x, y){ // Refactored
   let arGroupX = arGroup != null ? arGroup.frame().x() : 0
   let arGroupY = arGroup != null ? arGroup.frame().y() : 0
 
-  log(condition)
-
   if(conGroup){
-    condition.frame.x = x - condition.frame().width() / 2 - (conGroup.frame().x() - arGroupX) 
-    condition.frame.y = y - condition.frame().height() / 2 - (conGroup.frame().y() - arGroupY) 
+    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX) 
+    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY) 
     conGroup.fixGeometryWithOptions(1)
   } else {
-    condition.frame.x = x - condition.frame().width() / 2 
-    condition.frame.y = y - condition.frame().height() / 2
+    condition.frame.x = x - condition.frame.width / 2 
+    condition.frame.y = y - condition.frame.height / 2
   }
-
-  log(condition.id)
-
   return condition.id
 }
 
