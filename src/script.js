@@ -1,19 +1,30 @@
 import sketch from 'sketch'
-// const { toArray } = require('util')
+let UI = require('sketch/ui') 
+
 
 //
 //  Variables
 //
 
-let UI = require('sketch/ui') 
-// var SharedStyle = require('sketch/dom').SharedStyle
+
 
 const pluginKey = "flowArrows"
-const document = sketch.fromNative(context.document)
-let docData = context.document.documentData()
-let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey)
-let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage() // TODO: Might be a problem for multiple artboards
-let newConnectionsData = getConnectionsData()
+let document
+
+let docData, pluginData, currentParentGroup, newConnectionsData
+if(context.document){
+  document = sketch.fromNative(context.document)
+  docData = context.document.documentData()
+  pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey)
+  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage() // TODO: Might be a problem for multiple artboards
+  newConnectionsData = getConnectionsData()
+} else {
+  document = sketch.fromNative(context.actionContext.document)
+}
+
+// const action = context.actionContext
+// docData = action.document.documentData()
+
 
 // Settings
 var Settings = require('sketch/settings')
@@ -23,7 +34,7 @@ var Settings = require('sketch/settings')
 //  Create Connection Function
 //
 
-export default function(context) {}
+
 export function createAutoArrow(context){start(context, "Auto", false)}
 export function createRightArrow(context){start(context, "Right", false)}
 export function createDownArrow(context){start(context, "Down", false)}
@@ -49,9 +60,9 @@ export function updateSelectedArrows(context) {
     for(let g = 0; g < selection.count(); g++) {
       if(selection[g].objectID() != selection[0].objectID()){
         // Then need to create or update connection arrow with each selection
-        let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
+        let connectionIndex = findConnectionIndex(selection[0].objectID(), selection[g].objectID(), currentConnectionsData)
 
-        if(connectionIndex != null){
+        if(connectionIndex.length == 0){
           updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex)
           sketch.UI.message("Current connection is updated 🤘")
         } else {
@@ -66,6 +77,42 @@ export function updateSelectedArrows(context) {
     sketch.UI.message("Please select more than two layers. Artboards are coming soon 🥳")
   }
 }
+
+export function autoUpdateSelectedArrows(context) {  
+  const action = context.actionContext
+
+  docData = action.document.documentData()
+  pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey)
+  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage() // TODO: Might be a problem for multiple artboards
+  newConnectionsData = getConnectionsData()
+
+  const movedLayers = Array.from(context.actionContext.layers).map(layer => sketch.fromNative(layer))
+  log(movedLayers[0].id)
+  log(movedLayers.length)
+
+  // if (movedLayers.filter(layer => (layer.type == 'Artboard' || (layer.type == 'SymbolMaster' && config.arrangeSymbols))).length > 0) {
+  //   ArrangeArtboards(context)
+  // }
+
+  let currentConnectionsData = newConnectionsData // Need to refactor
+
+  for(let g = 0; g < movedLayers.length; g++) {
+
+    let connectionIndex = findConnectionIndex(movedLayers[0].id, null, currentConnectionsData)
+
+    log("yes "+connectionIndex)
+    if(connectionIndex.length == 0){
+      
+      updateArrow(currentConnectionsData[connectionIndex[0]].firstObject, currentConnectionsData[connectionIndex[0]].secondObject, currentConnectionsData[connectionIndex[0]].style, currentConnectionsData[connectionIndex[0]].type, currentConnectionsData[connectionIndex[0]].direction, currentConnectionsData[connectionIndex[0]].line, currentConnectionsData[connectionIndex[0]].condition, currentConnectionsData[connectionIndex[0]].isCondition, connectionIndex[0])
+      sketch.UI.message("Current connection is updated 🤘")
+    } else {
+      sketch.UI.message("There is no connection between selected layers on the plugin data")
+    }
+    
+  }
+  context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey)
+}
+
 
 export function updateArtboardArrows(context) {
   // TODO: Need to show amount of updated arrows and deleted ones
@@ -185,7 +232,7 @@ export function deleteSelectedArrows(context) {
       if(selection[g].objectID() != selection[0].objectID()){ // It will never check 3rd connection
         
         let connections = getConnectionsData() 
-        let connectionIndex = findConnectionData(selection[0].objectID(), selection[g].objectID(), connections)
+        let connectionIndex = findConnectionIndex(selection[0].objectID(), selection[g].objectID(), connections)
         
         if(connectionIndex != null){
           // We have connections in database
@@ -495,8 +542,8 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
   if(connection.type == "Curved"){ connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection)}
 
   // Condition
-  if(condition != false){
-    if(conditionID != "<null>"){
+  if(condition == true){
+    if(conditionID != null){
       connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY)
     } else {
       connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY)
@@ -570,26 +617,28 @@ function getConnectionsData(){ //Refactored
   return dataArray
 }
 
-function findConnectionData(firstObjectID, secondObjectID, data){
-  let arrayNumber = null
+function findConnectionIndex(firstObjectID, secondObjectID, data){
+  let indexArray = []  
   firstObjectID = String(firstObjectID)
   secondObjectID = String(secondObjectID)
-
+  
   if(pluginData){
     // If we have database, need to check for connections
-
     for(let y = 0; y < data.length; y++){
-
       if(firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject){
-        // if we found that we have this object in connection database already
-        if(secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject){
-          // if we found that we have this object in connection database already
-          arrayNumber = y
-        } 
+        if(secondObjectID == null){
+          // When we need to find connection between two objects
+          if(secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject){
+            indexArray[0] = y
+          } 
+        } else {
+          // When we need to find a connection for one object only
+          indexArray.push(y)
+        }
       }
     }
   }
-  return arrayNumber
+  return indexArray
 }
 
 function setActiveStyleSetting(arrowStylingField){
@@ -865,9 +914,9 @@ function start(context, direction, isCondition){
     for(let g = 0; g < selection.count(); g++) {
       if(selection[g].objectID() != sourceObjectID){
         // Then need to create or update connection arrow with each selection
-        let connectionIndex = findConnectionData(sourceObjectID, selection[g].objectID(), currentConnectionsData)
+        let connectionIndex = findConnectionIndex(sourceObjectID, selection[g].objectID(), currentConnectionsData)
         
-        if(connectionIndex == null){
+        if(connectionIndex.length == 0){
           // There is no connection with this two objects in our database
           createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition)
           sketch.UI.message("New connection is created 🚀")
@@ -912,6 +961,7 @@ function addCondition(keyword, x, y){ // Refactored
 
 function updateCondition(conditionID, x, y){ // Refactored
   let condition = document.getLayerWithID(conditionID)
+  // log (condition)
   let conGroup = checkForGroup("Conditions") 
   let arGroup = checkForGroup("Arrows") 
   let arGroupX = arGroup != null ? arGroup.frame().x() : 0
