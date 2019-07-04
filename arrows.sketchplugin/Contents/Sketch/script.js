@@ -95,7 +95,7 @@ var exports =
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, updateSelectedArrows, autoUpdateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows, settings, onLayersMoved, panel */
+/*! exports provided: createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, updateSelectedArrows, autoUpdateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteAllArrows, deleteArtboardArrows, deleteSelectedArrows */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -116,9 +116,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAllArrows", function() { return deleteAllArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteArtboardArrows", function() { return deleteArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteSelectedArrows", function() { return deleteSelectedArrows; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onLayersMoved", function() { return onLayersMoved; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "panel", function() { return panel; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 //
@@ -386,135 +383,6 @@ function deleteSelectedArrows(context) {
   } else {
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Select two layers, please 🧐");
   }
-}
-function settings(context) {
-  var alert = COSAlertWindow.new();
-  var viewWidth = 300;
-  var viewHeight = 450; // Alert window settings
-
-  alert = alertSetup(alert, viewWidth, viewHeight);
-  var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
-  alert.addAccessoryView(view); // Label: Arrow Style
-
-  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 40, 280, 40);
-  view.addSubview(arrowStyleLabel); // Select: Arrow Style
-
-  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
-  setActiveStyleSetting(arrowStylingField);
-  view.addSubview(arrowStylingField); // Label: Arrow Style Info
-
-  var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 80, 300, 40);
-  view.addSubview(arrowStyleInfoLabel); // Label: Arrow Type
-
-  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 130, 280, 40);
-  view.addSubview(arrowTypeLabel); // Select: Arrow Type
-
-  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 130, 300, 20));
-  setActiveTypeSetting(arrowTypeField);
-  view.addSubview(arrowTypeField); // Label: Arrow Type Info
-
-  var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 170, 300, 40);
-  view.addSubview(arrowTypeInfoLabel); // Label: Arrow Spacing
-
-  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 200, 330, 20);
-  view.addSubview(arrowSpacingLabel); // Label: Arrow Spacing PX
-
-  var arrowSpacingPxLabel = alertLabel("px", true, 90, viewHeight - 220, 330, 20);
-  view.addSubview(arrowSpacingPxLabel); // Input: Arrow Spacing
-
-  var arrowSpacingField = NSTextField.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 220, 80, 20));
-  var formatter = NSNumberFormatter.alloc().init().autorelease();
-  arrowSpacingField.setStringValue(String(Settings.settingForKey("arrowSpacing")));
-  arrowSpacingField.setFormatter(formatter);
-  view.addSubview(arrowSpacingField); // Stepper: Arrow Spacing
-
-  var arrowSpacingStepper = NSStepper.alloc().initWithFrame(NSMakeRect(70, viewHeight - 220, 20, 20));
-  arrowSpacingStepper.setMaxValue(1000);
-  arrowSpacingStepper.setMinValue(0);
-  arrowSpacingStepper.setValueWraps(false);
-  arrowSpacingStepper.setAutorepeat(true);
-  arrowSpacingStepper.setCOSJSTargetFunction(function (sender) {
-    var value = 0 + sender.integerValue();
-    arrowSpacingField.setStringValue(String(value));
-  });
-  view.addSubview(arrowSpacingStepper); // view.addSubview(formatter)
-  // Label: Auto Spacing Info
-
-  var arrowSpacingInfoLabel = alertLabel("The second layer will be moved closer based on the value provided here. Keep it 0 if you don't want to have auto spacing feature ", false, -1, viewHeight - 285, 300, 60);
-  view.addSubview(arrowSpacingInfoLabel); // Label: Other Settings
-
-  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 330, 280, 40);
-  view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
-
-  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 340, 260, 40);
-  view.addSubview(checkbox); // Label: Auto-Align Info
-
-  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 370, 280, 40);
-  view.addSubview(autoAlignInfoLabel); // Label: Plugin Info
-
-  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 420, 280, 40);
-  view.addSubview(pluginInfoLabel); // Need to check if style is still available
-  // Show modal and get the results
-
-  var modalResponse = alert.runModal();
-
-  if (modalResponse == NSAlertFirstButtonReturn) {
-    // When user clicks on "Update Settings"
-    // Need to save all this results into the Plugin Settings
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[1].title(), "arrowStyle", docData, pluginKey);
-    Settings.setSettingForKey("arrowType", alert.views()[0].subviews()[4].title());
-    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[8].intValue());
-    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[12].state());
-    UI.message("Settings are updated 🚀");
-  }
-}
-function onLayersMoved(context) {
-  sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers");
-  var action = context.actionContext;
-}
-function panel(context) {
-  var ControlBar;
-  ControlBar = NSPanel.alloc().init();
-  ControlBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask); // ControlBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.99, 0.99, 0.99, 1));
-
-  ControlBar.setTitleVisibility(NSWindowTitleHidden);
-  ControlBar.setTitlebarAppearsTransparent(true);
-  ControlBar.setFrame_display(NSMakeRect(0, 0, 720, 50), false);
-  ControlBar.setMovableByWindowBackground(true);
-  ControlBar.setHasShadow(true);
-  ControlBar.setLevel(NSFloatingWindowLevel); // contentView.addSubview(closeButton)
-
-  ControlBar.center();
-  ControlBar.makeKeyAndOrderFront(nil); //   getImage = function(size, name){
-  //     var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
-  //         suffix = (isRetinaDisplay)? "@2x": "",
-  //         imageURL = NSURL.fileURLWithPath(self.pluginResources + "/icons/" + name + suffix + ".png"),
-  //         image = NSImage.alloc().initWithContentsOfURL(imageURL);
-  //     return image
-  // },
-  // addButton = function(rect, name, callAction){
-  //     var button = NSButton.alloc().initWithFrame(rect),
-  //         image = getImage(rect.size, name);
-  //     button.setImage(image);
-  //     button.setBordered(false);
-  //     button.sizeToFit();
-  //     button.setButtonType(NSMomentaryChangeButton);
-  //     button.setCOSJSTargetFunction(callAction);
-  //     button.setAction("callAction:");
-  //     return button;
-  // },
-  // addImage = function(rect, name){
-  //     var view = NSImageView.alloc().initWithFrame(rect),
-  //         image = getImage(rect.size, name);
-  //     view.setImage(image);
-  //     return view;
-  // },
-  // closeButton = addButton( NSMakeRect(20, 10, 30, 30), "close-control",
-  //     function(sender){
-  //         coscript.setShouldKeepAround(false);
-  //         threadDictionary.removeObjectForKey(identifier);
-  //         ControlBar.close();
-  // }),
 } //
 // Functions
 //
@@ -750,78 +618,6 @@ function findConnectionIndex(firstObjectID, secondObjectID, data) {
   return indexArray;
 }
 
-function setActiveStyleSetting(arrowStylingField) {
-  var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
-  var styles = getLayerStyles(null);
-
-  if (docSettings) {
-    // We have info about the settings in the current document
-    if (docSettings != "Default Style") {
-      // if user specified own option
-      arrowStylingField.addItemWithTitle(docSettings);
-      arrowStylingField.addItemWithTitle("Default Style");
-
-      for (var i = 0; i < styles.length; i++) {
-        if (styles[i].name() != docSettings) {
-          arrowStylingField.addItemWithTitle(styles[i].name());
-        }
-      }
-    } else {
-      // Need to show the default first
-      arrowStylingField.addItemWithTitle("Default Style");
-
-      for (var _i = 0; _i < styles.length; _i++) {
-        arrowStylingField.addItemWithTitle(styles[_i].name());
-      }
-    }
-  } else {
-    arrowStylingField.addItemWithTitle("Default Style");
-
-    for (var _i2 = 0; _i2 < styles.length; _i2++) {
-      arrowStylingField.addItemWithTitle(styles[_i2].name());
-    }
-  }
-}
-
-function setActiveTypeSetting(arrowTypeField) {
-  var docTypeSettings = Settings.settingForKey("arrowType");
-
-  if (docTypeSettings) {
-    // We have info about the settings in the current document
-    if (docTypeSettings == "Angled") {
-      arrowTypeField.addItemWithTitle("Angled");
-      arrowTypeField.lastItem().setState(1);
-      arrowTypeField.addItemWithTitle("Curved");
-      arrowTypeField.lastItem().setState(0);
-      arrowTypeField.addItemWithTitle("Straight");
-      arrowTypeField.lastItem().setState(0);
-    }
-
-    if (docTypeSettings == "Curved") {
-      arrowTypeField.addItemWithTitle("Curved");
-      arrowTypeField.lastItem().setState(1);
-      arrowTypeField.addItemWithTitle("Straight");
-      arrowTypeField.lastItem().setState(0);
-      arrowTypeField.addItemWithTitle("Angled");
-      arrowTypeField.lastItem().setState(0);
-    }
-
-    if (docTypeSettings == "Straight") {
-      arrowTypeField.addItemWithTitle("Straight");
-      arrowTypeField.lastItem().setState(1);
-      arrowTypeField.addItemWithTitle("Angled");
-      arrowTypeField.lastItem().setState(0);
-      arrowTypeField.addItemWithTitle("Curved");
-      arrowTypeField.lastItem().setState(0);
-    }
-  } else {
-    // Show default
-    arrowTypeField.addItemWithTitle("Angled");
-    arrowTypeField.addItemWithTitle("Curved");
-    arrowTypeField.addItemWithTitle("Straight");
-  }
-}
-
 function deleteConnectionFromData(connectionIndex) {
   // Refactored
   var newConnections = [];
@@ -964,45 +760,6 @@ function getSourceObjectFromSelection(selection, direction) {
   }
 
   return sourceObjectID;
-}
-
-function alertSetup(alert, viewWidth, viewHeight) {
-  // Title
-  alert.setMessageText("Arrow Plugin Settings"); // Creating dialog buttons
-
-  alert.addButtonWithTitle("Update Settings");
-  alert.addButtonWithTitle("Cancel");
-  return alert;
-}
-
-function alertLabel(message, state, x, y, width, height) {
-  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height));
-  infoLabel.setStringValue(message);
-  infoLabel.setSelectable(false);
-  infoLabel.setDrawsBackground(false);
-  infoLabel.setBezeled(false);
-
-  if (state == false) {
-    infoLabel.textColor = NSColor.disabledControlTextColor();
-  }
-
-  return infoLabel;
-}
-
-function alertCheckbox(message, state, x, y, width, height) {
-  var checkbox = NSButton.alloc().initWithFrame(NSMakeRect(x, y, width, height));
-  checkbox.setButtonType(NSSwitchButton);
-  checkbox.setBezelStyle(0);
-  checkbox.setTitle(message);
-
-  if (Settings.settingForKey("autoAlign")) {
-    var currentState = Settings.settingForKey("autoAlign");
-    checkbox.setState(currentState);
-  } else {
-    checkbox.setState(state);
-  }
-
-  return checkbox;
 }
 
 function getLayerStyles(name) {
@@ -1600,7 +1357,6 @@ that['updateAllArrows'] = __skpm_run.bind(this, 'updateAllArrows');
 that['deleteSelectedArrows'] = __skpm_run.bind(this, 'deleteSelectedArrows');
 that['deleteArtboardArrows'] = __skpm_run.bind(this, 'deleteArtboardArrows');
 that['deleteAllArrows'] = __skpm_run.bind(this, 'deleteAllArrows');
-that['settings'] = __skpm_run.bind(this, 'settings');
 that['panel'] = __skpm_run.bind(this, 'panel')
 
 //# sourceMappingURL=script.js.map

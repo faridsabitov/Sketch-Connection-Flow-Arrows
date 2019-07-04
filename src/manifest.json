@@ -160,7 +160,7 @@
       "name": "Settings",
       "description": "Provide settings for the arrows",
       "identifier": "settings",
-      "script": "./script.js",
+      "script": "./settings.js",
       "icon": "icon.png",
       "handler": "settings"
     },
