@@ -121,18 +121,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "panel", function() { return panel; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
-
-
-var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui"); //
+//
 //  Variables
 //
 
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
 var document;
 var docData, pluginData, currentParentGroup, newConnectionsData;
 
 if (context.document) {
+  //cc:remember place
   document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
   docData = context.document.documentData();
   pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
@@ -140,13 +143,8 @@ if (context.document) {
 
   newConnectionsData = getConnectionsData();
 } else {
-  document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document);
-} // const action = context.actionContext
-// docData = action.document.documentData()
-// Settings
-
-
-var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings"); //
+  document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document); //cc:here is bug;well, seems like a bug in logic
+} //
 //  Create Connection Function
 //
 
@@ -1029,6 +1027,7 @@ function getLayerStyles(name) {
 }
 
 function start(context, direction, isCondition) {
+  //cc:start#1;Passing all the data
   var selection = context.selection;
 
   if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
@@ -1275,8 +1274,10 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 
     line = MSShapeGroup.layerWithPath(MSPath.pathWithBezierPath(path));
     var points = line.layers().firstObject().points();
-    points[0].curveMode = points[1].curveMode = 4;
-    points[0].hasCurveFrom = points[1].hasCurveTo = true;
+    points[0].curveMode = 4;
+    points[1].curveMode = 4;
+    points[0].hasCurveFrom = true;
+    points[1].hasCurveTo = true;
 
     if (firstLayerPosX < secondLayerPosX) {
       points[0].curveFrom = {
@@ -1324,8 +1325,10 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 
     var _points = line.layers().firstObject().points();
 
-    _points[0].curveMode = _points[1].curveMode = 4;
-    _points[0].hasCurveFrom = _points[1].hasCurveTo = true;
+    _points[0].curveMode = 4;
+    _points[1].curveMode = 4;
+    _points[0].hasCurveFrom = true;
+    _points[1].hasCurveTo = true;
 
     if (firstLayerPosY < secondLayerPosY) {
       _points[0].curveFrom = {
@@ -1373,8 +1376,10 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 
     var _points2 = line.layers().firstObject().points();
 
-    _points2[0].curveMode = _points2[1].curveMode = 4;
-    _points2[0].hasCurveFrom = _points2[1].hasCurveTo = true;
+    _points2[0].curveMode = 4;
+    _points2[1].curveMode = 4;
+    _points2[0].hasCurveFrom = true;
+    _points2[1].hasCurveTo = true;
 
     if (firstLayerPosX < secondLayerPosX) {
       _points2[0].curveFrom = {
@@ -1422,8 +1427,10 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 
     var _points3 = line.layers().firstObject().points();
 
-    _points3[0].curveMode = _points3[1].curveMode = 4;
-    _points3[0].hasCurveFrom = _points3[1].hasCurveTo = true;
+    _points3[0].curveMode = 4;
+    _points3[1].curveMode = 4;
+    _points3[0].hasCurveFrom = true;
+    _points3[1].hasCurveTo = true;
 
     if (firstLayerPosY < secondLayerPosY) {
       _points3[0].curveFrom = {

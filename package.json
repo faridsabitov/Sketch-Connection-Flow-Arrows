@@ -28,6 +28,7 @@
   },
   "author": "Farid Sabitov <farid.sabitov.design@gmail.com>",
   "dependencies": {
+    "js2flowchart": "^1.1.7",
     "sketch-module-google-analytics": "^0.2.1"
   }
 }
