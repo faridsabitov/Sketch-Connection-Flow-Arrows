@@ -91,6 +91,168 @@ var exports =
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/createArrow.js":
+/*!****************************!*\
+  !*** ./src/createArrow.js ***!
+  \****************************/
+/*! exports provided: createArrow */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createArrow", function() { return createArrow; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _draw_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./draw.js */ "./src/draw.js");
+
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var pluginKey = "flowArrows";
+var document;
+var docData, pluginData, currentParentGroup, newConnectionsData;
+document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+docData = context.document.documentData();
+pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+
+newConnectionsData = getConnectionsData();
+
+function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {
+  // Refactored
+  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
+
+  updateSpacing(firstObjectID, secondObjectID, localDirection);
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
+
+  var arrow = Object(_draw_js__WEBPACK_IMPORTED_MODULE_1__["drawConnection"])(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition); // Storage for current connection
+
+  var connection = {
+    firstObject: firstObjectID,
+    secondObject: secondObjectID,
+    style: arrow.style,
+    condition: arrow.conditionID,
+    isCondition: isCondition,
+    type: arrow.type,
+    direction: localDirection,
+    line: arrow.line.objectID() // Need to save this data to the global array
+
+  };
+  newConnectionsData.push(connection);
+  context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+}
+
+function getConnectionsData() {
+  //Refactored
+  var dataArray = [];
+
+  if (pluginData) {
+    for (var i = 0; i < pluginData.length; i++) {
+      dataArray.push(pluginData[i]);
+    }
+  }
+
+  return dataArray;
+}
+
+function getDirection(firstObjectID, secondObjectID) {
+  // Refactored
+  // Get direction from the source object
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var firstObjectMidX = firstObject.frame.x + firstObject.frame.width / 2;
+  var firstObjectMidY = firstObject.frame.y + firstObject.frame.height / 2;
+  var secondObjectMidX = secondObject.frame.x + secondObject.frame.width / 2;
+  var secondObjectMidY = secondObject.frame.y + secondObject.frame.height / 2;
+  var diffX = firstObjectMidX - secondObjectMidX;
+  var diffY = firstObjectMidY - secondObjectMidY;
+  var absDiffX = Math.abs(diffX);
+  var absDiffY = Math.abs(diffY);
+  var direction;
+
+  if (secondObjectMidX > firstObjectMidX) {
+    // Right Half
+    if (secondObjectMidY > firstObjectMidY) {
+      // Bottom quarter
+      direction = diffX > diffY ? "Down" : "Right";
+    } else {
+      // Top quarter
+      direction = absDiffX > absDiffY ? "Right" : "Up";
+    }
+  } else {
+    // Left Half
+    if (secondObjectMidY > firstObjectMidY) {
+      // Bottom quarter
+      direction = absDiffX > absDiffY ? "Left" : "Down";
+    } else {
+      // Top quarter
+      direction = diffX > diffY ? "Left" : "Up";
+    }
+  }
+
+  return direction;
+}
+
+function updateSpacing(sourceObjectID, childObjectID, direction) {
+  var sourceObject = document.getLayerWithID(sourceObjectID);
+  var childObject = document.getLayerWithID(childObjectID);
+
+  if (Settings.settingForKey("arrowSpacing") && Settings.settingForKey("arrowSpacing") != 0) {
+    var currentSpacing = Settings.settingForKey("arrowSpacing");
+
+    if (direction == "Right") {
+      childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + currentSpacing;
+    }
+
+    if (direction == "Down") {
+      childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + currentSpacing;
+    }
+
+    if (direction == "Left") {
+      childObject.frame.x = sourceObject.frame.x - childObject.frame.width - currentSpacing;
+    }
+
+    if (direction == "Up") {
+      childObject.frame.y = sourceObject.frame.y - childObject.frame.height - currentSpacing;
+    }
+  }
+}
+
+function autoAlignLayer(sourceObjectID, childObjectID, direction) {
+  var sourceObject = document.getLayerWithID(sourceObjectID);
+  var childObject = document.getLayerWithID(childObjectID);
+  var sourceMidY, childMidY, sourceMidX, childMidX, diff;
+
+  if (Settings.settingForKey("autoAlign")) {
+    if (Settings.settingForKey("autoAlign") == true) {
+      // If user turned on Auto-Align settings
+      if (direction == "Right" || direction == "Left") {
+        sourceMidY = sourceObject.frame.y + sourceObject.frame.height / 2;
+        childMidY = childObject.frame.y + childObject.frame.height / 2;
+        diff = sourceMidY - childMidY;
+
+        if (diff > -6 && diff < 6) {
+          childObject.frame.y = childObject.frame.y + diff;
+        }
+      }
+
+      if (direction == "Down" || direction == "Up") {
+        sourceMidX = sourceObject.frame.x + sourceObject.frame.width / 2;
+        childMidX = childObject.frame.x + childObject.frame.width / 2;
+        diff = sourceMidX - childMidX;
+
+        if (diff > -6 && diff < 6) {
+          childObject.frame.x = childObject.frame.x + diff;
+        }
+      }
+    }
+  }
+}
+
+/***/ }),
+
 /***/ "./src/draw.js":
 /*!*********************!*\
   !*** ./src/draw.js ***!
@@ -741,7 +903,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteSelectedArrows", function() { return deleteSelectedArrows; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _draw_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./draw.js */ "./src/draw.js");
+/* harmony import */ var _createArrow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createArrow.js */ "./src/createArrow.js");
 //
 //  Variables
 //
@@ -1011,8 +1173,6 @@ function deleteSelectedArrows(context) {
 // Functions
 //
 
-
-
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
   // Refactored
   // Need to check if we have the layers with such IDs
@@ -1032,70 +1192,11 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
 
   if (firstObject && secondObject) {
     // If we have all the objects, we can recreate the line
-    createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition);
+    Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition);
   }
 }
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {
-  // Refactored
-  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
 
-  updateSpacing(firstObjectID, secondObjectID, localDirection);
-  autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
-
-  var arrow = Object(_draw_js__WEBPACK_IMPORTED_MODULE_1__["drawConnection"])(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition); // Storage for current connection
-
-  var connection = {
-    firstObject: firstObjectID,
-    secondObject: secondObjectID,
-    style: arrow.style,
-    condition: arrow.conditionID,
-    isCondition: isCondition,
-    type: arrow.type,
-    direction: localDirection,
-    line: arrow.line.objectID() // Need to save this data to the global array
-
-  };
-  newConnectionsData.push(connection);
-}
-
-function getDirection(firstObjectID, secondObjectID) {
-  // Refactored
-  // Get direction from the source object
-  var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID);
-  var firstObjectMidX = firstObject.frame.x + firstObject.frame.width / 2;
-  var firstObjectMidY = firstObject.frame.y + firstObject.frame.height / 2;
-  var secondObjectMidX = secondObject.frame.x + secondObject.frame.width / 2;
-  var secondObjectMidY = secondObject.frame.y + secondObject.frame.height / 2;
-  var diffX = firstObjectMidX - secondObjectMidX;
-  var diffY = firstObjectMidY - secondObjectMidY;
-  var absDiffX = Math.abs(diffX);
-  var absDiffY = Math.abs(diffY);
-  var direction;
-
-  if (secondObjectMidX > firstObjectMidX) {
-    // Right Half
-    if (secondObjectMidY > firstObjectMidY) {
-      // Bottom quarter
-      direction = diffX > diffY ? "Down" : "Right";
-    } else {
-      // Top quarter
-      direction = absDiffX > absDiffY ? "Right" : "Up";
-    }
-  } else {
-    // Left Half
-    if (secondObjectMidY > firstObjectMidY) {
-      // Bottom quarter
-      direction = absDiffX > absDiffY ? "Left" : "Down";
-    } else {
-      // Top quarter
-      direction = diffX > diffY ? "Left" : "Up";
-    }
-  }
-
-  return direction;
-}
 
 function getConnectionsData() {
   //Refactored
@@ -1165,62 +1266,6 @@ function deleteLine(lineID) {
 
     if (selectedGroup.layers.length == 0) {
       selectedGroup.remove();
-    }
-  }
-}
-
-function updateSpacing(sourceObjectID, childObjectID, direction) {
-  var sourceObject = document.getLayerWithID(sourceObjectID);
-  var childObject = document.getLayerWithID(childObjectID);
-
-  if (Settings.settingForKey("arrowSpacing") && Settings.settingForKey("arrowSpacing") != 0) {
-    var currentSpacing = Settings.settingForKey("arrowSpacing");
-
-    if (direction == "Right") {
-      childObject.frame.x = sourceObject.frame.x + sourceObject.frame.width + currentSpacing;
-    }
-
-    if (direction == "Down") {
-      childObject.frame.y = sourceObject.frame.y + sourceObject.frame.height + currentSpacing;
-    }
-
-    if (direction == "Left") {
-      childObject.frame.x = sourceObject.frame.x - childObject.frame.width - currentSpacing;
-    }
-
-    if (direction == "Up") {
-      childObject.frame.y = sourceObject.frame.y - childObject.frame.height - currentSpacing;
-    }
-  }
-}
-
-function autoAlignLayer(sourceObjectID, childObjectID, direction) {
-  var sourceObject = document.getLayerWithID(sourceObjectID);
-  var childObject = document.getLayerWithID(childObjectID);
-  var sourceMidY, childMidY, sourceMidX, childMidX, diff;
-
-  if (Settings.settingForKey("autoAlign")) {
-    if (Settings.settingForKey("autoAlign") == true) {
-      // If user turned on Auto-Align settings
-      if (direction == "Right" || direction == "Left") {
-        sourceMidY = sourceObject.frame.y + sourceObject.frame.height / 2;
-        childMidY = childObject.frame.y + childObject.frame.height / 2;
-        diff = sourceMidY - childMidY;
-
-        if (diff > -6 && diff < 6) {
-          childObject.frame.y = childObject.frame.y + diff;
-        }
-      }
-
-      if (direction == "Down" || direction == "Up") {
-        sourceMidX = sourceObject.frame.x + sourceObject.frame.width / 2;
-        childMidX = childObject.frame.x + childObject.frame.width / 2;
-        diff = sourceMidX - childMidX;
-
-        if (diff > -6 && diff < 6) {
-          childObject.frame.x = childObject.frame.x + diff;
-        }
-      }
     }
   }
 }
@@ -1295,7 +1340,7 @@ function start(context, direction, isCondition) {
 
         if (connectionIndex.length == 0) {
           // There is no connection with this two objects in our database
-          createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+          Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
           // Need to remake the arrow condition
@@ -1304,8 +1349,6 @@ function start(context, direction, isCondition) {
         }
       }
     }
-
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
