@@ -112,10 +112,8 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
-var docData, pluginData, currentParentGroup, newConnectionsData;
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+var docData = context.document.documentData();
 function settings(context) {
   var alert = COSAlertWindow.new();
   var viewWidth = 300;

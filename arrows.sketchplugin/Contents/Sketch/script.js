@@ -106,19 +106,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _draw_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./draw.js */ "./src/draw.js");
 
 
-var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var pluginKey = "flowArrows";
-var document;
-var docData, pluginData, currentParentGroup, newConnectionsData;
-document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-
-newConnectionsData = getConnectionsData();
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document); // Main Function
 
 function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {
   // Refactored
@@ -137,24 +128,9 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
     isCondition: isCondition,
     type: arrow.type,
     direction: localDirection,
-    line: arrow.line.objectID() // Need to save this data to the global array
-
+    line: arrow.line.objectID()
   };
-  newConnectionsData.push(connection);
-  context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-}
-
-function getConnectionsData() {
-  //Refactored
-  var dataArray = [];
-
-  if (pluginData) {
-    for (var i = 0; i < pluginData.length; i++) {
-      dataArray.push(pluginData[i]);
-    }
-  }
-
-  return dataArray;
+  return connection;
 }
 
 function getDirection(firstObjectID, secondObjectID) {
@@ -271,10 +247,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var pluginKey = "flowArrows";
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData(); // let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-
+var docData = context.document.documentData();
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // Main Function
 
 function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, condition) {
@@ -836,9 +810,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _createArrow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createArrow.js */ "./src/createArrow.js");
 /* harmony import */ var _updateArrow_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./updateArrow.js */ "./src/updateArrow.js");
+/* harmony import */ var _utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utilities/getSourceObject.js */ "./src/utilities/getSourceObject.js");
+/* harmony import */ var _utilities_data_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities/data.js */ "./src/utilities/data.js");
 //
 //  Variables
 //
+
+
+
+
 
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
@@ -847,7 +827,7 @@ var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
 var document;
-var docData, pluginData, currentParentGroup, newConnectionsData;
+var docData, pluginData, currentParentGroup, connectionsData;
 
 if (context.document) {
   //cc:remember place
@@ -856,11 +836,11 @@ if (context.document) {
   pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
   currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
-  newConnectionsData = getConnectionsData();
+  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])();
 } else {
   document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document); //cc:here is bug;well, seems like a bug in logic
 } //
-//  Create Connection Function
+//  Plugin Incoming Commands - Create 
 //
 
 
@@ -891,219 +871,84 @@ function createLeftArrowWithCondition(context) {
 function createUpArrowWithCondition(context) {
   create(context, "Up", true);
 }
-function autoUpdateSelectedArrows(context) {} // const action = context.actionContext;
-// docData = action.document.documentData();
-// pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-// currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-// newConnectionsData = getConnectionsData();
-// const movedLayers = Array.from(context.actionContext.layers).map(layer => sketch.fromNative(layer));
-// log(movedLayers[0].id);
-// log(movedLayers.length);
-// // if (movedLayers.filter(layer => (layer.type == 'Artboard' || (layer.type == 'SymbolMaster' && config.arrangeSymbols))).length > 0) {
-// //   ArrangeArtboards(context)
-// // }
-// let currentConnectionsData = newConnectionsData; // Need to refactor
-// for(let g = 0; g < movedLayers.length; g++) {
-//   let connectionIndex = findConnectionIndex(movedLayers[0].id, null, currentConnectionsData);
-//   log("yes "+connectionIndex);
-//   if(connectionIndex.length == 0){
-//     updateArrow(currentConnectionsData[connectionIndex[0]].firstObject, currentConnectionsData[connectionIndex[0]].secondObject, currentConnectionsData[connectionIndex[0]].style, currentConnectionsData[connectionIndex[0]].type, currentConnectionsData[connectionIndex[0]].direction, currentConnectionsData[connectionIndex[0]].line, currentConnectionsData[connectionIndex[0]].condition, currentConnectionsData[connectionIndex[0]].isCondition, connectionIndex[0]);
-//     sketch.UI.message("Current connection is updated 🤘");
-//   } else {
-//     sketch.UI.message("There is no connection between selected layers on the plugin data");
-//   }
-// }
-// context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-//
-//  Update Connection Function
-//
+function autoUpdateSelectedArrows(context) {// const action = context.actionContext;
+  // docData = action.document.documentData();
+  // pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+  // currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+  // newConnectionsData = getConnectionsData();
+  // const movedLayers = Array.from(context.actionContext.layers).map(layer => sketch.fromNative(layer));
+  // log(movedLayers[0].id);
+  // log(movedLayers.length);
+  // // if (movedLayers.filter(layer => (layer.type == 'Artboard' || (layer.type == 'SymbolMaster' && config.arrangeSymbols))).length > 0) {
+  // //   ArrangeArtboards(context)
+  // // }
+  // let currentConnectionsData = newConnectionsData; // Need to refactor
+  // for(let g = 0; g < movedLayers.length; g++) {
+  //   let connectionIndex = findConnectionIndex(movedLayers[0].id, null, currentConnectionsData);
+  //   log("yes "+connectionIndex);
+  //   if(connectionIndex.length == 0){
+  //     updateArrow(currentConnectionsData[connectionIndex[0]].firstObject, currentConnectionsData[connectionIndex[0]].secondObject, currentConnectionsData[connectionIndex[0]].style, currentConnectionsData[connectionIndex[0]].type, currentConnectionsData[connectionIndex[0]].direction, currentConnectionsData[connectionIndex[0]].line, currentConnectionsData[connectionIndex[0]].condition, currentConnectionsData[connectionIndex[0]].isCondition, connectionIndex[0]);
+  //     sketch.UI.message("Current connection is updated 🤘");
+  //   } else {
+  //     sketch.UI.message("There is no connection between selected layers on the plugin data");
+  //   }
+  // }
+  // context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+}
 
-function updateSelectedArrows(context) {
+function create(context, direction, isCondition) {
   var selection = context.selection;
 
   if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
-    // Need to find source object by ID first
-    var currentConnectionsData = newConnectionsData; // Need to refactor
+    var sourceObjectID = Object(_utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__["getSourceObjectFromSelection"])(selection, direction);
 
     for (var g = 0; g < selection.count(); g++) {
-      if (selection[g].objectID() != selection[0].objectID()) {
-        // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionIndex(selection[0].objectID(), selection[g].objectID(), currentConnectionsData);
+      if (selection[g].objectID() != sourceObjectID) {
+        var connectionIndex = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["findConnectionIndex"])(sourceObjectID, selection[g].objectID(), connectionsData);
 
         if (connectionIndex.length == 0) {
-          Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
+          // Create
+          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+          connectionsData.push(connection);
+          context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no connection between selected layers on the plugin data");
+          // Update
+          if (Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, connectionsData[connectionIndex].line, connectionsData[connectionIndex].condition, isCondition, connectionIndex)) {
+            Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, connectionsData[connectionIndex].condition, isCondition);
+          }
+
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
         }
       }
     }
-
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
   }
+} //
+//  Plugin Incoming Commands - Update and Delete
+//
+
+
+function updateSelectedArrows(context) {
+  update(context, 1, true);
 }
 function updateArtboardArrows(context) {
-  update(context, 2, false);
+  update(context, 2, true);
 }
 function updateAllArrows(context) {
   update(context, 3, true);
 }
 function deleteSelectedArrows(context) {
-  var selection = context.selection;
-  var firstObject, secondObject;
-
-  if (selection.count() == 2) {
-    for (var g = 0; g < selection.count(); g++) {
-      if (selection[g].objectID() != selection[0].objectID()) {
-        // It will never check 3rd connection
-        var connections = getConnectionsData();
-        var connectionIndex = findConnectionIndex(selection[0].objectID(), selection[g].objectID(), connections);
-
-        if (connectionIndex != null) {
-          // We have connections in database
-          deleteLine(connections[connectionIndex].line);
-          newConnectionsData = deleteConnectionFromData(connectionIndex);
-          var updateArrowsCounter = connections.length;
-
-          for (var i = 0; i < updateArrowsCounter; i++) {
-            // Need to go through each connection and check if it placed on selected artboard
-            firstObject = document.getLayerWithID(connections[i].firstObject);
-            secondObject = document.getLayerWithID(connections[i].secondObject);
-
-            if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
-              if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
-                deleteLine(connections[i].line);
-                newConnectionsData = deleteConnectionFromData(i);
-              }
-            }
-          }
-
-          context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows from selected layers are deleted ✌️");
-        }
-      }
-    }
-  } else {
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Select two layers, please 🧐");
-  }
+  update(context, 1, false);
 }
 function deleteArtboardArrows(context) {
-  var selection = context.selection;
-  var firstObject, secondObject; // Need to delete all the arrows only from selected artboard
-
-  if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
-    var connections = getConnectionsData();
-
-    if (connections.length > 0) {
-      // We have connections in database
-      var updateArrowsCounter = connections.length;
-
-      for (var i = 0; i < updateArrowsCounter; i++) {
-        // Need to go through each connection and check if it placed on selected artboard
-        firstObject = document.getLayerWithID(connections[i].firstObject);
-        secondObject = document.getLayerWithID(connections[i].secondObject);
-
-        if (firstObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
-          if (secondObject.sketchObject.parentArtboard().objectID() == selection[0].objectID()) {
-            deleteLine(connections[i].line);
-            newConnectionsData = deleteConnectionFromData(i);
-          }
-        }
-      }
-
-      context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows from selected artboard are deleted");
-    } else {
-      // We don't have any connections to update
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is nothing to delete");
-    }
-  } else {
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select one artboard");
-  }
+  update(context, 2, false);
 }
 function deleteAllArrows(context) {
   update(context, 3, false);
-} // let selection = context.selection;
-// if(selection.count() > 1 && selection[0].class() != "MSArtboardGroup"){
-//   // Need to find source object by ID first
-//   let currentConnectionsData = newConnectionsData; // Need to refactor
-//   for(let g = 0; g < selection.count(); g++) {
-//     if(selection[g].objectID() != selection[0].objectID()){
-//       // Then need to create or update connection arrow with each selection
-//       let connectionIndex = findConnectionIndex(selection[0].objectID(), selection[g].objectID(), currentConnectionsData);
-//       if(connectionIndex.length == 0){
-//         updateArrow(currentConnectionsData[connectionIndex].firstObject, currentConnectionsData[connectionIndex].secondObject, currentConnectionsData[connectionIndex].style, currentConnectionsData[connectionIndex].type, currentConnectionsData[connectionIndex].direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, currentConnectionsData[connectionIndex].isCondition, connectionIndex);
-//         sketch.UI.message("Current connection is updated 🤘");
-//       } else {
-//         sketch.UI.message("There is no connection between selected layers on the plugin data");
-//       }
-//     }
-//   }
-//   context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-// } else {
-//   // When user didn't select anything
-//   sketch.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
-// }
-//
-//  Data
-//
-
-function getConnectionsData() {
-  //Refactored
-  var dataArray = [];
-
-  if (pluginData) {
-    for (var i = 0; i < pluginData.length; i++) {
-      dataArray.push(pluginData[i]);
-    }
-  }
-
-  return dataArray;
-} //
-// Functions
-//
-
-
-
-
-
-function create(context, direction, isCondition) {
-  //cc:create#1;Passing all the data
-  var selection = context.selection;
-
-  if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
-    // Need to find source object by ID first
-    var sourceObjectID = getSourceObjectFromSelection(selection, direction);
-    var currentConnectionsData = newConnectionsData; // Need to refactor
-
-    for (var g = 0; g < selection.count(); g++) {
-      if (selection[g].objectID() != sourceObjectID) {
-        // Then need to create or update connection arrow with each selection
-        var connectionIndex = findConnectionIndex(sourceObjectID, selection[g].objectID(), currentConnectionsData);
-
-        if (connectionIndex.length == 0) {
-          // There is no connection with this two objects in our database
-          Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
-        } else {
-          // Need to remake the arrow condition
-          if (Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].line, currentConnectionsData[connectionIndex].condition, isCondition, connectionIndex)) {
-            Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, currentConnectionsData[connectionIndex].condition, isCondition);
-          }
-
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
-        }
-      }
-    }
-  } else {
-    // When user didn't select anything
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
-  }
 }
-
 function update(context, level, isUpdate) {
   // 1 - selection level
   // 2 - artboard level
@@ -1153,85 +998,6 @@ function update(context, level, isUpdate) {
   } else {
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no arrows");
   }
-}
-
-function getSourceObjectFromSelection(selection, direction) {
-  //Refactored
-  var sourceObjectID = selection.firstObject().objectID();
-
-  if (direction != "Auto") {
-    for (var g = 0; g < selection.count(); g++) {
-      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), direction);
-    }
-  }
-
-  return sourceObjectID;
-}
-
-function defineSourceObject(firstObjectID, secondObjectID, direction) {
-  //Refactored
-  var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID);
-  var sourceObjectID;
-
-  if (direction == "Right") {
-    if (firstObject.frame.x <= secondObject.frame.x) {
-      sourceObjectID = firstObject.id;
-    } else {
-      sourceObjectID = secondObject.id;
-    }
-  }
-
-  if (direction == "Down") {
-    if (firstObject.frame.y <= secondObject.frame.y) {
-      sourceObjectID = firstObject.id;
-    } else {
-      sourceObjectID = secondObject.id;
-    }
-  }
-
-  if (direction == "Left") {
-    if (firstObject.frame.x <= secondObject.frame.x) {
-      sourceObjectID = secondObject.id;
-    } else {
-      sourceObjectID = firstObject.id;
-    }
-  }
-
-  if (direction == "Up") {
-    if (firstObject.frame.y <= secondObject.frame.y) {
-      sourceObjectID = secondObject.id;
-    } else {
-      sourceObjectID = firstObject.id;
-    }
-  }
-
-  return sourceObjectID;
-}
-
-function findConnectionIndex(firstObjectID, secondObjectID, data) {
-  var indexArray = [];
-  firstObjectID = String(firstObjectID);
-  secondObjectID = String(secondObjectID);
-
-  if (pluginData) {
-    // If we have database, need to check for connections
-    for (var y = 0; y < data.length; y++) {
-      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
-        if (secondObjectID == null) {
-          // When we need to find connection between two objects
-          if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
-            indexArray[0] = y;
-          }
-        } else {
-          // When we need to find a connection for one object only
-          indexArray.push(y);
-        }
-      }
-    }
-  }
-
-  return indexArray;
 } // const track = require("sketch-module-google-analytics")
 // track("UA-138226597-1", "event", {
 //   ec: "command", 
@@ -1339,6 +1105,141 @@ function getConnectionsData() {
   }
 
   return dataArray;
+}
+
+/***/ }),
+
+/***/ "./src/utilities/data.js":
+/*!*******************************!*\
+  !*** ./src/utilities/data.js ***!
+  \*******************************/
+/*! exports provided: getConnectionsData, findConnectionIndex */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConnectionsData", function() { return getConnectionsData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findConnectionIndex", function() { return findConnectionIndex; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var pluginKey = "flowArrows";
+var document;
+var docData, pluginData, currentParentGroup, connectionsData;
+document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+docData = context.document.documentData();
+pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+
+function getConnectionsData() {
+  var dataArray = [];
+
+  if (pluginData) {
+    for (var i = 0; i < pluginData.length; i++) {
+      dataArray.push(pluginData[i]);
+    }
+  }
+
+  return dataArray;
+}
+function findConnectionIndex(firstObjectID, secondObjectID, data) {
+  var indexArray = [];
+  firstObjectID = String(firstObjectID);
+  secondObjectID = String(secondObjectID);
+
+  if (pluginData) {
+    // If we have database, need to check for connections
+    for (var y = 0; y < data.length; y++) {
+      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
+        if (secondObjectID == null) {
+          // When we need to find connection between two objects
+          if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
+            indexArray[0] = y;
+          }
+        } else {
+          // When we need to find a connection for one object only
+          indexArray.push(y);
+        }
+      }
+    }
+  }
+
+  return indexArray;
+}
+
+/***/ }),
+
+/***/ "./src/utilities/getSourceObject.js":
+/*!******************************************!*\
+  !*** ./src/utilities/getSourceObject.js ***!
+  \******************************************/
+/*! exports provided: getSourceObjectFromSelection */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getSourceObjectFromSelection", function() { return getSourceObjectFromSelection; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+function getSourceObjectFromSelection(selection, direction) {
+  //Refactored
+  var sourceObjectID = selection.firstObject().objectID();
+
+  if (direction != "Auto") {
+    for (var g = 0; g < selection.count(); g++) {
+      sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), direction);
+    }
+  }
+
+  return sourceObjectID;
+}
+
+function defineSourceObject(firstObjectID, secondObjectID, direction) {
+  //Refactored
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var sourceObjectID;
+
+  if (direction == "Right") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Down") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = firstObject.id;
+    } else {
+      sourceObjectID = secondObject.id;
+    }
+  }
+
+  if (direction == "Left") {
+    if (firstObject.frame.x <= secondObject.frame.x) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  if (direction == "Up") {
+    if (firstObject.frame.y <= secondObject.frame.y) {
+      sourceObjectID = secondObject.id;
+    } else {
+      sourceObjectID = firstObject.id;
+    }
+  }
+
+  return sourceObjectID;
 }
 
 /***/ }),

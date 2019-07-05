@@ -95,14 +95,13 @@ var exports =
 /*!********************************!*\
   !*** ./src/utilities/links.js ***!
   \********************************/
-/*! exports provided: default, getLibrary, joinCommunity */
+/*! exports provided: getLibrary, joinCommunity */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLibrary", function() { return getLibrary; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "joinCommunity", function() { return joinCommunity; });
-/* harmony default export */ __webpack_exports__["default"] = (function (context) {});
 function getLibrary(context) {
   NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("https://github.com/faridsabitov/Sketch-Interactions"));
 }

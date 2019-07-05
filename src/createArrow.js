@@ -1,20 +1,10 @@
 import sketch from 'sketch';
-
-let UI = require('sketch/ui') ;
-var Settings = require('sketch/settings');
-
-const pluginKey = "flowArrows";
-let document;
-
-let docData, pluginData, currentParentGroup, newConnectionsData;
-
-document = sketch.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-newConnectionsData = getConnectionsData();
-
 import { drawConnection } from "./draw.js";
+
+var Settings = require('sketch/settings');
+let document = sketch.fromNative(context.document);
+
+// Main Function
 
 export function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {  // Refactored
   let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction;
@@ -37,22 +27,8 @@ export function createArrow(firstObjectID, secondObjectID, style, type, directio
     direction: localDirection,
     line : arrow.line.objectID()
   }
-
-  // Need to save this data to the global array
-  newConnectionsData.push(connection);
-  context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+  return connection;
 }
-
-function getConnectionsData(){ //Refactored
-    let dataArray = [];
-    
-    if(pluginData){
-      for (let i = 0; i < pluginData.length; i ++) {
-        dataArray.push(pluginData[i]);
-      }
-    } 
-    return dataArray;
-  }
 
 function getDirection(firstObjectID, secondObjectID){ // Refactored
   // Get direction from the source object

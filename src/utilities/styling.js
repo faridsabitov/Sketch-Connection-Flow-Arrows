@@ -1,8 +1,6 @@
 import sketch from 'sketch';
 const pluginKey = "flowArrows";
 let document = sketch.fromNative(context.document);
-
-
 let docData = context.document.documentData();
 
 export function styleLine(line, style){ // Refactored

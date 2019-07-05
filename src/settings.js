@@ -1,20 +1,12 @@
 import sketch from "sketch";
 import { getLayerStyles } from "./utilities/styling.js";
 
-let UI = require("sketch/ui");
-var Settings = require("sketch/settings");
 
+let UI = require('sketch/ui') ;
+let Settings = require("sketch/settings");
 const pluginKey = "flowArrows";
-
-let docData, pluginData, currentParentGroup, newConnectionsData;
-
 let document = sketch.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier(
-  "arrowConnections",
-  docData,
-  pluginKey
-);
+let docData = context.document.documentData();
 
 export function settings(context) {
   let alert = COSAlertWindow.new();

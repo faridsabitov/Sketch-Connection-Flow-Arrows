@@ -2,13 +2,10 @@ import sketch from 'sketch';
 import { styleLine } from "./utilities/styling.js";
 var Settings = require('sketch/settings');
 
-const pluginKey = "flowArrows";
 let document = sketch.fromNative(context.document);
-
-
 let docData = context.document.documentData();
-// let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
 let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+
 
 // Main Function
 
