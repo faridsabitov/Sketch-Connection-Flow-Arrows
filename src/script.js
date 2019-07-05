@@ -108,63 +108,9 @@ export function updateSelectedArrows(context) {
   }
 }
 
-export function updateArtboardArrows(context) {
-  // TODO: Need to show amount of updated arrows and deleted ones
-  let selection = context.selection;
-  let connections = getConnectionsData();
-  let firstObjectArtboard;
-  let secondObjectArtboard;
-  
-  if(connections.length > 0){
-    // We have connections in database
-    const updateArrowsCounter = connections.length;
-    for (let i = 0; i < updateArrowsCounter; i ++) {
-      // Need to check if the element is selected globally or from the artboard
-      firstObjectArtboard = document.getLayerWithID(connections[i].firstObject);
-      firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
+export function updateArtboardArrows(context) {update(context, 2, false);}
 
-      secondObjectArtboard = document.getLayerWithID(connections[i].secondObject);
-      secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
-
-      if(selection.count() == 1 && selection[0].class() == "MSArtboardGroup"){
-        // Need to go through each connection and update arrow position for specific artboard
-        
-        if (firstObjectArtboard == selection[0].objectID()){
-          if (secondObjectArtboard == selection[0].objectID()){
-            updateArrow(connections[i].firstObject, connections[i].secondObject, connections[i].style, connections[i].type, connections[i].direction, connections[i].line, connections[i].condition, i);
-          } else {newConnectionsData.push(connections[i])}
-        } else {
-          // If not just saving it
-          newConnectionsData.push(connections[i]);
-        }
-      }
-    }
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-    sketch.UI.message("All arrows are updated 🚀");
-  } else {
-    // We don't have any connections to update
-    sketch.UI.message("There is nothing to update");
-  }
-}
-
-export function updateAllArrows(context) { // TODO
-  // TODO: Need to show amount of updated arrows and deleted ones
-  let currentConnectionsData = newConnectionsData;
-  if(currentConnectionsData.length > 0){
-    // We have connections in database
-    const updateArrowsCounter = currentConnectionsData.length;
-    for (let i = 0; i < updateArrowsCounter; i ++) {
-      // Need to go through each connection and update arrow position without artboards
-      // Need to check if current object don't have the parrent
-      updateArrow(currentConnectionsData[i].firstObject, currentConnectionsData[i].secondObject, currentConnectionsData[i].style, currentConnectionsData[i].type, currentConnectionsData[i].direction, currentConnectionsData[i].line, currentConnectionsData[i].condition, i);
-    }
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-    sketch.UI.message("All arrows are updated 🚀");
-  } else {
-    // We don't have any connections to update
-    sketch.UI.message("There is nothing to update");
-  }
-}
+export function updateAllArrows(context) {update(context, 3, true);}
 
 export function deleteSelectedArrows(context) {
   let selection = context.selection;
@@ -240,28 +186,9 @@ export function deleteArtboardArrows(context) {
 
 export function deleteAllArrows(context) {update(context, 3, false);}
 
-  if(newConnectionsData.length > 0){
-    // We have connections in database
-    for (let i = 0; i < newConnectionsData.length; i ++) {
-      // Need to go through each connection and update arrow position
-      deleteLine(newConnectionsData[i].line);
-    }
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(null, "arrowConnections", docData, pluginKey);
-    sketch.UI.message("All arrows are deleted");
-  } else {
-    // We don't have any connections to update
-    sketch.UI.message("There is nothing to delete");
-  }
-}
 
-function update(context, level, isUpdate) {
-  // 1 - selection level
-  // 2 - artboard level
-  // 3 - document level
 
-  if(level == 3){
-    
-  }
+
 
   // let selection = context.selection;
   // if(selection.count() > 1 && selection[0].class() != "MSArtboardGroup"){
@@ -287,7 +214,7 @@ function update(context, level, isUpdate) {
   //   // When user didn't select anything
   //   sketch.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
   // }
-}
+
 
 //
 //  Data
@@ -311,6 +238,7 @@ function getConnectionsData(){ //Refactored
 
 import { createArrow } from "./createArrow.js";
 import { updateArrow } from "./updateArrow.js";
+import { update } from "./updateArrow.js";
 
 
 function create(context, direction, isCondition){
