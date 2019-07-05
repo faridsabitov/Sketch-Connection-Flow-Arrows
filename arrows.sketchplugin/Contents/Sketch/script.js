@@ -265,6 +265,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "drawConnection", function() { return drawConnection; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utilities/styling.js */ "./src/utilities/styling.js");
+
 
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
@@ -315,7 +317,7 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
   // Style
 
 
-  connection.style = styleLine(connection.line, style); // Add to group
+  connection.style = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["styleLine"])(connection.line, style); // Add to group
 
   addToArrowsGroup(connection.line);
   return connection;
@@ -766,78 +768,6 @@ function updateCondition(conditionID, x, y) {
   }
 
   return condition.id;
-} // Style
-
-
-function styleLine(line, style) {
-  // Refactored
-  var localStyle;
-
-  if (style != null) {
-    // For updates
-    if (getLayerStyles(style) != null && style != "Default Style") {
-      // If style is specified
-      localStyle = style;
-      var ownStyle = getLayerStyles(style);
-      line.sharedStyle = ownStyle[0];
-    } else {
-      // if there is no specific style
-      localStyle = "Default Style";
-      var border = line.style().addStylePartOfType(1);
-      border.color = MSColor.colorWithRGBADictionary({
-        r: 0.89,
-        g: 0.89,
-        b: 0.89,
-        a: 1
-      });
-      border.thickness = 2;
-      line.style().endMarkerType = 2;
-    }
-  } else {
-    // For creating new
-    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style") {
-      // we have settins almost all the time and it's not default
-      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
-      line.sharedStyle = localStyle[0];
-      localStyle = localStyle[0].name();
-    } else {
-      localStyle = "Default Style";
-
-      var _border = line.style().addStylePartOfType(1);
-
-      _border.color = MSColor.colorWithRGBADictionary({
-        r: 0.89,
-        g: 0.89,
-        b: 0.89,
-        a: 1
-      });
-      _border.thickness = 2;
-      line.style().endMarkerType = 2;
-    }
-  }
-
-  return localStyle;
-}
-
-function getLayerStyles(name) {
-  // Refactored
-  var allStyles = docData.allLayerStyles();
-  var keyword = "$arrow";
-  var styles = [];
-
-  for (var i = 0; i < allStyles.count(); i++) {
-    if (name == null) {
-      if (allStyles[i].name().includes(keyword)) {
-        styles.push(allStyles[i]);
-      }
-    } else {
-      if (allStyles[i].name() == name) {
-        styles.push(allStyles[i]);
-      }
-    }
-  }
-
-  return styles;
 } // Groups
 
 
@@ -880,7 +810,7 @@ function checkForGroup(groupName) {
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, autoUpdateSelectedArrows, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteSelectedArrows, deleteArtboardArrows, deleteAllArrows */
+/*! exports provided: createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, autoUpdateSelectedArrows, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteSelectedArrows, deleteArtboardArrows, deleteAllArrows, update */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -901,6 +831,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteSelectedArrows", function() { return deleteSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteArtboardArrows", function() { return deleteArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteAllArrows", function() { return deleteAllArrows; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "update", function() { return update; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _createArrow_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createArrow.js */ "./src/createArrow.js");
@@ -1015,10 +946,10 @@ function updateSelectedArrows(context) {
   }
 }
 function updateArtboardArrows(context) {
-  Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["update"])(context, 2, false);
+  update(context, 2, false);
 }
 function updateAllArrows(context) {
-  Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["update"])(context, 3, true);
+  update(context, 3, true);
 }
 function deleteSelectedArrows(context) {
   var selection = context.selection;
@@ -1094,7 +1025,7 @@ function deleteArtboardArrows(context) {
   }
 }
 function deleteAllArrows(context) {
-  Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["update"])(context, 3, false);
+  update(context, 3, false);
 } // let selection = context.selection;
 // if(selection.count() > 1 && selection[0].class() != "MSArtboardGroup"){
 //   // Need to find source object by ID first
@@ -1139,7 +1070,6 @@ function getConnectionsData() {
 
 
 
-
 function create(context, direction, isCondition) {
   //cc:create#1;Passing all the data
   var selection = context.selection;
@@ -1171,6 +1101,57 @@ function create(context, direction, isCondition) {
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
+  }
+}
+
+function update(context, level, isUpdate) {
+  // 1 - selection level
+  // 2 - artboard level
+  // 3 - document level
+  var newConnectionsData = [];
+  var selection = context.selection;
+  var firstObjectArtboard;
+  var secondObjectArtboard;
+
+  if (connectionsData.length > 0) {
+    for (var i = 0; i < connectionsData.length; i++) {
+      deleteLine(connectionsData[i].line);
+
+      if (level == 3) {
+        if (isUpdate) {
+          Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated");
+        } else {
+          newConnectionsData = null;
+          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are deleted");
+        }
+      }
+
+      if (level == 2) {
+        firstObjectArtboard = document.getLayerWithID(connectionsData[i].firstObject);
+        firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
+        secondObjectArtboard = document.getLayerWithID(connectionsData[i].secondObject);
+        secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
+
+        if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+          if (firstObjectArtboard == selection[0].objectID()) {
+            if (secondObjectArtboard == selection[0].objectID()) {
+              Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+            } else {
+              newConnectionsData.push(connectionsData[i]);
+            }
+          } else {
+            newConnectionsData.push(connectionsData[i]);
+          }
+        }
+      }
+
+      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
+    }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+  } else {
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no arrows");
   }
 }
 
@@ -1264,12 +1245,11 @@ function findConnectionIndex(firstObjectID, secondObjectID, data) {
 /*!****************************!*\
   !*** ./src/updateArrow.js ***!
   \****************************/
-/*! exports provided: update, updateArrow */
+/*! exports provided: updateArrow */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "update", function() { return update; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrow", function() { return updateArrow; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
@@ -1288,56 +1268,6 @@ pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConne
 currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
 connectionsData = getConnectionsData();
-function update(context, level, isUpdate) {
-  // 1 - selection level
-  // 2 - artboard level
-  // 3 - document level
-  var newConnectionsData = [];
-  var selection = context.selection;
-  var firstObjectArtboard;
-  var secondObjectArtboard;
-
-  if (connectionsData.length > 0) {
-    for (var i = 0; i < connectionsData.length; i++) {
-      deleteLine(connectionsData[i].line);
-
-      if (level == 3) {
-        if (isUpdate) {
-          updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated");
-        } else {
-          newConnectionsData = null;
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are deleted");
-        }
-      }
-
-      if (level == 2) {
-        firstObjectArtboard = document.getLayerWithID(connectionsData[i].firstObject);
-        firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
-        secondObjectArtboard = document.getLayerWithID(connectionsData[i].secondObject);
-        secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
-
-        if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
-          if (firstObjectArtboard == selection[0].objectID()) {
-            if (secondObjectArtboard == selection[0].objectID()) {
-              updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
-            } else {
-              newConnectionsData.push(connectionsData[i]);
-            }
-          } else {
-            newConnectionsData.push(connectionsData[i]);
-          }
-        }
-      }
-
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
-    }
-
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
-  } else {
-    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no arrows");
-  }
-}
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
   // Refactored
   // Need to check if we have the layers with such IDs
@@ -1409,6 +1339,95 @@ function getConnectionsData() {
   }
 
   return dataArray;
+}
+
+/***/ }),
+
+/***/ "./src/utilities/styling.js":
+/*!**********************************!*\
+  !*** ./src/utilities/styling.js ***!
+  \**********************************/
+/*! exports provided: styleLine, getLayerStyles */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "styleLine", function() { return styleLine; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLayerStyles", function() { return getLayerStyles; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+var pluginKey = "flowArrows";
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+function styleLine(line, style) {
+  // Refactored
+  var localStyle;
+
+  if (style != null) {
+    // For updates
+    if (getLayerStyles(style) != null && style != "Default Style") {
+      // If style is specified
+      localStyle = style;
+      var ownStyle = getLayerStyles(style);
+      line.sharedStyle = ownStyle[0];
+    } else {
+      // if there is no specific style
+      localStyle = "Default Style";
+      var border = line.style().addStylePartOfType(1);
+      border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  } else {
+    // For creating new
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style") {
+      // we have settins almost all the time and it's not default
+      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+      line.sharedStyle = localStyle[0];
+      localStyle = localStyle[0].name();
+    } else {
+      localStyle = "Default Style";
+
+      var _border = line.style().addStylePartOfType(1);
+
+      _border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      _border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  }
+
+  return localStyle;
+}
+function getLayerStyles(name) {
+  // Refactored
+  var allStyles = docData.allLayerStyles();
+  var keyword = "$arrow";
+  var styles = [];
+
+  for (var i = 0; i < allStyles.count(); i++) {
+    if (name == null) {
+      if (allStyles[i].name().includes(keyword)) {
+        styles.push(allStyles[i]);
+      }
+    } else {
+      if (allStyles[i].name() == name) {
+        styles.push(allStyles[i]);
+      }
+    }
+  }
+
+  return styles;
 }
 
 /***/ }),

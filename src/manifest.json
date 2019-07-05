@@ -176,7 +176,7 @@
       "name": "Get Free Library",
       "description": "Download library for having interactive arrows",
       "identifier": "getLibrary",
-      "script": "./links.js",
+      "script": "./utilities/links.js",
       "icon": "icon.png",
       "handler": "getLibrary"
     },
@@ -184,7 +184,7 @@
       "name": "Join Community",
       "description": "Share all the suggestions, bugs or just say Hi",
       "identifier": "joinCommunity",
-      "script": "./links.js",
+      "script": "./utilities/links.js",
       "icon": "icon.png",
       "handler": "joinCommunity"
     }

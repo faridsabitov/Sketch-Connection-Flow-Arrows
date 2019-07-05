@@ -103,6 +103,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utilities/styling.js */ "./src/utilities/styling.js");
+
 
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
@@ -198,7 +200,7 @@ function settings(context) {
 
 function setActiveStyleSetting(arrowStylingField) {
   var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
-  var styles = getLayerStyles(null);
+  var styles = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["getLayerStyles"])(null);
 
   if (docSettings) {
     // We have info about the settings in the current document
@@ -307,8 +309,76 @@ function alertCheckbox(message, state, x, y, width, height) {
   return checkbox;
 }
 
+/***/ }),
+
+/***/ "./src/utilities/styling.js":
+/*!**********************************!*\
+  !*** ./src/utilities/styling.js ***!
+  \**********************************/
+/*! exports provided: styleLine, getLayerStyles */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "styleLine", function() { return styleLine; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLayerStyles", function() { return getLayerStyles; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+var pluginKey = "flowArrows";
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+function styleLine(line, style) {
+  // Refactored
+  var localStyle;
+
+  if (style != null) {
+    // For updates
+    if (getLayerStyles(style) != null && style != "Default Style") {
+      // If style is specified
+      localStyle = style;
+      var ownStyle = getLayerStyles(style);
+      line.sharedStyle = ownStyle[0];
+    } else {
+      // if there is no specific style
+      localStyle = "Default Style";
+      var border = line.style().addStylePartOfType(1);
+      border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  } else {
+    // For creating new
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style") {
+      // we have settins almost all the time and it's not default
+      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+      line.sharedStyle = localStyle[0];
+      localStyle = localStyle[0].name();
+    } else {
+      localStyle = "Default Style";
+
+      var _border = line.style().addStylePartOfType(1);
+
+      _border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      _border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  }
+
+  return localStyle;
+}
 function getLayerStyles(name) {
-  // Duplicate
+  // Refactored
   var allStyles = docData.allLayerStyles();
   var keyword = "$arrow";
   var styles = [];

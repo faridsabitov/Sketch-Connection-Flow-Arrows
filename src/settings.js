@@ -1,4 +1,6 @@
 import sketch from "sketch";
+import { getLayerStyles } from "./utilities/styling.js";
+
 let UI = require("sketch/ui");
 var Settings = require("sketch/settings");
 
@@ -355,22 +357,4 @@ function alertCheckbox(message, state, x, y, width, height) {
   return checkbox;
 }
 
-function getLayerStyles(name) {
-  // Duplicate
-  let allStyles = docData.allLayerStyles();
-  let keyword = "$arrow";
-  let styles = [];
 
-  for (let i = 0; i < allStyles.count(); i++) {
-    if (name == null) {
-      if (allStyles[i].name().includes(keyword)) {
-        styles.push(allStyles[i]);
-      }
-    } else {
-      if (allStyles[i].name() == name) {
-        styles.push(allStyles[i]);
-      }
-    }
-  }
-  return styles;
-}

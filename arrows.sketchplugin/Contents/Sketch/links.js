@@ -86,15 +86,15 @@ var exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/links.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/utilities/links.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/links.js":
-/*!**********************!*\
-  !*** ./src/links.js ***!
-  \**********************/
+/***/ "./src/utilities/links.js":
+/*!********************************!*\
+  !*** ./src/utilities/links.js ***!
+  \********************************/
 /*! exports provided: default, getLibrary, joinCommunity */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 

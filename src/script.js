@@ -238,7 +238,6 @@ function getConnectionsData(){ //Refactored
 
 import { createArrow } from "./createArrow.js";
 import { updateArrow } from "./updateArrow.js";
-import { update } from "./updateArrow.js";
 
 
 function create(context, direction, isCondition){
@@ -271,6 +270,57 @@ function create(context, direction, isCondition){
   } else {
     // When user didn't select anything
     sketch.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
+  }
+}
+
+export function update(context, level, isUpdate) {
+  // 1 - selection level
+  // 2 - artboard level
+  // 3 - document level
+  let newConnectionsData = [];
+  let selection = context.selection;
+  let firstObjectArtboard;
+  let secondObjectArtboard;
+
+  if (connectionsData.length > 0) {
+      for (let i = 0; i < connectionsData.length; i++) {
+          deleteLine(connectionsData[i].line);
+          
+          if (level == 3) {
+              if(isUpdate){
+                  updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+                  sketch.UI.message("All arrows are updated");
+              } else {
+                  newConnectionsData = null
+                  sketch.UI.message("All arrows are deleted");
+              }
+          }
+          if (level == 2) {
+              firstObjectArtboard = document.getLayerWithID(connectionsData[i].firstObject);
+              firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
+              secondObjectArtboard = document.getLayerWithID(connectionsData[i].secondObject);
+              secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
+
+              if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
+
+                  if (firstObjectArtboard == selection[0].objectID()) {
+                      if (secondObjectArtboard == selection[0].objectID()) {
+                          updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+                      } else {
+                          newConnectionsData.push(connectionsData[i]);
+                      }
+                  } else {
+                      newConnectionsData.push(connectionsData[i]);
+                  }
+              }
+          }
+          sketch.UI.message("All arrows are updated 🚀");
+          
+         
+      }
+      context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+  } else {
+      sketch.UI.message("There is no arrows");
   }
 }
 
