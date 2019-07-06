@@ -31,23 +31,12 @@ export function findConnectionIndex(firstObjectID, secondObjectID, data) {
   firstObjectID = String(firstObjectID);
   secondObjectID = String(secondObjectID);
 
-  if (pluginData) {
+  if (data) {
     // If we have database, need to check for connections
     for (let y = 0; y < data.length; y++) {
-      if (
-        firstObjectID == data[y].firstObject ||
-        firstObjectID == data[y].secondObject
-      ) {
-        if (secondObjectID == null) {
-          // When we need to find connection between two objects
-          if (
-            secondObjectID == data[y].firstObject ||
-            secondObjectID == data[y].secondObject
-          ) {
-            indexArray[0] = y;
-          }
-        } else {
-          // When we need to find a connection for one object only
+      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
+        // When we need to find connection between two objects
+        if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
           indexArray.push(y);
         }
       }

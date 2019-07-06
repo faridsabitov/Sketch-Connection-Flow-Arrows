@@ -1,5 +1,6 @@
 import sketch from 'sketch';
-import { getConnectionsData, findConnectionIndex, deleteConnectionFromData} from "./utilities/data.js"
+import { getConnectionsData, deleteConnectionFromData} from "./utilities/data.js"
+import { deleteLine } from "./utilities/lines.js"
 
 let UI = require('sketch/ui') ;
 var Settings = require('sketch/settings');
@@ -14,35 +15,23 @@ let connectionsData = getConnectionsData();
 
 export function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) { // Refactored
   // Need to check if we have the layers with such IDs
-  let firstObject = document.getLayerWithID(firstObjectID);
-  let secondObject = document.getLayerWithID(secondObjectID);
-  let conditionObject = document.getLayerWithID(conditionID);
-  let result = false;
+  // let firstObject = document.getLayerWithID(firstObjectID);
+  // let secondObject = document.getLayerWithID(secondObjectID);
+  // let conditionObject = document.getLayerWithID(conditionID);
+  // let result = false;
   
   // Need to delete data first, because we will have a new line
-  deleteLine(lineID);
-  if(conditionID && !isCondition){
-    if(conditionObject){conditionObject.remove();}
-  }
+  // deleteLine(lineID);
+  // if(conditionID && !isCondition){
+  //   if(conditionObject){conditionObject.remove();}
+  // }
   
   connectionsData = deleteConnectionFromData(connectionIndex);
 
-  if(firstObject && secondObject){
-    // If we have all the objects, we can recreate the line
-    result = true;
-  }
+  // if(firstObject && secondObject){
+  //   // If we have all the objects, we can recreate the line
+  //   result = true;
+  // }
 
-  return result;
-}
-
-function deleteLine(lineID){ // refactored
-    let lineObject = document.getLayerWithID(lineID);
-    let selectedGroup;
-    if(lineObject){
-      selectedGroup = lineObject.parent;
-      lineObject.remove();
-      if(selectedGroup.layers.length == 0){
-        selectedGroup.remove();
-      }
-    }
+  // return result;
 }

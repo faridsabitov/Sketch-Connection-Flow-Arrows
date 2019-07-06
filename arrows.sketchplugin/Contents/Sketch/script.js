@@ -242,10 +242,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utilities/styling.js */ "./src/utilities/styling.js");
+/* harmony import */ var _utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utilities/conditions.js */ "./src/utilities/conditions.js");
+/* harmony import */ var _utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utilities/groups.js */ "./src/utilities/groups.js");
+
+
 
 
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 var docData = context.document.documentData();
@@ -281,9 +287,9 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
   if (condition == true) {
     if (conditionID != null) {
-      connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
+      connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["updateCondition"])(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
     } else {
-      connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY);
+      connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["addCondition"])("#con", connectionPos.middlePosX, connectionPos.middlePosY);
     }
   } else {
     connection.conditionID = null;
@@ -293,7 +299,7 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
   connection.style = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["styleLine"])(connection.line, style); // Add to group
 
-  addToArrowsGroup(connection.line);
+  Object(_utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__["addToArrowsGroup"])(connection.line);
   return connection;
 } // Positions
 
@@ -307,7 +313,7 @@ function getConnectionPos(firstObject, secondObject, direction) {
     from: secondObject.parent,
     to: currentParentGroup
   });
-  var currentGroup = checkForGroup("Arrows");
+  var currentGroup = Object(_utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__["checkForGroup"])("Arrows");
   var diffX, diffY;
 
   if (currentGroup) {
@@ -663,119 +669,6 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 
   line.setName("Curved Arrow");
   return line;
-} // Conditions
-
-
-function addCondition(keyword, x, y) {
-  // Refactored
-  var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
-  var libraryObject, symbolReferences, symbol;
-
-  for (var g = 0; g < libraries.length; g++) {
-    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
-
-    for (var i = 0; i < symbolReferences.length; i++) {
-      if (symbolReferences[i].name.includes(keyword)) {
-        libraryObject = symbolReferences[i];
-      }
-    }
-  }
-
-  if (libraryObject == null) {
-    symbol = null;
-    UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
-  } else {
-    var symbolMaster = libraryObject.import();
-    symbol = symbolMaster.createNewInstance();
-    symbol = addToConditionGroup(symbol, x, y);
-  }
-
-  return symbol;
-}
-
-function addToConditionGroup(condition, x, y) {
-  // Refactored
-  var conGroup = checkForGroup("Conditions");
-  var arGroup = checkForGroup("Arrows");
-  var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
-  var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-
-  if (conGroup) {
-    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
-    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
-    condition.parent = conGroup;
-    conGroup.fixGeometryWithOptions(1);
-  } else {
-    condition.frame.x = x - condition.frame.width / 2;
-    condition.frame.y = y - condition.frame.height / 2;
-
-    var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
-
-    var group = new Group({
-      parent: currentParentGroup,
-      name: 'Conditions',
-      layers: [condition]
-    });
-    group.moveToBack();
-    group.adjustToFit();
-  }
-
-  return condition.id;
-}
-
-function updateCondition(conditionID, x, y) {
-  // Refactored
-  var condition = document.getLayerWithID(conditionID); // log (condition)
-
-  var conGroup = checkForGroup("Conditions");
-  var arGroup = checkForGroup("Arrows");
-  var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
-  var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-
-  if (conGroup) {
-    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
-    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
-    conGroup.fixGeometryWithOptions(1);
-  } else {
-    condition.frame.x = x - condition.frame.width / 2;
-    condition.frame.y = y - condition.frame.height / 2;
-  }
-
-  return condition.id;
-} // Groups
-
-
-function addToArrowsGroup(line) {
-  var currentGroup = checkForGroup("Arrows");
-
-  if (currentGroup) {
-    currentGroup.addLayers([line]);
-    currentGroup.fixGeometryWithOptions(1);
-  } else {
-    var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
-
-    var group = new Group({
-      parent: currentParentGroup,
-      name: 'Arrows',
-      locked: true,
-      layers: [line]
-    });
-    group.moveToBack();
-    group.adjustToFit();
-  }
-}
-
-function checkForGroup(groupName) {
-  // refactored
-  var currentGroup = null; // Checking all the groups that we have
-
-  for (var i = 0; i < currentParentGroup.layers().count(); i++) {
-    if (currentParentGroup.layers()[i].name() == groupName) {
-      currentGroup = currentParentGroup.layers()[i];
-    }
-  }
-
-  return currentGroup;
 }
 
 /***/ }),
@@ -812,9 +705,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _updateArrow_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./updateArrow.js */ "./src/updateArrow.js");
 /* harmony import */ var _utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utilities/getSourceObject.js */ "./src/utilities/getSourceObject.js");
 /* harmony import */ var _utilities_data_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities/data.js */ "./src/utilities/data.js");
+/* harmony import */ var _utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utilities/lines.js */ "./src/utilities/lines.js");
+/* harmony import */ var _utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utilities/conditions.js */ "./src/utilities/conditions.js");
 //
 //  Variables
 //
+
+
 
 
 
@@ -898,28 +795,42 @@ function create(context, direction, isCondition) {
   var selection = context.selection;
 
   if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
-    var sourceObjectID = Object(_utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__["getSourceObjectFromSelection"])(selection, direction);
+    var _sourceObjectID = Object(_utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__["getSourceObjectFromSelection"])(selection, direction); // Useful for selecting multiple layers
 
-    for (var g = 0; g < selection.count(); g++) {
-      if (selection[g].objectID() != sourceObjectID) {
-        var connectionIndex = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["findConnectionIndex"])(sourceObjectID, selection[g].objectID(), connectionsData);
+
+    for (var _g = 0; _g < selection.count(); _g++) {
+      if (selection[_g].objectID() != _sourceObjectID) {
+        var connectionIndex = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["findConnectionIndex"])(_sourceObjectID, selection[_g].objectID(), connectionsData);
+        log("connection Index length");
+        log(connectionIndex.length);
 
         if (connectionIndex.length == 0) {
           // Create
-          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(_sourceObjectID, selection[_g].objectID(), null, null, direction, null, isCondition);
           connectionsData.push(connection);
-          context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+          log("Create Data");
+          log(connectionsData);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
           // Update
-          if (Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, connectionsData[connectionIndex].line, connectionsData[connectionIndex].condition, isCondition, connectionIndex)) {
-            Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, connectionsData[connectionIndex].condition, isCondition);
+          Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[connectionIndex].line);
+
+          if (!isCondition) {
+            Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[connectionIndex].condition);
           }
 
+          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(_sourceObjectID, selection[_g].objectID(), null, null, direction, null, isCondition);
+
+          connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["deleteConnectionFromData"])(connectionIndex);
+          connectionsData.push(_connection);
+          log("Final Data: ");
+          log(connectionsData);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
         }
       }
     }
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
@@ -990,7 +901,9 @@ function update(context, level, isUpdate) {
       sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
     }
 
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+    var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+    connectionsData.push(connection);
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no arrows");
   }
@@ -1016,6 +929,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _utilities_data_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utilities/data.js */ "./src/utilities/data.js");
+/* harmony import */ var _utilities_lines_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utilities/lines.js */ "./src/utilities/lines.js");
+
 
 
 
@@ -1033,37 +948,99 @@ var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["ge
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
   // Refactored
   // Need to check if we have the layers with such IDs
-  var firstObject = document.getLayerWithID(firstObjectID);
-  var secondObject = document.getLayerWithID(secondObjectID);
-  var conditionObject = document.getLayerWithID(conditionID);
-  var result = false; // Need to delete data first, because we will have a new line
+  // let firstObject = document.getLayerWithID(firstObjectID);
+  // let secondObject = document.getLayerWithID(secondObjectID);
+  // let conditionObject = document.getLayerWithID(conditionID);
+  // let result = false;
+  // Need to delete data first, because we will have a new line
+  // deleteLine(lineID);
+  // if(conditionID && !isCondition){
+  //   if(conditionObject){conditionObject.remove();}
+  // }
+  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["deleteConnectionFromData"])(connectionIndex); // if(firstObject && secondObject){
+  //   // If we have all the objects, we can recreate the line
+  //   result = true;
+  // }
+  // return result;
+}
 
-  deleteLine(lineID);
+/***/ }),
 
-  if (conditionID && !isCondition) {
-    if (conditionObject) {
-      conditionObject.remove();
+/***/ "./src/utilities/conditions.js":
+/*!*************************************!*\
+  !*** ./src/utilities/conditions.js ***!
+  \*************************************/
+/*! exports provided: addCondition, updateCondition, deleteCondition */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addCondition", function() { return addCondition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateCondition", function() { return updateCondition; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteCondition", function() { return deleteCondition; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _groups_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./groups.js */ "./src/utilities/groups.js");
+
+
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+function addCondition(keyword, x, y) {
+  var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
+  var libraryObject, symbolReferences, symbol;
+
+  for (var g = 0; g < libraries.length; g++) {
+    symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
+
+    for (var i = 0; i < symbolReferences.length; i++) {
+      if (symbolReferences[i].name.includes(keyword)) {
+        libraryObject = symbolReferences[i];
+      }
     }
   }
 
-  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["deleteConnectionFromData"])(connectionIndex);
-
-  if (firstObject && secondObject) {
-    // If we have all the objects, we can recreate the line
-    result = true;
+  if (libraryObject == null) {
+    symbol = null;
+    UI.alert("Condition symbol is not found", 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
+  } else {
+    var symbolMaster = libraryObject.import();
+    symbol = symbolMaster.createNewInstance();
+    symbol = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["addToConditionGroup"])(symbol, x, y);
   }
 
-  return result;
+  return symbol;
 }
+function updateCondition(conditionID, x, y) {
+  var condition = document.getLayerWithID(conditionID);
+  var conGroup = checkForGroup("Conditions");
+  var arGroup = checkForGroup("Arrows");
+  var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
+  var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
 
-function deleteLine(lineID) {
-  // refactored
-  var lineObject = document.getLayerWithID(lineID);
+  if (conGroup) {
+    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
+    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
+    conGroup.fixGeometryWithOptions(1);
+  } else {
+    condition.frame.x = x - condition.frame.width / 2;
+    condition.frame.y = y - condition.frame.height / 2;
+  }
+
+  return condition.id;
+}
+function deleteCondition(conditionID) {
+  var conditionObject = document.getLayerWithID(conditionID);
   var selectedGroup;
 
-  if (lineObject) {
-    selectedGroup = lineObject.parent;
-    lineObject.remove();
+  if (conditionObject) {
+    selectedGroup = conditionObject.parent;
+    conditionObject.remove();
 
     if (selectedGroup.layers.length == 0) {
       selectedGroup.remove();
@@ -1117,17 +1094,12 @@ function findConnectionIndex(firstObjectID, secondObjectID, data) {
   firstObjectID = String(firstObjectID);
   secondObjectID = String(secondObjectID);
 
-  if (pluginData) {
+  if (data) {
     // If we have database, need to check for connections
     for (var y = 0; y < data.length; y++) {
       if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
-        if (secondObjectID == null) {
-          // When we need to find connection between two objects
-          if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
-            indexArray[0] = y;
-          }
-        } else {
-          // When we need to find a connection for one object only
+        // When we need to find connection between two objects
+        if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
           indexArray.push(y);
         }
       }
@@ -1172,7 +1144,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 function getSourceObjectFromSelection(selection, direction) {
-  //Refactored
   var sourceObjectID = selection.firstObject().objectID();
 
   if (direction != "Auto") {
@@ -1223,6 +1194,122 @@ function defineSourceObject(firstObjectID, secondObjectID, direction) {
   }
 
   return sourceObjectID;
+}
+
+/***/ }),
+
+/***/ "./src/utilities/groups.js":
+/*!*********************************!*\
+  !*** ./src/utilities/groups.js ***!
+  \*********************************/
+/*! exports provided: checkForGroup, addToArrowsGroup, addToConditionGroup */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "checkForGroup", function() { return checkForGroup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addToArrowsGroup", function() { return addToArrowsGroup; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addToConditionGroup", function() { return addToConditionGroup; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+function checkForGroup(groupName) {
+  // refactored
+  var currentGroup = null; // Checking all the groups that we have
+
+  for (var i = 0; i < currentParentGroup.layers().count(); i++) {
+    if (currentParentGroup.layers()[i].name() == groupName) {
+      currentGroup = currentParentGroup.layers()[i];
+    }
+  }
+
+  return currentGroup;
+}
+function addToArrowsGroup(line) {
+  var currentGroup = checkForGroup("Arrows");
+
+  if (currentGroup) {
+    currentGroup.addLayers([line]);
+    currentGroup.fixGeometryWithOptions(1);
+  } else {
+    var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+
+    var group = new Group({
+      parent: currentParentGroup,
+      name: 'Arrows',
+      locked: true,
+      layers: [line]
+    });
+    group.moveToBack();
+    group.adjustToFit();
+  }
+}
+function addToConditionGroup(condition, x, y) {
+  var conGroup = checkForGroup("Conditions");
+  var arGroup = checkForGroup("Arrows");
+  var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
+  var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
+
+  if (conGroup) {
+    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
+    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
+    condition.parent = conGroup;
+    conGroup.fixGeometryWithOptions(1);
+  } else {
+    condition.frame.x = x - condition.frame.width / 2;
+    condition.frame.y = y - condition.frame.height / 2;
+
+    var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
+
+    var group = new Group({
+      parent: currentParentGroup,
+      name: "Conditions",
+      layers: [condition]
+    });
+    group.moveToBack();
+    group.adjustToFit();
+  }
+
+  return condition.id;
+}
+
+/***/ }),
+
+/***/ "./src/utilities/lines.js":
+/*!********************************!*\
+  !*** ./src/utilities/lines.js ***!
+  \********************************/
+/*! exports provided: deleteLine */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteLine", function() { return deleteLine; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+function deleteLine(lineID) {
+  // refactored
+  var lineObject = document.getLayerWithID(lineID);
+  var selectedGroup;
+
+  if (lineObject) {
+    selectedGroup = lineObject.parent;
+    lineObject.remove();
+
+    if (selectedGroup.layers.length == 0) {
+      selectedGroup.remove();
+    }
+  }
 }
 
 /***/ }),

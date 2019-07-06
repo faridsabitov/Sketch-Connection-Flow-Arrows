@@ -2,7 +2,7 @@ import sketch from 'sketch';
 let document = sketch.fromNative(context.document);
 
 
-export function getSourceObjectFromSelection(selection, direction){ //Refactored
+export function getSourceObjectFromSelection(selection, direction){
   let sourceObjectID = selection.firstObject().objectID();
   
   if(direction != "Auto"){
@@ -10,7 +10,6 @@ export function getSourceObjectFromSelection(selection, direction){ //Refactored
       sourceObjectID = defineSourceObject(sourceObjectID, selection[g].objectID(), direction);
     }
   }
- 
   return sourceObjectID;
 }
 

@@ -6,7 +6,9 @@ import sketch from 'sketch';
 import { createArrow } from "./createArrow.js";
 import { updateArrow } from "./updateArrow.js";
 import { getSourceObjectFromSelection } from "./utilities/getSourceObject.js"
-import { getConnectionsData, findConnectionIndex } from "./utilities/data.js"
+import { getConnectionsData, findConnectionIndex, deleteConnectionFromData } from "./utilities/data.js"
+import { deleteLine } from "./utilities/lines.js"
+import { deleteCondition } from "./utilities/conditions.js";
 
 let UI = require('sketch/ui') ;
 var Settings = require('sketch/settings');
@@ -81,28 +83,33 @@ function create(context, direction, isCondition){
   let selection = context.selection;
 
   if(selection.count() > 1 && selection[0].class() != "MSArtboardGroup"){
-
-    let sourceObjectID = getSourceObjectFromSelection(selection, direction);
-
+    let sourceObjectID = getSourceObjectFromSelection(selection, direction); // Useful for selecting multiple layers
     for(let g = 0; g < selection.count(); g++) {
       if(selection[g].objectID() != sourceObjectID){
         let connectionIndex = findConnectionIndex(sourceObjectID, selection[g].objectID(), connectionsData);
-        
+        log("connection Index length")
+        log(connectionIndex.length);
         if(connectionIndex.length == 0){
           // Create
           let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
           connectionsData.push(connection);
-          context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+          log("Create Data");
+          log(connectionsData);
           sketch.UI.message("New connection is created 🚀");
         } else {
           // Update
-          if(updateArrow(sourceObjectID, selection[g].objectID(), null, null, direction, connectionsData[connectionIndex].line, connectionsData[connectionIndex].condition, isCondition, connectionIndex)){
-            createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, connectionsData[connectionIndex].condition, isCondition);
-          }
+          deleteLine(connectionsData[connectionIndex].line);
+          if(!isCondition){deleteCondition(connectionsData[connectionIndex].condition)}
+          let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+          connectionsData = deleteConnectionFromData(connectionIndex);
+          connectionsData.push(connection);
+          log("Final Data: ");
+          log(connectionsData);
           sketch.UI.message("Current connection is updated 🤘");
         }
       }
     }
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {
     // When user didn't select anything
     sketch.UI.message("Please select more than two layers. Artboards are coming soon 🥳");
@@ -166,7 +173,9 @@ export function update(context, level, isUpdate) {
           
          
       }
-      context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+      let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+      connectionsData.push(connection);
+      context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {
       sketch.UI.message("There is no arrows");
   }

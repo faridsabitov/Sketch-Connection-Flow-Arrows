@@ -1,6 +1,9 @@
 import sketch from 'sketch';
 import { styleLine } from "./utilities/styling.js";
-var Settings = require('sketch/settings');
+import { addCondition, updateCondition } from "./utilities/conditions.js";
+import { checkForGroup, addToArrowsGroup } from "./utilities/groups.js";
+let Settings = require('sketch/settings');
+let UI = require('sketch/ui') ;
 
 let document = sketch.fromNative(context.document);
 let docData = context.document.documentData();
@@ -335,107 +338,3 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
     return line;
 }
 
-// Conditions
-
-function addCondition(keyword, x, y){ // Refactored
-    let libraries = sketch.getLibraries();
-    let libraryObject, symbolReferences, symbol;
-  
-    for(let g = 0; g < libraries.length; g++) {
-      symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
-      for(let i = 0; i < symbolReferences.length; i++) {
-        if(symbolReferences[i].name.includes(keyword)){
-          libraryObject = symbolReferences[i];
-        }
-      }
-    }
-  
-    if(libraryObject == null){
-      symbol = null;
-      UI.alert('Condition symbol is not found', 'If you would like to add arrows with specific conditions, you need to specify them in your libraries. You can download the library that works well with the plugin by going into Plugins -> Connection Arrows -> Get Free Library. Conditions are taken from the library based on their names. Make sure to name symbol as "#condition" so it will be added here');
-    } else {
-      let symbolMaster = libraryObject.import();
-      symbol = symbolMaster.createNewInstance();
-      symbol = addToConditionGroup(symbol, x, y);
-    }
-  
-    return symbol;
-}
-
-function addToConditionGroup(condition, x, y){ // Refactored
-    let conGroup = checkForGroup("Conditions");
-    let arGroup = checkForGroup("Arrows");
-    let arGroupX = arGroup != null ? arGroup.frame().x() : 0;
-    let arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-  
-    if(conGroup){
-      condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
-      condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
-      condition.parent = conGroup;
-      conGroup.fixGeometryWithOptions(1);
-    } else {
-      condition.frame.x = x - condition.frame.width / 2;
-      condition.frame.y = y - condition.frame.height / 2;
-      let Group = require('sketch/dom').Group;
-      let group = new Group({
-        parent: currentParentGroup,
-        name: 'Conditions',
-        layers: [condition]
-      });
-      group.moveToBack();
-      group.adjustToFit();
-    }
-    return condition.id;
-}
-
-function updateCondition(conditionID, x, y){ // Refactored
-let condition = document.getLayerWithID(conditionID);
-// log (condition)
-let conGroup = checkForGroup("Conditions") ;
-let arGroup = checkForGroup("Arrows");
-let arGroupX = arGroup != null ? arGroup.frame().x() : 0;
-let arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-
-if(conGroup){
-    condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
-    condition.frame.y = y - condition.frame.height / 2 - (conGroup.frame().y() - arGroupY);
-    conGroup.fixGeometryWithOptions(1);
-} else {
-    condition.frame.x = x - condition.frame.width / 2;
-    condition.frame.y = y - condition.frame.height / 2;
-}
-return condition.id;
-}
-  
-// Groups
-
-function addToArrowsGroup(line){
-    let currentGroup = checkForGroup("Arrows");
-    if(currentGroup){
-      currentGroup.addLayers([line]);
-      currentGroup.fixGeometryWithOptions(1);
-    } else {
-      let Group = require('sketch/dom').Group;
-      let group = new Group({
-        parent: currentParentGroup,
-        name: 'Arrows',
-        locked: true,
-        layers: [line]
-      });
-      group.moveToBack();
-      group.adjustToFit();
-    }
-}
-
-function checkForGroup(groupName) { // refactored
-    let currentGroup = null;
-  
-    // Checking all the groups that we have
-    for(let i = 0; i < currentParentGroup.layers().count(); i++){
-      if(currentParentGroup.layers()[i].name() == groupName) {
-        currentGroup = currentParentGroup.layers()[i];
-      } 
-    }
-  
-    return currentGroup;
-}
