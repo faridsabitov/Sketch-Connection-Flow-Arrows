@@ -830,15 +830,13 @@ var document;
 var docData, pluginData, currentParentGroup, connectionsData;
 
 if (context.document) {
-  //cc:remember place
   document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
   docData = context.document.documentData();
   pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-
+  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])();
 } else {
-  document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document); //cc:here is bug;well, seems like a bug in logic
+  document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document);
 } //
 //  Plugin Incoming Commands - Create 
 //
@@ -960,8 +958,6 @@ function update(context, level, isUpdate) {
 
   if (connectionsData.length > 0) {
     for (var i = 0; i < connectionsData.length; i++) {
-      deleteLine(connectionsData[i].line);
-
       if (level == 3) {
         if (isUpdate) {
           Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
@@ -1019,6 +1015,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArrow", function() { return updateArrow; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_data_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utilities/data.js */ "./src/utilities/data.js");
+
 
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
@@ -1026,14 +1024,12 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
-var document;
-var docData, pluginData, currentParentGroup, connectionsData;
-document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
-connectionsData = getConnectionsData();
+var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["getConnectionsData"])();
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
   // Refactored
   // Need to check if we have the layers with such IDs
@@ -1050,7 +1046,7 @@ function updateArrow(firstObjectID, secondObjectID, style, type, direction, line
     }
   }
 
-  connectionsData = deleteConnectionFromData(connectionIndex);
+  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["deleteConnectionFromData"])(connectionIndex);
 
   if (firstObject && secondObject) {
     // If we have all the objects, we can recreate the line
@@ -1075,51 +1071,20 @@ function deleteLine(lineID) {
   }
 }
 
-function deleteConnectionFromData(connectionIndex) {
-  // Refactored
-  var newConnections = [];
-
-  if (pluginData) {
-    // If we have database
-    var connections = pluginData;
-
-    for (var i = 0; i < connections.length; i++) {
-      // Updating all connections without deleted one
-      if (i != connectionIndex) {
-        newConnections.push(connections[i]);
-      }
-    }
-  }
-
-  return newConnections;
-}
-
-function getConnectionsData() {
-  //Refactored
-  var dataArray = [];
-
-  if (pluginData) {
-    for (var i = 0; i < pluginData.length; i++) {
-      dataArray.push(pluginData[i]);
-    }
-  }
-
-  return dataArray;
-}
-
 /***/ }),
 
 /***/ "./src/utilities/data.js":
 /*!*******************************!*\
   !*** ./src/utilities/data.js ***!
   \*******************************/
-/*! exports provided: getConnectionsData, findConnectionIndex */
+/*! exports provided: getConnectionsData, findConnectionIndex, deleteConnectionFromData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConnectionsData", function() { return getConnectionsData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findConnectionIndex", function() { return findConnectionIndex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteConnectionFromData", function() { return deleteConnectionFromData; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -1170,6 +1135,24 @@ function findConnectionIndex(firstObjectID, secondObjectID, data) {
   }
 
   return indexArray;
+}
+function deleteConnectionFromData(connectionIndex) {
+  // Refactored
+  var newConnections = [];
+
+  if (pluginData) {
+    // If we have database
+    var connections = pluginData;
+
+    for (var i = 0; i < connections.length; i++) {
+      // Updating all connections without deleted one
+      if (i != connectionIndex) {
+        newConnections.push(connections[i]);
+      }
+    }
+  }
+
+  return newConnections;
 }
 
 /***/ }),

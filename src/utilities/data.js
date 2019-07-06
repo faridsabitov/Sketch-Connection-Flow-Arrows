@@ -55,3 +55,19 @@ export function findConnectionIndex(firstObjectID, secondObjectID, data) {
   }
   return indexArray;
 }
+
+export function deleteConnectionFromData(connectionIndex){ // Refactored
+  let newConnections = [];
+  if(pluginData){
+    // If we have database
+    let connections = pluginData;
+
+    for (let i = 0; i < connections.length; i ++) {
+      // Updating all connections without deleted one
+      if(i != connectionIndex){
+        newConnections.push(connections[i]);
+      }
+    }
+  }
+  return newConnections;
+}

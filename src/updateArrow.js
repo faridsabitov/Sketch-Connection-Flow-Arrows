@@ -1,18 +1,14 @@
 import sketch from 'sketch';
+import { getConnectionsData, findConnectionIndex, deleteConnectionFromData} from "./utilities/data.js"
 
 let UI = require('sketch/ui') ;
 var Settings = require('sketch/settings');
-
 const pluginKey = "flowArrows";
-let document;
-
-let docData, pluginData, currentParentGroup, connectionsData;
-
-document = sketch.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-connectionsData = getConnectionsData();
+let document = sketch.fromNative(context.document);
+let docData = context.document.documentData();
+let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+let connectionsData = getConnectionsData();
 
 
 
@@ -49,31 +45,4 @@ function deleteLine(lineID){ // refactored
         selectedGroup.remove();
       }
     }
-}
-
-function deleteConnectionFromData(connectionIndex){ // Refactored
-    let newConnections = [];
-    if(pluginData){
-      // If we have database
-      let connections = pluginData;
-  
-      for (let i = 0; i < connections.length; i ++) {
-        // Updating all connections without deleted one
-        if(i != connectionIndex){
-          newConnections.push(connections[i]);
-        }
-      }
-    }
-    return newConnections;
-}
-
-function getConnectionsData(){ //Refactored
-    let dataArray = [];
-    
-    if(pluginData){
-      for (let i = 0; i < pluginData.length; i ++) {
-        dataArray.push(pluginData[i]);
-      }
-    } 
-    return dataArray;
 }

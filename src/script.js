@@ -16,15 +16,13 @@ let document;
 
 let docData, pluginData, currentParentGroup, connectionsData;
 if(context.document){
-  //cc:remember place
   document = sketch.fromNative(context.document);
   docData = context.document.documentData();
   pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
+  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   connectionsData = getConnectionsData();
 } else {
   document = sketch.fromNative(context.actionContext.document);
-  //cc:here is bug;well, seems like a bug in logic
 }
 
   
@@ -132,9 +130,9 @@ export function update(context, level, isUpdate) {
   let firstObjectArtboard;
   let secondObjectArtboard;
 
+
   if (connectionsData.length > 0) {
       for (let i = 0; i < connectionsData.length; i++) {
-          deleteLine(connectionsData[i].line);
           
           if (level == 3) {
               if(isUpdate){
