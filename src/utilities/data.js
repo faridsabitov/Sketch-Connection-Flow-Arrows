@@ -26,37 +26,34 @@ export function getConnectionsData() {
   return dataArray;
 }
 
-export function findConnectionIndex(firstObjectID, secondObjectID, data) {
+export function findConnectionIndex(sourceObjectID, selection, data) {
   let indexArray = [];
-  firstObjectID = String(firstObjectID);
-  secondObjectID = String(secondObjectID);
-
   if (data) {
-    // If we have database, need to check for connections
-    for (let y = 0; y < data.length; y++) {
-      if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
-        // When we need to find connection between two objects
-        if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
-          indexArray.push(y);
+    for (let g = 0; g < selection.count(); g++) {
+      if (sourceObjectID != selection[g].objectID()) {
+
+        let firstObjectID = String(sourceObjectID);
+        let secondObjectID = String(selection[g].objectID());
+
+        for (let y = 0; y < data.length; y++) {
+          if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
+            if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
+              indexArray.push(y);
+            }
+          }
         }
+
       }
     }
   }
   return indexArray;
 }
 
-export function deleteConnectionFromData(connectionIndex){ // Refactored
-  let newConnections = [];
-  if(pluginData){
-    // If we have database
-    let connections = pluginData;
-
-    for (let i = 0; i < connections.length; i ++) {
-      // Updating all connections without deleted one
-      if(i != connectionIndex){
-        newConnections.push(connections[i]);
-      }
+export function deleteConnectionFromData(connectionIndexArray, data){
+  if(data){
+    for (let i = connectionIndexArray.length -1; i >= 0; i--) {
+      data.splice(connectionIndexArray[i],1);
     }
   }
-  return newConnections;
+  return data;
 }

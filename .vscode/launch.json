@@ -7,8 +7,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Sketch Plugin",
-            "program": "${workspaceFolder}/--run"
+            "name": "Sketch Arrows Plugin",
+            "program": "${workspaceFolder}/src/script.js"
         }
     ]
 }

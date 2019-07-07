@@ -103,17 +103,6 @@
       "handler": "updateSelectedArrows"
     },
     {
-      "name": "Auto update arrows between selected",
-      "script": "./script.js",
-      "handlers": {
-        "actions": {
-          "LayersMoved.finish": "autoUpdateSelectedArrows",
-          "LayersResized.finish": "autoUpdateSelectedArrows"
-        }
-      },
-      "identifier": "autoUpdateSelectedArrows"
-    },
-    {
       "name": "Update arrows from the selected artboard",
       "description": "Update all the arrows from selected artboard",
       "identifier": "updateArtboardArrows",

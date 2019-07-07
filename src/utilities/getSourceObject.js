@@ -1,5 +1,7 @@
 import sketch from 'sketch';
 let document = sketch.fromNative(context.document);
+let docData = context.document.documentData();
+let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
 
 export function getSourceObjectFromSelection(selection, direction){
@@ -13,13 +15,16 @@ export function getSourceObjectFromSelection(selection, direction){
   return sourceObjectID;
 }
 
-function defineSourceObject(firstObjectID, secondObjectID, direction){ //Refactored
+function defineSourceObject(firstObjectID, secondObjectID, direction){
+  
   let firstObject = document.getLayerWithID(firstObjectID);
   let secondObject = document.getLayerWithID(secondObjectID);
+  let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup});
+  let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup});
   let sourceObjectID;
 
   if(direction == "Right"){
-    if(firstObject.frame.x <= secondObject.frame.x){
+    if(firstObjectAbsPos.x <= secondObjectAbsPos.x){ // We need to get the doc position
       sourceObjectID = firstObject.id;
     } else {
       sourceObjectID = secondObject.id;
@@ -27,7 +32,7 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){ //Refacto
   }
 
   if(direction == "Down"){
-    if(firstObject.frame.y <= secondObject.frame.y){
+    if(firstObject.y <= secondObjectAbsPos.y){
       sourceObjectID = firstObject.id;
     } else {
       sourceObjectID = secondObject.id;
@@ -35,7 +40,7 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){ //Refacto
   }
 
   if(direction == "Left"){
-    if(firstObject.frame.x <= secondObject.frame.x){
+    if(firstObjectAbsPos.x <= secondObjectAbsPos.x){
       sourceObjectID = secondObject.id;
     } else {
       sourceObjectID = firstObject.id;
@@ -43,7 +48,7 @@ function defineSourceObject(firstObjectID, secondObjectID, direction){ //Refacto
   }
 
   if(direction == "Up"){
-    if(firstObject.frame.y <= secondObject.frame.y){
+    if(firstObjectAbsPos.y <= secondObjectAbsPos.y){
       sourceObjectID = secondObject.id;
     } else {
       sourceObjectID = firstObject.id;

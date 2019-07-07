@@ -24,7 +24,7 @@ if(context.document){
   currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   connectionsData = getConnectionsData();
 } else {
-  document = sketch.fromNative(context.actionContext.document);
+  // document = sketch.fromNative(context.actionContext.document);
 }
 
   
@@ -43,39 +43,8 @@ export function createDownArrowWithCondition(context){create(context, "Down", tr
 export function createLeftArrowWithCondition(context){create(context, "Left", true);}
 export function createUpArrowWithCondition(context){create(context, "Up", true);}
 
-export function autoUpdateSelectedArrows(context) {  
-  // const action = context.actionContext;
-
-  // docData = action.document.documentData();
-  // pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-  // currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-  // newConnectionsData = getConnectionsData();
-
-  // const movedLayers = Array.from(context.actionContext.layers).map(layer => sketch.fromNative(layer));
-  // log(movedLayers[0].id);
-  // log(movedLayers.length);
-
-  // // if (movedLayers.filter(layer => (layer.type == 'Artboard' || (layer.type == 'SymbolMaster' && config.arrangeSymbols))).length > 0) {
-  // //   ArrangeArtboards(context)
-  // // }
-
-  // let currentConnectionsData = newConnectionsData; // Need to refactor
-
-  // for(let g = 0; g < movedLayers.length; g++) {
-
-  //   let connectionIndex = findConnectionIndex(movedLayers[0].id, null, currentConnectionsData);
-
-  //   log("yes "+connectionIndex);
-  //   if(connectionIndex.length == 0){
-      
-  //     updateArrow(currentConnectionsData[connectionIndex[0]].firstObject, currentConnectionsData[connectionIndex[0]].secondObject, currentConnectionsData[connectionIndex[0]].style, currentConnectionsData[connectionIndex[0]].type, currentConnectionsData[connectionIndex[0]].direction, currentConnectionsData[connectionIndex[0]].line, currentConnectionsData[connectionIndex[0]].condition, currentConnectionsData[connectionIndex[0]].isCondition, connectionIndex[0]);
-  //     sketch.UI.message("Current connection is updated 🤘");
-  //   } else {
-  //     sketch.UI.message("There is no connection between selected layers on the plugin data");
-  //   }
-    
-  // }
-  // context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
+export function autoUpdateSelectedArrows() {  
+  let a = true
 }
 
 
@@ -83,31 +52,31 @@ function create(context, direction, isCondition){
   let selection = context.selection;
 
   if(selection.count() > 1 && selection[0].class() != "MSArtboardGroup"){
-    let sourceObjectID = getSourceObjectFromSelection(selection, direction); // Useful for selecting multiple layers
+    let sourceObjectID = getSourceObjectFromSelection(selection, direction);
+    let connectionIndex = findConnectionIndex(sourceObjectID, selection, connectionsData);
     for(let g = 0; g < selection.count(); g++) {
       if(selection[g].objectID() != sourceObjectID){
-        let connectionIndex = findConnectionIndex(sourceObjectID, selection[g].objectID(), connectionsData);
-        log("connection Index length")
-        log(connectionIndex.length);
         if(connectionIndex.length == 0){
           // Create
           let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
           connectionsData.push(connection);
-          log("Create Data");
-          log(connectionsData);
           sketch.UI.message("New connection is created 🚀");
         } else {
           // Update
-          deleteLine(connectionsData[connectionIndex].line);
-          if(!isCondition){deleteCondition(connectionsData[connectionIndex].condition)}
+          // if(!isCondition){deleteCondition(connectionsData[connectionIndex[0]].condition)}
           let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
-          connectionsData = deleteConnectionFromData(connectionIndex);
           connectionsData.push(connection);
-          log("Final Data: ");
-          log(connectionsData);
           sketch.UI.message("Current connection is updated 🤘");
         }
       }
+    }
+    for(let z = 0; z < connectionIndex.length; z++) {
+      let currentIndex = connectionIndex[z];
+      deleteLine(connectionsData[currentIndex].line);
+    }
+    if(connectionIndex.length > 0){
+      // Update flow 
+      connectionsData = deleteConnectionFromData(connectionIndex, connectionsData);
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {
