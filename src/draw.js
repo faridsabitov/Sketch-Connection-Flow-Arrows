@@ -34,10 +34,8 @@ export function drawConnection(firstObjectID, secondObjectID, style, type, local
   // Condition
   if(isCondition == true){
     if(document.getLayerWithID(conditionID)){
-      log("let's update")
       connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
     } else {
-      log("let's NOT update")
       connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY);
     }
   } else {

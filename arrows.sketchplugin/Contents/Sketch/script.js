@@ -287,10 +287,8 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
   if (isCondition == true) {
     if (document.getLayerWithID(conditionID)) {
-      log("let's update");
       connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["updateCondition"])(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
     } else {
-      log("let's NOT update");
       connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["addCondition"])("#con", connectionPos.middlePosX, connectionPos.middlePosY);
     }
   } else {

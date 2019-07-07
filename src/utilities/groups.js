@@ -16,7 +16,7 @@ export function checkForGroup(groupName) { // refactored
         currentGroup = currentParentGroup.layers()[i];
       } 
     }
-  
+
     return currentGroup;
 }
 
