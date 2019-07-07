@@ -257,7 +257,7 @@ var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.
 var docData = context.document.documentData();
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // Main Function
 
-function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, condition) {
+function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition) {
   // Refactored
   // Process of creating new connection  
   var firstObject = document.getLayerWithID(firstObjectID);
@@ -285,16 +285,17 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
   } // Condition
 
 
-  if (condition == true) {
-    if (conditionID != null) {
+  if (isCondition == true) {
+    if (document.getLayerWithID(conditionID)) {
+      log("let's update");
       connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["updateCondition"])(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
     } else {
+      log("let's NOT update");
       connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["addCondition"])("#con", connectionPos.middlePosX, connectionPos.middlePosY);
     }
   } else {
     connection.conditionID = null;
-  } // connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null
-  // Style
+  } // Style
 
 
   connection.style = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["styleLine"])(connection.line, style); // Add to group
@@ -382,8 +383,6 @@ function getConnectionPos(firstObject, secondObject, direction) {
     connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY) / 2;
   }
 
-  log("Direction " + direction);
-  console.log(connectionPos);
   return connectionPos;
 } // Drawing Types
 
@@ -810,7 +809,7 @@ function create(context, direction, isCondition) {
             Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[index].condition);
           }
 
-          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, null, isCondition);
+          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition);
 
           connectionsData.push(_connection);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
@@ -1011,8 +1010,8 @@ function addCondition(keyword, x, y) {
 }
 function updateCondition(conditionID, x, y) {
   var condition = document.getLayerWithID(conditionID);
-  var conGroup = checkForGroup("Conditions");
-  var arGroup = checkForGroup("Arrows");
+  var conGroup = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["checkForGroup"])("Conditions");
+  var arGroup = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["checkForGroup"])("Arrows");
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
 
@@ -1231,7 +1230,6 @@ function addToConditionGroup(condition, x, y) {
   var arGroup = checkForGroup("Arrows");
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-  log("Arr group " + arGroupX);
 
   if (conGroup) {
     condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);

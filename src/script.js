@@ -81,8 +81,11 @@ function create(context, direction, isCondition){
         } else {
           // Update
           deleteLine(connectionsData[index].line);
-          if(!isCondition){deleteCondition(connectionsData[index].condition)}
-          let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, null, isCondition);
+          if (!isCondition) { 
+            deleteCondition(connectionsData[index].condition) 
+          }
+
+          let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition);
           connectionsData.push(connection);
           sketch.UI.message("Current connection is updated 🤘");
         }

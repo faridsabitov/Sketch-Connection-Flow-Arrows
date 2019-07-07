@@ -1,5 +1,5 @@
 import sketch from 'sketch';
-import { addToConditionGroup } from "./groups.js";
+import { addToConditionGroup, checkForGroup } from "./groups.js";
 let Settings = require('sketch/settings');
 let UI = require('sketch/ui') ;
 
@@ -33,7 +33,6 @@ export function addCondition(keyword, x, y) {
     symbol = symbolMaster.createNewInstance();
     symbol = addToConditionGroup(symbol, x, y);
   }
-
   return symbol;
 }
 

@@ -12,7 +12,7 @@ let currentParentGroup = docData.currentPage().currentArtboard() || docData.curr
 
 // Main Function
 
-export function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, condition){ // Refactored
+export function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition){ // Refactored
   // Process of creating new connection  
   let firstObject = document.getLayerWithID(firstObjectID);
   let secondObject = document.getLayerWithID(secondObjectID);
@@ -30,18 +30,20 @@ export function drawConnection(firstObjectID, secondObjectID, style, type, local
   if(connection.type == "Straight"){ connection.line = drawStraightLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);}
   if(connection.type == "Curved"){ connection.line = drawCurvedLine(connectionPos.firstLayerPosX, connectionPos.firstLayerPosY, connectionPos.secondLayerPosX, connectionPos.secondLayerPosY, localDirection);}
 
+
   // Condition
-  if(condition == true){
-    if(conditionID != null){
+  if(isCondition == true){
+    if(document.getLayerWithID(conditionID)){
+      log("let's update")
       connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
     } else {
+      log("let's NOT update")
       connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY);
     }
   } else {
     connection.conditionID = null;
   }
-  // connection.conditionID = condition != false ? connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY) : connection.conditionID = null
-
+ 
   // Style
   connection.style = styleLine(connection.line, style);
 
@@ -133,8 +135,6 @@ function getConnectionPos(firstObject, secondObject, direction){ // Refactored
       connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2;
       connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2;
     }
-    log("Direction "+direction)
-    console.log(connectionPos)
 
     return connectionPos
 }

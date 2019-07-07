@@ -44,8 +44,6 @@ export function addToConditionGroup(condition, x, y) {
     
     let arGroupX = arGroup != null ? arGroup.frame().x() : 0;
     let arGroupY = arGroup != null ? arGroup.frame().y() : 0;
-  
-    log("Arr group "+arGroupX)
 
     if (conGroup) {
       condition.frame.x =
