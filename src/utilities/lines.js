@@ -1,7 +1,7 @@
 import sketch from 'sketch';
 let document = sketch.fromNative(context.document);
 
-export function deleteLine(lineID){ // refactored
+export function deleteLine(lineID){
     let lineObject = document.getLayerWithID(lineID);
     let selectedGroup;
     if(lineObject){

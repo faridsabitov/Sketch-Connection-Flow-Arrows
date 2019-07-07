@@ -382,6 +382,8 @@ function getConnectionPos(firstObject, secondObject, direction) {
     connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY) / 2;
   }
 
+  log("Direction " + direction);
+  console.log(connectionPos);
   return connectionPos;
 } // Drawing Types
 
@@ -775,19 +777,40 @@ function create(context, direction, isCondition) {
   if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
     var _sourceObjectID = Object(_utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__["getSourceObjectFromSelection"])(selection, direction);
 
-    var connectionIndex = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["findConnectionIndex"])(_sourceObjectID, selection, connectionsData);
+    var connectionIndex = [];
 
     for (var _g = 0; _g < selection.count(); _g++) {
       if (selection[_g].objectID() != _sourceObjectID) {
-        if (connectionIndex.length == 0) {
+        var firstObjectID = String(_sourceObjectID);
+        var secondObjectID = String(selection[_g].objectID());
+        var _create = true;
+        var index = void 0;
+
+        if (connectionsData.length > 0) {
+          for (var y = 0; y < connectionsData.length; y++) {
+            if ((firstObjectID == connectionsData[y].firstObject || firstObjectID == connectionsData[y].secondObject) && (secondObjectID == connectionsData[y].firstObject || secondObjectID == connectionsData[y].secondObject)) {
+              // We have this connection and need to update
+              _create = false;
+              index = y;
+              connectionIndex.push(y);
+            }
+          }
+        }
+
+        if (_create) {
           // Create
-          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(_sourceObjectID, selection[_g].objectID(), null, null, direction, null, isCondition);
+          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, null, isCondition);
           connectionsData.push(connection);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
           // Update
-          // if(!isCondition){deleteCondition(connectionsData[connectionIndex[0]].condition)}
-          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(_sourceObjectID, selection[_g].objectID(), null, null, direction, null, isCondition);
+          Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[index].line);
+
+          if (!isCondition) {
+            Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[index].condition);
+          }
+
+          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, null, isCondition);
 
           connectionsData.push(_connection);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
@@ -795,13 +818,8 @@ function create(context, direction, isCondition) {
       }
     }
 
-    for (var z = 0; z < connectionIndex.length; z++) {
-      var currentIndex = connectionIndex[z];
-      Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[currentIndex].line);
-    }
-
     if (connectionIndex.length > 0) {
-      // Update flow 
+      // Update data if there was changes
       connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["deleteConnectionFromData"])(connectionIndex, connectionsData);
     }
 
@@ -1029,13 +1047,12 @@ function deleteCondition(conditionID) {
 /*!*******************************!*\
   !*** ./src/utilities/data.js ***!
   \*******************************/
-/*! exports provided: getConnectionsData, findConnectionIndex, deleteConnectionFromData */
+/*! exports provided: getConnectionsData, deleteConnectionFromData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getConnectionsData", function() { return getConnectionsData; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findConnectionIndex", function() { return findConnectionIndex; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteConnectionFromData", function() { return deleteConnectionFromData; });
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
@@ -1063,28 +1080,6 @@ function getConnectionsData() {
   }
 
   return dataArray;
-}
-function findConnectionIndex(sourceObjectID, selection, data) {
-  var indexArray = [];
-
-  if (data) {
-    for (var g = 0; g < selection.count(); g++) {
-      if (sourceObjectID != selection[g].objectID()) {
-        var firstObjectID = String(sourceObjectID);
-        var secondObjectID = String(selection[g].objectID());
-
-        for (var y = 0; y < data.length; y++) {
-          if (firstObjectID == data[y].firstObject || firstObjectID == data[y].secondObject) {
-            if (secondObjectID == data[y].firstObject || secondObjectID == data[y].secondObject) {
-              indexArray.push(y);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return indexArray;
 }
 function deleteConnectionFromData(connectionIndexArray, data) {
   if (data) {
@@ -1236,6 +1231,7 @@ function addToConditionGroup(condition, x, y) {
   var arGroup = checkForGroup("Arrows");
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
+  log("Arr group " + arGroupX);
 
   if (conGroup) {
     condition.frame.x = x - condition.frame.width / 2 - (conGroup.frame().x() - arGroupX);
@@ -1243,8 +1239,8 @@ function addToConditionGroup(condition, x, y) {
     condition.parent = conGroup;
     conGroup.fixGeometryWithOptions(1);
   } else {
-    condition.frame.x = x - condition.frame.width / 2;
-    condition.frame.y = y - condition.frame.height / 2;
+    condition.frame.x = x - condition.frame.width / 2 + arGroupX;
+    condition.frame.y = y - condition.frame.height / 2 + arGroupY;
 
     var Group = __webpack_require__(/*! sketch/dom */ "sketch/dom").Group;
 
@@ -1277,7 +1273,6 @@ __webpack_require__.r(__webpack_exports__);
 
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 function deleteLine(lineID) {
-  // refactored
   var lineObject = document.getLayerWithID(lineID);
   var selectedGroup;
 

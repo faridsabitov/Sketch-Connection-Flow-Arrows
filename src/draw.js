@@ -133,7 +133,9 @@ function getConnectionPos(firstObject, secondObject, direction){ // Refactored
       connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2;
       connectionPos.middlePosY = (connectionPos.firstLayerPosY + connectionPos.secondLayerPosY)/2;
     }
-  
+    log("Direction "+direction)
+    console.log(connectionPos)
+
     return connectionPos
 }
 
@@ -337,4 +339,3 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
   
     return line;
 }
-
