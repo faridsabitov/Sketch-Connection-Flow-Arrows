@@ -3,7 +3,6 @@ import { addToConditionGroup, checkForGroup } from "./groups.js";
 let Settings = require('sketch/settings');
 let UI = require('sketch/ui') ;
 
-let document = sketch.fromNative(context.document);
 let docData = context.document.documentData();
 let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
@@ -56,7 +55,7 @@ export function updateCondition(conditionID, x, y) {
   return condition.id;
 }
 
-export function deleteCondition(conditionID) {
+export function deleteCondition(conditionID, document) {
     let conditionObject = document.getLayerWithID(conditionID);
     let selectedGroup;
     if(conditionObject){
@@ -66,6 +65,5 @@ export function deleteCondition(conditionID) {
         selectedGroup.remove();
       }
     }
-
   }
   

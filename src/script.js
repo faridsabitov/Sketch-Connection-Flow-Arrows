@@ -14,18 +14,13 @@ let UI = require('sketch/ui') ;
 var Settings = require('sketch/settings');
 
 const pluginKey = "flowArrows";
-let document;
 
-let docData, pluginData, currentParentGroup, connectionsData;
-if(context.document){
-  document = sketch.fromNative(context.document);
-  docData = context.document.documentData();
-  pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-  connectionsData = getConnectionsData();
-} else {
-  // document = sketch.fromNative(context.actionContext.document);
-}
+let document = sketch.fromNative(context.document);
+let docData = context.document.documentData();
+// let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+let connectionsData = getConnectionsData();
+
 
   
 //
@@ -42,11 +37,6 @@ export function createRightArrowWithCondition(context){create(context, "Right", 
 export function createDownArrowWithCondition(context){create(context, "Down", true);}
 export function createLeftArrowWithCondition(context){create(context, "Left", true);}
 export function createUpArrowWithCondition(context){create(context, "Up", true);}
-
-export function autoUpdateSelectedArrows() {  
-  let a = true
-}
-
 
 function create(context, direction, isCondition){
   let selection = context.selection;
@@ -80,9 +70,9 @@ function create(context, direction, isCondition){
           sketch.UI.message("New connection is created 🚀");
         } else {
           // Update
-          deleteLine(connectionsData[index].line);
+          deleteLine(connectionsData[index].line, document);
           if (!isCondition) { 
-            deleteCondition(connectionsData[index].condition) 
+            deleteCondition(connectionsData[index].condition, document) 
           }
 
           let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition);

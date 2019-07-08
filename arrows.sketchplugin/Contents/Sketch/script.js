@@ -676,7 +676,7 @@ function drawCurvedLine(firstLayerPosX, firstLayerPosY, secondLayerPosX, secondL
 /*!***********************!*\
   !*** ./src/script.js ***!
   \***********************/
-/*! exports provided: createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, autoUpdateSelectedArrows, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteSelectedArrows, deleteArtboardArrows, deleteAllArrows, update */
+/*! exports provided: createAutoArrow, createRightArrow, createDownArrow, createLeftArrow, createUpArrow, createRightArrowWithCondition, createDownArrowWithCondition, createLeftArrowWithCondition, createUpArrowWithCondition, updateSelectedArrows, updateArtboardArrows, updateAllArrows, deleteSelectedArrows, deleteArtboardArrows, deleteAllArrows, update */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -690,7 +690,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDownArrowWithCondition", function() { return createDownArrowWithCondition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createLeftArrowWithCondition", function() { return createLeftArrowWithCondition; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createUpArrowWithCondition", function() { return createUpArrowWithCondition; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "autoUpdateSelectedArrows", function() { return autoUpdateSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateSelectedArrows", function() { return updateSelectedArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateArtboardArrows", function() { return updateArtboardArrows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "updateAllArrows", function() { return updateAllArrows; });
@@ -722,20 +721,13 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
-var document;
-var docData, pluginData, currentParentGroup, connectionsData;
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData(); // let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
-if (context.document) {
-  document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-  docData = context.document.documentData();
-  pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-  currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])();
-} else {} // document = sketch.fromNative(context.actionContext.document);
-//
+var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])(); //
 //  Plugin Incoming Commands - Create 
 //
-
 
 function createAutoArrow(context) {
   create(context, "Auto", false);
@@ -763,9 +755,6 @@ function createLeftArrowWithCondition(context) {
 }
 function createUpArrowWithCondition(context) {
   create(context, "Up", true);
-}
-function autoUpdateSelectedArrows() {
-  var a = true;
 }
 
 function create(context, direction, isCondition) {
@@ -801,10 +790,10 @@ function create(context, direction, isCondition) {
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
           // Update
-          Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[index].line);
+          Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[index].line, document);
 
           if (!isCondition) {
-            Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[index].condition);
+            Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[index].condition, document);
           }
 
           var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition);
@@ -978,7 +967,6 @@ var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
 var docData = context.document.documentData();
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 function addCondition(keyword, x, y) {
@@ -1024,7 +1012,7 @@ function updateCondition(conditionID, x, y) {
 
   return condition.id;
 }
-function deleteCondition(conditionID) {
+function deleteCondition(conditionID, document) {
   var conditionObject = document.getLayerWithID(conditionID);
   var selectedGroup;
 
@@ -1267,8 +1255,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-function deleteLine(lineID) {
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+function deleteLine(lineID, document) {
+  log(lineID);
   var lineObject = document.getLayerWithID(lineID);
   var selectedGroup;
 
