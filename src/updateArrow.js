@@ -9,7 +9,7 @@ let document = sketch.fromNative(context.document);
 let docData = context.document.documentData();
 let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
 let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-let connectionsData = getConnectionsData();
+let connectionsData = getConnectionsData(docData);
 
 
 

@@ -107,18 +107,17 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings"); // Main Function
 
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document); // Main Function
 
-function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {
+function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition, document, docData) {
   // Refactored
-  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction; // Main Operations based on the settings
+  var localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID, document) : direction; // Main Operations based on the settings
 
-  updateSpacing(firstObjectID, secondObjectID, localDirection);
-  autoAlignLayer(firstObjectID, secondObjectID, localDirection); // Making an Arrow 
+  updateSpacing(firstObjectID, secondObjectID, localDirection, document);
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection, document); // Making an Arrow 
 
-  var arrow = Object(_draw_js__WEBPACK_IMPORTED_MODULE_1__["drawConnection"])(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition); // Storage for current connection
+  var arrow = Object(_draw_js__WEBPACK_IMPORTED_MODULE_1__["drawConnection"])(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition, document, docData); // Storage for current connection
 
   var connection = {
     firstObject: firstObjectID,
@@ -133,7 +132,7 @@ function createArrow(firstObjectID, secondObjectID, style, type, direction, cond
   return connection;
 }
 
-function getDirection(firstObjectID, secondObjectID) {
+function getDirection(firstObjectID, secondObjectID, document) {
   // Refactored
   // Get direction from the source object
   var firstObject = document.getLayerWithID(firstObjectID);
@@ -171,7 +170,7 @@ function getDirection(firstObjectID, secondObjectID) {
   return direction;
 }
 
-function updateSpacing(sourceObjectID, childObjectID, direction) {
+function updateSpacing(sourceObjectID, childObjectID, direction, document) {
   var sourceObject = document.getLayerWithID(sourceObjectID);
   var childObject = document.getLayerWithID(childObjectID);
 
@@ -196,7 +195,7 @@ function updateSpacing(sourceObjectID, childObjectID, direction) {
   }
 }
 
-function autoAlignLayer(sourceObjectID, childObjectID, direction) {
+function autoAlignLayer(sourceObjectID, childObjectID, direction, document) {
   var sourceObject = document.getLayerWithID(sourceObjectID);
   var childObject = document.getLayerWithID(childObjectID);
   var sourceMidY, childMidY, sourceMidX, childMidX, diff;
@@ -251,18 +250,19 @@ __webpack_require__.r(__webpack_exports__);
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui"); // let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+// Main Function
 
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData();
-var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // Main Function
 
-function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition) {
+function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition, document, docData) {
   // Refactored
   // Process of creating new connection  
+  var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   var firstObject = document.getLayerWithID(firstObjectID);
   var secondObject = document.getLayerWithID(secondObjectID);
-  var connectionPos = getConnectionPos(firstObject, secondObject, localDirection);
+  var connectionPos = getConnectionPos(firstObject, secondObject, localDirection, currentParentGroup);
   var connection = {
     line: [],
     conditionID: [],
@@ -287,22 +287,22 @@ function drawConnection(firstObjectID, secondObjectID, style, type, localDirecti
 
   if (isCondition == true) {
     if (document.getLayerWithID(conditionID)) {
-      connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["updateCondition"])(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
+      connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["updateCondition"])(conditionID, connectionPos.middlePosX, connectionPos.middlePosY, document, docData);
     } else {
-      connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["addCondition"])("#con", connectionPos.middlePosX, connectionPos.middlePosY);
+      connection.conditionID = Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_2__["addCondition"])("#con", connectionPos.middlePosX, connectionPos.middlePosY, document, docData);
     }
   } else {
     connection.conditionID = null;
   } // Style
 
 
-  connection.style = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["styleLine"])(connection.line, style); // Add to group
+  connection.style = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["styleLine"])(connection.line, style, docData); // Add to group
 
-  Object(_utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__["addToArrowsGroup"])(connection.line);
+  Object(_utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__["addToArrowsGroup"])(connection.line, currentParentGroup);
   return connection;
 } // Positions
 
-function getConnectionPos(firstObject, secondObject, direction) {
+function getConnectionPos(firstObject, secondObject, direction, currentParentGroup) {
   // Refactored
   var firstObjectAbsPos = firstObject.frame.changeBasis({
     from: firstObject.parent,
@@ -312,7 +312,7 @@ function getConnectionPos(firstObject, secondObject, direction) {
     from: secondObject.parent,
     to: currentParentGroup
   });
-  var currentGroup = Object(_utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__["checkForGroup"])("Arrows");
+  var currentGroup = Object(_utilities_groups_js__WEBPACK_IMPORTED_MODULE_3__["checkForGroup"])("Arrows", currentParentGroup);
   var diffX, diffY;
 
   if (currentGroup) {
@@ -722,10 +722,10 @@ var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData(); // let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-
-var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])(); //
+var docData = context.document.documentData();
+var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])(docData); //
 //  Plugin Incoming Commands - Create 
 //
 
@@ -785,7 +785,7 @@ function create(context, direction, isCondition) {
 
         if (_create) {
           // Create
-          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, null, isCondition);
+          var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, null, isCondition, document, docData);
           connectionsData.push(connection);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("New connection is created 🚀");
         } else {
@@ -796,7 +796,7 @@ function create(context, direction, isCondition) {
             Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[index].condition, document);
           }
 
-          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition);
+          var _connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition, document, docData);
 
           connectionsData.push(_connection);
           sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Current connection is updated 🤘");
@@ -880,7 +880,7 @@ function update(context, level, isUpdate) {
       sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
     }
 
-    var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+    var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
     connectionsData.push(connection);
     context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {
@@ -923,7 +923,7 @@ var docData = context.document.documentData();
 var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
 var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
 
-var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["getConnectionsData"])();
+var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["getConnectionsData"])(docData);
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
   // Refactored
   // Need to check if we have the layers with such IDs
@@ -965,13 +965,14 @@ __webpack_require__.r(__webpack_exports__);
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui"); // let docData = context.document.documentData();
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
-var docData = context.document.documentData();
-var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-function addCondition(keyword, x, y) {
+
+function addCondition(keyword, x, y, document, docData) {
   var libraries = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.getLibraries();
   var libraryObject, symbolReferences, symbol;
+  var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
   for (var g = 0; g < libraries.length; g++) {
     symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(document);
@@ -989,15 +990,16 @@ function addCondition(keyword, x, y) {
   } else {
     var symbolMaster = libraryObject.import();
     symbol = symbolMaster.createNewInstance();
-    symbol = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["addToConditionGroup"])(symbol, x, y);
+    symbol = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["addToConditionGroup"])(symbol, x, y, currentParentGroup);
   }
 
   return symbol;
 }
-function updateCondition(conditionID, x, y) {
+function updateCondition(conditionID, x, y, document, docData) {
+  var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   var condition = document.getLayerWithID(conditionID);
-  var conGroup = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["checkForGroup"])("Conditions");
-  var arGroup = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["checkForGroup"])("Arrows");
+  var conGroup = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["checkForGroup"])("Conditions", currentParentGroup);
+  var arGroup = Object(_groups_js__WEBPACK_IMPORTED_MODULE_1__["checkForGroup"])("Arrows", currentParentGroup);
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
 
@@ -1048,14 +1050,8 @@ var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
-var document;
-var docData, pluginData, currentParentGroup, connectionsData;
-document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-
-function getConnectionsData() {
+function getConnectionsData(docData) {
+  var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
   var dataArray = [];
 
   if (pluginData) {
@@ -1175,12 +1171,12 @@ __webpack_require__.r(__webpack_exports__);
 
 var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
-var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui"); // let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData();
-var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-function checkForGroup(groupName) {
+
+function checkForGroup(groupName, currentParentGroup) {
   // refactored
   var currentGroup = null; // Checking all the groups that we have
 
@@ -1192,8 +1188,8 @@ function checkForGroup(groupName) {
 
   return currentGroup;
 }
-function addToArrowsGroup(line) {
-  var currentGroup = checkForGroup("Arrows");
+function addToArrowsGroup(line, currentParentGroup) {
+  var currentGroup = checkForGroup("Arrows", currentParentGroup);
 
   if (currentGroup) {
     currentGroup.addLayers([line]);
@@ -1211,9 +1207,9 @@ function addToArrowsGroup(line) {
     group.adjustToFit();
   }
 }
-function addToConditionGroup(condition, x, y) {
-  var conGroup = checkForGroup("Conditions");
-  var arGroup = checkForGroup("Arrows");
+function addToConditionGroup(condition, x, y, currentParentGroup) {
+  var conGroup = checkForGroup("Conditions", currentParentGroup);
+  var arGroup = checkForGroup("Arrows", currentParentGroup);
   var arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   var arGroupY = arGroup != null ? arGroup.frame().y() : 0;
 
@@ -1259,7 +1255,6 @@ __webpack_require__.r(__webpack_exports__);
 var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
 
 function deleteLine(lineID, document) {
-  log(lineID);
   var lineObject = document.getLayerWithID(lineID);
   var selectedGroup;
 
@@ -1289,19 +1284,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 
-var pluginKey = "flowArrows";
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData();
-function styleLine(line, style) {
+var pluginKey = "flowArrows"; // let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+
+function styleLine(line, style, docData) {
   // Refactored
   var localStyle;
 
   if (style != null) {
     // For updates
-    if (getLayerStyles(style) != null && style != "Default Style") {
+    if (getLayerStyles(style, docData) != null && style != "Default Style") {
       // If style is specified
       localStyle = style;
-      var ownStyle = getLayerStyles(style);
+      var ownStyle = getLayerStyles(style, docData);
       line.sharedStyle = ownStyle[0];
     } else {
       // if there is no specific style
@@ -1320,7 +1315,7 @@ function styleLine(line, style) {
     // For creating new
     if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style") {
       // we have settins almost all the time and it's not default
-      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey), docData);
       line.sharedStyle = localStyle[0];
       localStyle = localStyle[0].name();
     } else {
@@ -1341,7 +1336,7 @@ function styleLine(line, style) {
 
   return localStyle;
 }
-function getLayerStyles(name) {
+function getLayerStyles(name, docData) {
   // Refactored
   var allStyles = docData.allLayerStyles();
   var keyword = "$arrow";

@@ -2,19 +2,19 @@ import sketch from 'sketch';
 import { drawConnection } from "./draw.js";
 
 var Settings = require('sketch/settings');
-let document = sketch.fromNative(context.document);
+
 
 // Main Function
 
-export function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition) {  // Refactored
-  let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID) : direction;
+export function createArrow(firstObjectID, secondObjectID, style, type, direction, conditionID, isCondition, document, docData) {  // Refactored
+  let localDirection = direction == "Auto" ? getDirection(firstObjectID, secondObjectID, document) : direction;
 
   // Main Operations based on the settings
-  updateSpacing(firstObjectID, secondObjectID, localDirection);
-  autoAlignLayer(firstObjectID, secondObjectID, localDirection);
+  updateSpacing(firstObjectID, secondObjectID, localDirection, document);
+  autoAlignLayer(firstObjectID, secondObjectID, localDirection, document);
 
   // Making an Arrow 
-  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition);
+  let arrow = drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition, document, docData);
   
   // Storage for current connection
   let connection = {
@@ -30,7 +30,7 @@ export function createArrow(firstObjectID, secondObjectID, style, type, directio
   return connection;
 }
 
-function getDirection(firstObjectID, secondObjectID){ // Refactored
+function getDirection(firstObjectID, secondObjectID, document){ // Refactored
   // Get direction from the source object
   const firstObject = document.getLayerWithID(firstObjectID);
   const secondObject = document.getLayerWithID(secondObjectID);
@@ -68,7 +68,7 @@ function getDirection(firstObjectID, secondObjectID){ // Refactored
   return direction;
 }
 
-function updateSpacing(sourceObjectID, childObjectID, direction){
+function updateSpacing(sourceObjectID, childObjectID, direction, document){
   let sourceObject = document.getLayerWithID(sourceObjectID);
   let childObject = document.getLayerWithID(childObjectID);
 
@@ -93,7 +93,7 @@ function updateSpacing(sourceObjectID, childObjectID, direction){
   }
 }
 
-function autoAlignLayer(sourceObjectID, childObjectID, direction){
+function autoAlignLayer(sourceObjectID, childObjectID, direction, document){
   let sourceObject = document.getLayerWithID(sourceObjectID);
   let childObject = document.getLayerWithID(childObjectID);
   let sourceMidY, childMidY, sourceMidX, childMidX, diff;

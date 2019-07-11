@@ -17,9 +17,9 @@ const pluginKey = "flowArrows";
 
 let document = sketch.fromNative(context.document);
 let docData = context.document.documentData();
-// let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
-let connectionsData = getConnectionsData();
+let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+let connectionsData = getConnectionsData(docData);
 
 
   
@@ -65,7 +65,7 @@ function create(context, direction, isCondition){
   
         if(create){
           // Create
-          let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, null, isCondition);
+          let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, null, isCondition, document, docData);
           connectionsData.push(connection);
           sketch.UI.message("New connection is created 🚀");
         } else {
@@ -75,7 +75,7 @@ function create(context, direction, isCondition){
             deleteCondition(connectionsData[index].condition, document) 
           }
 
-          let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition);
+          let connection = createArrow(firstObjectID, secondObjectID, null, null, direction, connectionsData[index].condition, isCondition, document, docData);
           connectionsData.push(connection);
           sketch.UI.message("Current connection is updated 🤘");
         }
@@ -149,7 +149,7 @@ export function update(context, level, isUpdate) {
           
          
       }
-      let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition);
+      let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
       connectionsData.push(connection);
       context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
   } else {

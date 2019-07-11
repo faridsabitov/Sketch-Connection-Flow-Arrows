@@ -5,18 +5,19 @@ import { checkForGroup, addToArrowsGroup } from "./utilities/groups.js";
 let Settings = require('sketch/settings');
 let UI = require('sketch/ui') ;
 
-let document = sketch.fromNative(context.document);
-let docData = context.document.documentData();
-let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+// let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
 
 // Main Function
 
-export function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition){ // Refactored
+export function drawConnection(firstObjectID, secondObjectID, style, type, localDirection, conditionID, isCondition, document, docData){ // Refactored
   // Process of creating new connection  
+  let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   let firstObject = document.getLayerWithID(firstObjectID);
   let secondObject = document.getLayerWithID(secondObjectID);
-  let connectionPos = getConnectionPos(firstObject, secondObject, localDirection);
+  let connectionPos = getConnectionPos(firstObject, secondObject, localDirection, currentParentGroup);
   let connection = {
     line: [], 
     conditionID: [],
@@ -34,30 +35,30 @@ export function drawConnection(firstObjectID, secondObjectID, style, type, local
   // Condition
   if(isCondition == true){
     if(document.getLayerWithID(conditionID)){
-      connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY);
+      connection.conditionID = updateCondition(conditionID, connectionPos.middlePosX, connectionPos.middlePosY, document, docData);
     } else {
-      connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY);
+      connection.conditionID = addCondition("#con", connectionPos.middlePosX, connectionPos.middlePosY, document, docData);
     }
   } else {
     connection.conditionID = null;
   }
  
   // Style
-  connection.style = styleLine(connection.line, style);
+  connection.style = styleLine(connection.line, style, docData);
 
   // Add to group
-  addToArrowsGroup(connection.line);
+  addToArrowsGroup(connection.line, currentParentGroup);
   
   return connection
 }
 
 // Positions
 
-function getConnectionPos(firstObject, secondObject, direction){ // Refactored
+function getConnectionPos(firstObject, secondObject, direction, currentParentGroup){ // Refactored
 
     let firstObjectAbsPos = firstObject.frame.changeBasis({from: firstObject.parent, to: currentParentGroup});
     let secondObjectAbsPos = secondObject.frame.changeBasis({from: secondObject.parent, to: currentParentGroup});
-    let currentGroup = checkForGroup("Arrows");
+    let currentGroup = checkForGroup("Arrows", currentParentGroup);
     let diffX, diffY;
   
     if(currentGroup){

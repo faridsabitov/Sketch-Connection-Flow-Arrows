@@ -4,16 +4,10 @@ let UI = require('sketch/ui') ;
 var Settings = require('sketch/settings');
 
 const pluginKey = "flowArrows";
-let document;
 
-let docData, pluginData, currentParentGroup, connectionsData;
 
-document = sketch.fromNative(context.document);
-docData = context.document.documentData();
-pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage(); // TODO: Might be a problem for multiple artboards
-
-export function getConnectionsData() {
+export function getConnectionsData(docData) {
+  let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
   let dataArray = [];
 
   if (pluginData) {

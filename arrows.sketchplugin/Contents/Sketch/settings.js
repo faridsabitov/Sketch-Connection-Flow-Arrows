@@ -323,19 +323,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
 /* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
 
-var pluginKey = "flowArrows";
-var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData();
-function styleLine(line, style) {
+var pluginKey = "flowArrows"; // let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+
+function styleLine(line, style, docData) {
   // Refactored
   var localStyle;
 
   if (style != null) {
     // For updates
-    if (getLayerStyles(style) != null && style != "Default Style") {
+    if (getLayerStyles(style, docData) != null && style != "Default Style") {
       // If style is specified
       localStyle = style;
-      var ownStyle = getLayerStyles(style);
+      var ownStyle = getLayerStyles(style, docData);
       line.sharedStyle = ownStyle[0];
     } else {
       // if there is no specific style
@@ -354,7 +354,7 @@ function styleLine(line, style) {
     // For creating new
     if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style") {
       // we have settins almost all the time and it's not default
-      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey), docData);
       line.sharedStyle = localStyle[0];
       localStyle = localStyle[0].name();
     } else {
@@ -375,7 +375,7 @@ function styleLine(line, style) {
 
   return localStyle;
 }
-function getLayerStyles(name) {
+function getLayerStyles(name, docData) {
   // Refactored
   var allStyles = docData.allLayerStyles();
   var keyword = "$arrow";

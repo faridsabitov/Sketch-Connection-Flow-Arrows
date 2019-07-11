@@ -1,17 +1,17 @@
 import sketch from 'sketch';
 const pluginKey = "flowArrows";
-let document = sketch.fromNative(context.document);
-let docData = context.document.documentData();
+// let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
 
-export function styleLine(line, style){ // Refactored
+export function styleLine(line, style, docData){ // Refactored
     let localStyle;
     
     if(style != null){ 
       // For updates
-      if(getLayerStyles(style) != null && style != "Default Style"){
+      if(getLayerStyles(style, docData) != null && style != "Default Style"){
         // If style is specified
         localStyle = style;
-        let ownStyle = getLayerStyles(style);
+        let ownStyle = getLayerStyles(style, docData);
         line.sharedStyle = ownStyle[0];
       } else {
         // if there is no specific style
@@ -25,7 +25,7 @@ export function styleLine(line, style){ // Refactored
       // For creating new
       if(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style"){
         // we have settins almost all the time and it's not default
-        localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey));
+        localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey), docData);
         line.sharedStyle = localStyle[0];
         localStyle = localStyle[0].name();
       } else {
@@ -40,7 +40,7 @@ export function styleLine(line, style){ // Refactored
     return localStyle;
 }
 
-export function getLayerStyles(name) { // Refactored
+export function getLayerStyles(name, docData) { // Refactored
     let allStyles = docData.allLayerStyles();
     let keyword = "$arrow";
     let styles = [];

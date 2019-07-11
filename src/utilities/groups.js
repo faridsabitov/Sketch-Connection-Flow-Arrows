@@ -2,12 +2,12 @@ import sketch from 'sketch';
 let Settings = require('sketch/settings');
 let UI = require('sketch/ui') ;
 
-let document = sketch.fromNative(context.document);
-let docData = context.document.documentData();
-let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+// let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
 
-export function checkForGroup(groupName) { // refactored
+export function checkForGroup(groupName, currentParentGroup) { // refactored
     let currentGroup = null;
   
     // Checking all the groups that we have
@@ -20,8 +20,8 @@ export function checkForGroup(groupName) { // refactored
     return currentGroup;
 }
 
-export function addToArrowsGroup(line){
-    let currentGroup = checkForGroup("Arrows");
+export function addToArrowsGroup(line, currentParentGroup){
+    let currentGroup = checkForGroup("Arrows", currentParentGroup);
     if(currentGroup){
       currentGroup.addLayers([line]);
       currentGroup.fixGeometryWithOptions(1);
@@ -38,9 +38,9 @@ export function addToArrowsGroup(line){
     }
 }
 
-export function addToConditionGroup(condition, x, y) {
-    let conGroup = checkForGroup("Conditions");
-    let arGroup = checkForGroup("Arrows");
+export function addToConditionGroup(condition, x, y, currentParentGroup) {
+    let conGroup = checkForGroup("Conditions", currentParentGroup);
+    let arGroup = checkForGroup("Arrows", currentParentGroup);
     
     let arGroupX = arGroup != null ? arGroup.frame().x() : 0;
     let arGroupY = arGroup != null ? arGroup.frame().y() : 0;

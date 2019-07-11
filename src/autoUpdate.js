@@ -2,25 +2,18 @@ import sketch from 'sketch';
 let UI = require('sketch/ui');
 const pluginKey = "flowArrows";
 import { deleteLine } from "./utilities/lines.js"
-import { deleteCondition } from "./utilities/conditions.js";
+import { createArrow } from "./createArrow.js";
+import { getConnectionsData, deleteConnectionFromData } from "./utilities/data.js"
 
 
 
 export function autoUpdateSelectedArrows(context) {
     let document = sketch.fromNative(context.actionContext.document)
-    const action = context.actionContext
+    let action = context.actionContext
     let docData = action.document.documentData();
-    let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey)
 
-    let connectionsData = [];
+    let connectionsData = getConnectionsData(docData);
 
-    if (pluginData) {
-        for (let i = 0; i < pluginData.length; i++) {
-            connectionsData.push(pluginData[i]);
-        }
-    }
-
-    console.log(connectionsData)
     
     const movedLayers = Array.from(context.actionContext.layers).map(layer => sketch.fromNative(layer))
     let firstObjectID = String(movedLayers[0].id);
@@ -37,9 +30,6 @@ export function autoUpdateSelectedArrows(context) {
     if(connectionIndex.length > 0){
         for (let x = 0; x < connectionIndex.length; x++) {
             deleteLine(connectionsData[connectionIndex[x]].line, document);
-            if (!isCondition) { 
-                deleteCondition(connectionsData[connectionIndex[x]].condition, document);
-            }
             let connection = createArrow(
                 connectionsData[connectionIndex[x]].firstObject, 
                 connectionsData[connectionIndex[x]].secondObject, 
@@ -47,14 +37,15 @@ export function autoUpdateSelectedArrows(context) {
                 connectionsData[connectionIndex[x]].type, 
                 connectionsData[connectionIndex[x]].direction, 
                 connectionsData[connectionIndex[x]].conditionID, 
-                connectionsData[connectionIndex[x]].isCondition
+                connectionsData[connectionIndex[x]].isCondition,
+                document, 
+                docData
             );
             connectionsData.push(connection);
         }
     }
 
     if(connectionIndex.length > 0){
-        // Update data if there was changes
         connectionsData = deleteConnectionFromData(connectionIndex, connectionsData);
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);

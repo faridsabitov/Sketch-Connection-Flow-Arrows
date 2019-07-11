@@ -3,12 +3,13 @@ import { addToConditionGroup, checkForGroup } from "./groups.js";
 let Settings = require('sketch/settings');
 let UI = require('sketch/ui') ;
 
-let docData = context.document.documentData();
-let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+// let docData = context.document.documentData();
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
-export function addCondition(keyword, x, y) {
+export function addCondition(keyword, x, y, document, docData) {
   let libraries = sketch.getLibraries();
   let libraryObject, symbolReferences, symbol;
+  let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 
   for (let g = 0; g < libraries.length; g++) {
     symbolReferences = libraries[g].getImportableSymbolReferencesForDocument(
@@ -30,15 +31,16 @@ export function addCondition(keyword, x, y) {
   } else {
     let symbolMaster = libraryObject.import();
     symbol = symbolMaster.createNewInstance();
-    symbol = addToConditionGroup(symbol, x, y);
+    symbol = addToConditionGroup(symbol, x, y, currentParentGroup);
   }
   return symbol;
 }
 
-export function updateCondition(conditionID, x, y) {
+export function updateCondition(conditionID, x, y, document, docData) {
+  let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
   let condition = document.getLayerWithID(conditionID);
-  let conGroup = checkForGroup("Conditions");
-  let arGroup = checkForGroup("Arrows");
+  let conGroup = checkForGroup("Conditions", currentParentGroup);
+  let arGroup = checkForGroup("Arrows", currentParentGroup);
   let arGroupX = arGroup != null ? arGroup.frame().x() : 0;
   let arGroupY = arGroup != null ? arGroup.frame().y() : 0;
 
