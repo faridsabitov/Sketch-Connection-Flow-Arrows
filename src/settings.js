@@ -234,7 +234,7 @@ function setActiveStyleSetting(arrowStylingField) {
     docData,
     pluginKey
   );
-  let styles = getLayerStyles(null);
+  let styles = getLayerStyles(null, docData);
 
   if (docSettings) {
     // We have info about the settings in the current document

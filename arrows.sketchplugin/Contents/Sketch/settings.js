@@ -198,7 +198,7 @@ function settings(context) {
 
 function setActiveStyleSetting(arrowStylingField) {
   var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
-  var styles = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["getLayerStyles"])(null);
+  var styles = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["getLayerStyles"])(null, docData);
 
   if (docSettings) {
     // We have info about the settings in the current document
