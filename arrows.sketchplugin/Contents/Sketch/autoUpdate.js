@@ -124,19 +124,12 @@ function autoUpdateSelectedArrows(context) {
   });
   var firstObjectID = String(movedLayers[0].id);
   var connectionIndex = [];
-
-  if (connectionsData.length > 0) {
-    for (var y = 0; y < connectionsData.length; y++) {
-      if (firstObjectID == connectionsData[y].firstObject || firstObjectID == connectionsData[y].secondObject) {
-        connectionIndex.push(y);
-      }
-    }
-  }
+  connectionIndex = getIndex(connectionsData, firstObjectID);
 
   if (connectionIndex.length > 0) {
     for (var x = 0; x < connectionIndex.length; x++) {
       Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_1__["deleteLine"])(connectionsData[connectionIndex[x]].line, document);
-      var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_2__["createArrow"])(connectionsData[connectionIndex[x]].firstObject, connectionsData[connectionIndex[x]].secondObject, connectionsData[connectionIndex[x]].style, connectionsData[connectionIndex[x]].type, connectionsData[connectionIndex[x]].direction, connectionsData[connectionIndex[x]].conditionID, connectionsData[connectionIndex[x]].isCondition, document, docData);
+      var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_2__["createArrow"])(connectionsData[connectionIndex[x]].firstObject, connectionsData[connectionIndex[x]].secondObject, connectionsData[connectionIndex[x]].style, connectionsData[connectionIndex[x]].type, connectionsData[connectionIndex[x]].direction, connectionsData[connectionIndex[x]].condition, connectionsData[connectionIndex[x]].isCondition, document, docData);
       connectionsData.push(connection);
     }
   }
@@ -146,6 +139,20 @@ function autoUpdateSelectedArrows(context) {
   }
 
   context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+}
+
+function getIndex(connectionsData, firstObjectID) {
+  var connectionIndex = [];
+
+  if (connectionsData.length > 0) {
+    for (var y = 0; y < connectionsData.length; y++) {
+      if (firstObjectID == connectionsData[y].firstObject || firstObjectID == connectionsData[y].secondObject) {
+        connectionIndex.push(y);
+      }
+    }
+  }
+
+  return connectionIndex;
 }
 
 /***/ }),

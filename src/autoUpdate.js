@@ -19,13 +19,7 @@ export function autoUpdateSelectedArrows(context) {
     let firstObjectID = String(movedLayers[0].id);
     let connectionIndex = []
 
-    if(connectionsData.length > 0){
-        for (let y = 0; y < connectionsData.length; y++) {
-            if (firstObjectID == connectionsData[y].firstObject || firstObjectID == connectionsData[y].secondObject) {
-                connectionIndex.push(y);
-            }
-        }
-    } 
+    connectionIndex = getIndex(connectionsData, firstObjectID);
 
     if(connectionIndex.length > 0){
         for (let x = 0; x < connectionIndex.length; x++) {
@@ -36,7 +30,7 @@ export function autoUpdateSelectedArrows(context) {
                 connectionsData[connectionIndex[x]].style,
                 connectionsData[connectionIndex[x]].type, 
                 connectionsData[connectionIndex[x]].direction, 
-                connectionsData[connectionIndex[x]].conditionID, 
+                connectionsData[connectionIndex[x]].condition, 
                 connectionsData[connectionIndex[x]].isCondition,
                 document, 
                 docData
@@ -50,4 +44,17 @@ export function autoUpdateSelectedArrows(context) {
     }
     context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
 
+}
+
+function getIndex(connectionsData, firstObjectID){
+    let connectionIndex = [];
+    if(connectionsData.length > 0){
+        for (let y = 0; y < connectionsData.length; y++) {
+            if (firstObjectID == connectionsData[y].firstObject || firstObjectID == connectionsData[y].secondObject) {
+                connectionIndex.push(y);
+            }
+        }
+    } 
+
+    return connectionIndex;
 }
