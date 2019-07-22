@@ -147,7 +147,6 @@ export function update(context, level, isUpdate) {
           }
           sketch.UI.message("All arrows are updated 🚀");
           
-         
       }
       let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
       connectionsData.push(connection);

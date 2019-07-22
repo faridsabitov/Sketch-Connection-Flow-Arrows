@@ -11,7 +11,7 @@ let docData = context.document.documentData();
 export function settings(context) {
   let alert = COSAlertWindow.new();
   const viewWidth = 300;
-  const viewHeight = 450;
+  const viewHeight = 500;
 
   // Alert window settings
   alert = alertSetup(alert, viewWidth, viewHeight);
@@ -152,15 +152,15 @@ export function settings(context) {
   view.addSubview(otherSettingsLabel);
 
   // Checkbox: Auto-Align
-  let checkbox = alertCheckbox(
+  let checkAutoAlign = alertCheckbox(
     "Second layer auto-align",
-    false,
+    "autoAlign",
     -1,
     viewHeight - 340,
     260,
     40
   );
-  view.addSubview(checkbox);
+  view.addSubview(checkAutoAlign);
 
   // Label: Auto-Align Info
   let autoAlignInfoLabel = alertLabel(
@@ -173,12 +173,34 @@ export function settings(context) {
   );
   view.addSubview(autoAlignInfoLabel);
 
+  // Checkbox: Auto-Draw
+  let checkAutoDraw = alertCheckbox(
+    "Redraw arrows after moving/resizing layers",
+    "autoDraw",
+    -1,
+    viewHeight - 410,
+    300,
+    40
+  );
+  view.addSubview(checkAutoDraw);
+
+  // Label: Auto-Draw Info
+  let autoDrawInfoLabel = alertLabel(
+    "If you have performance issues, try to turn this option off",
+    false,
+    -1,
+    viewHeight - 440,
+    280,
+    40
+  );
+  view.addSubview(autoDrawInfoLabel);
+
   // Label: Plugin Info
   let pluginInfoLabel = alertLabel(
     "Made by @faridSabitov with the support of EPAM.com ❤️",
     true,
     -1,
-    viewHeight - 420,
+    viewHeight - 490,
     280,
     40
   );
@@ -220,6 +242,13 @@ export function settings(context) {
       alert
         .views()[0]
         .subviews()[12]
+        .state()
+    );
+    Settings.setSettingForKey(
+      "autoDraw",
+      alert
+        .views()[0]
+        .subviews()[14]
         .state()
     );
     UI.message("Settings are updated 🚀");
@@ -339,12 +368,9 @@ function alertCheckbox(message, state, x, y, width, height) {
   checkbox.setButtonType(NSSwitchButton);
   checkbox.setBezelStyle(0);
   checkbox.setTitle(message);
-  if (Settings.settingForKey("autoAlign")) {
-    let currentState = Settings.settingForKey("autoAlign");
-    checkbox.setState(currentState);
-  } else {
-    checkbox.setState(state);
-  }
+
+  let currentState = Settings.settingForKey(state);
+  checkbox.setState(currentState);
 
   return checkbox;
 }

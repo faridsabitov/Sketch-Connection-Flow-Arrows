@@ -114,31 +114,36 @@ var pluginKey = "flowArrows";
 
 
 
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
 function autoUpdateSelectedArrows(context) {
-  var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document);
-  var action = context.actionContext;
-  var docData = action.document.documentData();
-  var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_3__["getConnectionsData"])(docData);
-  var movedLayers = Array.from(context.actionContext.layers).map(function (layer) {
-    return sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(layer);
-  });
-  var firstObjectID = String(movedLayers[0].id);
-  var connectionIndex = [];
-  connectionIndex = getIndex(connectionsData, firstObjectID);
+  if (Settings.settingForKey("autoDraw") != false) {
+    var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.actionContext.document);
+    var action = context.actionContext;
+    var docData = action.document.documentData();
+    var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_3__["getConnectionsData"])(docData);
+    var movedLayers = Array.from(context.actionContext.layers).map(function (layer) {
+      return sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(layer);
+    });
+    var firstObjectID = String(movedLayers[0].id);
+    var connectionIndex = [];
+    connectionIndex = getIndex(connectionsData, firstObjectID);
 
-  if (connectionIndex.length > 0) {
-    for (var x = 0; x < connectionIndex.length; x++) {
-      Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_1__["deleteLine"])(connectionsData[connectionIndex[x]].line, document);
-      var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_2__["createArrow"])(connectionsData[connectionIndex[x]].firstObject, connectionsData[connectionIndex[x]].secondObject, connectionsData[connectionIndex[x]].style, connectionsData[connectionIndex[x]].type, connectionsData[connectionIndex[x]].direction, connectionsData[connectionIndex[x]].condition, connectionsData[connectionIndex[x]].isCondition, document, docData);
-      connectionsData.push(connection);
+    if (connectionIndex.length > 0) {
+      for (var x = 0; x < connectionIndex.length; x++) {
+        Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_1__["deleteLine"])(connectionsData[connectionIndex[x]].line, document);
+        var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_2__["createArrow"])(connectionsData[connectionIndex[x]].firstObject, connectionsData[connectionIndex[x]].secondObject, connectionsData[connectionIndex[x]].style, connectionsData[connectionIndex[x]].type, connectionsData[connectionIndex[x]].direction, connectionsData[connectionIndex[x]].condition, connectionsData[connectionIndex[x]].isCondition, document, docData);
+        connectionsData.push(connection);
+      }
     }
-  }
 
-  if (connectionIndex.length > 0) {
-    connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_3__["deleteConnectionFromData"])(connectionIndex, connectionsData);
-  }
+    if (connectionIndex.length > 0) {
+      connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_3__["deleteConnectionFromData"])(connectionIndex, connectionsData);
+    }
 
-  context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+  }
 }
 
 function getIndex(connectionsData, firstObjectID) {

@@ -117,7 +117,7 @@ var docData = context.document.documentData();
 function settings(context) {
   var alert = COSAlertWindow.new();
   var viewWidth = 300;
-  var viewHeight = 450; // Alert window settings
+  var viewHeight = 500; // Alert window settings
 
   alert = alertSetup(alert, viewWidth, viewHeight);
   var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
@@ -173,13 +173,19 @@ function settings(context) {
   var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 330, 280, 40);
   view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
 
-  var checkbox = alertCheckbox("Second layer auto-align", false, -1, viewHeight - 340, 260, 40);
-  view.addSubview(checkbox); // Label: Auto-Align Info
+  var checkAutoAlign = alertCheckbox("Second layer auto-align", "autoAlign", -1, viewHeight - 340, 260, 40);
+  view.addSubview(checkAutoAlign); // Label: Auto-Align Info
 
   var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 370, 280, 40);
-  view.addSubview(autoAlignInfoLabel); // Label: Plugin Info
+  view.addSubview(autoAlignInfoLabel); // Checkbox: Auto-Draw
 
-  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 420, 280, 40);
+  var checkAutoDraw = alertCheckbox("Redraw arrows after moving/resizing layers", "autoDraw", -1, viewHeight - 410, 300, 40);
+  view.addSubview(checkAutoDraw); // Label: Auto-Draw Info
+
+  var autoDrawInfoLabel = alertLabel("If you have performance issues, try to turn this option off", false, -1, viewHeight - 440, 280, 40);
+  view.addSubview(autoDrawInfoLabel); // Label: Plugin Info
+
+  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 490, 280, 40);
   view.addSubview(pluginInfoLabel); // Need to check if style is still available
   // Show modal and get the results
 
@@ -192,6 +198,7 @@ function settings(context) {
     Settings.setSettingForKey("arrowType", alert.views()[0].subviews()[4].title());
     Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[8].intValue());
     Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[12].state());
+    Settings.setSettingForKey("autoDraw", alert.views()[0].subviews()[14].state());
     UI.message("Settings are updated 🚀");
   }
 } // Functions
@@ -296,14 +303,8 @@ function alertCheckbox(message, state, x, y, width, height) {
   checkbox.setButtonType(NSSwitchButton);
   checkbox.setBezelStyle(0);
   checkbox.setTitle(message);
-
-  if (Settings.settingForKey("autoAlign")) {
-    var currentState = Settings.settingForKey("autoAlign");
-    checkbox.setState(currentState);
-  } else {
-    checkbox.setState(state);
-  }
-
+  var currentState = Settings.settingForKey(state);
+  checkbox.setState(currentState);
   return checkbox;
 }
 
