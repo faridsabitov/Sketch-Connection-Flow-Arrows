@@ -2,7 +2,6 @@
   "compatibleVersion": 3,
   "bundleVersion": 1,
   "identifier": "me.sabitov.sketch.connectionFlowArrows",
-  "version": "2.7.1",
   "icon": "icon.png",
   "authorEmail": "farid.sabitov.design@gmail.com",
   "appcast": "https://raw.githubusercontent.com/faridsabitov/Sketch-Connection-Flow-Arrows/master/.appcast.xml",
@@ -58,6 +57,42 @@
       "handler": "createUpArrow"
     },
     {
+      "name": "Arrow to the Right with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createRightArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift →",
+      "script": "script.js",
+      "handler": "createRightArrowWithCondition"
+    },
+    {
+      "name": "Arrow to the Bottom with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createDownArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift ↓",
+      "script": "script.js",
+      "handler": "createDownArrowWithCondition"
+    },
+    {
+      "name": "Arrow to the Left with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createLeftArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift ←",
+      "script": "script.js",
+      "handler": "createLeftArrowWithCondition"
+    },
+    {
+      "name": "Arrow to the Top with Condition",
+      "description": "Select more than one layer, to create a link between first object and others",
+      "identifier": "createUpArrowWithCondition",
+      "icon": "icon.png",
+      "shortcut": "command control shift ↑",
+      "script": "script.js",
+      "handler": "createUpArrowWithCondition"
+    },
+    {
       "name": "Update arrows between selected",
       "description": "Update connection between selected layers",
       "identifier": "updateSelectedArrows",
@@ -65,6 +100,17 @@
       "script": "script.js",
       "icon": "icon.png",
       "handler": "updateSelectedArrows"
+    },
+    {
+      "name": "Auto update arrows between selected",
+      "script": "autoUpdate.js",
+      "handlers": {
+        "actions": {
+          "LayersMoved.finish": "autoUpdateSelectedArrows",
+          "LayersResized.finish": "autoUpdateSelectedArrows"
+        }
+      },
+      "identifier": "autoUpdateSelectedArrows"
     },
     {
       "name": "Update arrows from the selected artboard",
@@ -113,7 +159,7 @@
       "name": "Settings",
       "description": "Provide settings for the arrows",
       "identifier": "settings",
-      "script": "script.js",
+      "script": "settings.js",
       "icon": "icon.png",
       "handler": "settings"
     },
@@ -153,23 +199,12 @@
           "createRightArrow",
           "createDownArrow",
           "createLeftArrow",
-          "createUpArrow"
-        ]
-      },
-      {
-        "title": "Update Connection Positions",
-        "items": [
-          "updateSelectedArrows",
-          "updateArtboardArrows",
-          "updateAllArrows"
-        ]
-      },
-      {
-        "title": "Delete Connection",
-        "items": [
-          "deleteSelectedArrows",
-          "deleteArtboardArrows",
-          "deleteAllArrows"
+          "createUpArrow",
+          "-",
+          "createRightArrowWithCondition",
+          "createDownArrowWithCondition",
+          "createLeftArrowWithCondition",
+          "createUpArrowWithCondition"
         ]
       },
       "settings",
@@ -178,6 +213,7 @@
       "joinCommunity"
     ]
   },
+  "version": "3.0.0",
   "name": "arrows",
   "disableCocoaScriptPreprocessor": true
 }

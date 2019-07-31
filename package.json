@@ -1,6 +1,6 @@
 {
   "name": "arrows",
-  "version": "2.7.1",
+  "version": "3.0.0",
   "engines": {
     "sketch": ">=3.0"
   },
@@ -26,5 +26,9 @@
   "devDependencies": {
     "@skpm/builder": "0.5.14"
   },
-  "author": "Farid Sabitov <farid.sabitov.design@gmail.com>"
+  "author": "Farid Sabitov <farid.sabitov.design@gmail.com>",
+  "dependencies": {
+    "js2flowchart": "^1.1.7",
+    "sketch-module-google-analytics": "^0.2.1"
+  }
 }
