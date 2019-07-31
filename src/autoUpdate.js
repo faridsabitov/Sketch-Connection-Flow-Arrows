@@ -39,11 +39,9 @@ export function autoUpdateSelectedArrows(context) {
                 );
                 connectionsData.push(connection);
             }
-        }
-
-        if(connectionIndex.length > 0){
             connectionsData = deleteConnectionFromData(connectionIndex, connectionsData);
         }
+
         context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
     }
 }

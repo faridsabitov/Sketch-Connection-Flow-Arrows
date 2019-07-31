@@ -136,9 +136,7 @@ function autoUpdateSelectedArrows(context) {
         var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_2__["createArrow"])(connectionsData[connectionIndex[x]].firstObject, connectionsData[connectionIndex[x]].secondObject, connectionsData[connectionIndex[x]].style, connectionsData[connectionIndex[x]].type, connectionsData[connectionIndex[x]].direction, connectionsData[connectionIndex[x]].condition, connectionsData[connectionIndex[x]].isCondition, document, docData);
         connectionsData.push(connection);
       }
-    }
 
-    if (connectionIndex.length > 0) {
       connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_3__["deleteConnectionFromData"])(connectionIndex, connectionsData);
     }
 

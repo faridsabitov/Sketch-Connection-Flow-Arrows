@@ -13,25 +13,33 @@ let connectionsData = getConnectionsData(docData);
 
 
 
-export function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) { // Refactored
-  // Need to check if we have the layers with such IDs
-  // let firstObject = document.getLayerWithID(firstObjectID);
-  // let secondObject = document.getLayerWithID(secondObjectID);
-  // let conditionObject = document.getLayerWithID(conditionID);
-  // let result = false;
-  
-  // Need to delete data first, because we will have a new line
-  // deleteLine(lineID);
-  // if(conditionID && !isCondition){
-  //   if(conditionObject){conditionObject.remove();}
-  // }
+export function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
+  let firstObject = document.getLayerWithID(firstObjectID);
+  let secondObject = document.getLayerWithID(secondObjectID);
+  let conditionObject = document.getLayerWithID(conditionID);
+  let connection = [];
+
+  deleteLine(lineID);
+
+  if(conditionID && !isCondition){
+    if(conditionObject){conditionObject.remove();}
+  }
   
   connectionsData = deleteConnectionFromData(connectionIndex);
 
-  // if(firstObject && secondObject){
-  //   // If we have all the objects, we can recreate the line
-  //   result = true;
-  // }
+  if(firstObject && secondObject){
+    connection = createArrow(
+      connectionsData[connectionIndex[x]].firstObject, 
+      connectionsData[connectionIndex[x]].secondObject, 
+      connectionsData[connectionIndex[x]].style,
+      connectionsData[connectionIndex[x]].type, 
+      connectionsData[connectionIndex[x]].direction, 
+      connectionsData[connectionIndex[x]].condition, 
+      connectionsData[connectionIndex[x]].isCondition,
+      document, 
+      docData
+    );
+  }
 
-  // return result;
+  return connection;
 }

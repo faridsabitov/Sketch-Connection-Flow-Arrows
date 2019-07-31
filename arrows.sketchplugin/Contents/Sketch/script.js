@@ -722,9 +722,9 @@ var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
 
 var pluginKey = "flowArrows";
 var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
-var docData = context.document.documentData();
-var pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-var currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+var docData = context.document.documentData(); // let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+
 var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_4__["getConnectionsData"])(docData); //
 //  Plugin Incoming Commands - Create 
 //
@@ -761,14 +761,13 @@ function create(context, direction, isCondition) {
   var selection = context.selection;
 
   if (selection.count() > 1 && selection[0].class() != "MSArtboardGroup") {
-    var _sourceObjectID = Object(_utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__["getSourceObjectFromSelection"])(selection, direction);
-
+    var sourceObjectID = Object(_utilities_getSourceObject_js__WEBPACK_IMPORTED_MODULE_3__["getSourceObjectFromSelection"])(selection, direction);
     var connectionIndex = [];
 
-    for (var _g = 0; _g < selection.count(); _g++) {
-      if (selection[_g].objectID() != _sourceObjectID) {
-        var firstObjectID = String(_sourceObjectID);
-        var secondObjectID = String(selection[_g].objectID());
+    for (var g = 0; g < selection.count(); g++) {
+      if (selection[g].objectID() != sourceObjectID) {
+        var firstObjectID = String(sourceObjectID);
+        var secondObjectID = String(selection[g].objectID());
         var _create = true;
         var index = void 0;
 
@@ -847,42 +846,63 @@ function update(context, level, isUpdate) {
   var secondObjectArtboard;
 
   if (connectionsData.length > 0) {
-    for (var i = 0; i < connectionsData.length; i++) {
-      if (level == 3) {
-        if (isUpdate) {
-          Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated");
-        } else {
+    if (level == 3) {
+      if (isUpdate) {
+        newConnectionsData = Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated");
+      } else {
+        for (var _i = 0; _i < connectionsData.length; _i++) {
+          Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[_i].line, document);
+          Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[_i].condition, document);
           newConnectionsData = null;
-          sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are deleted");
         }
       }
+    }
 
-      if (level == 2) {
-        firstObjectArtboard = document.getLayerWithID(connectionsData[i].firstObject);
-        firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
-        secondObjectArtboard = document.getLayerWithID(connectionsData[i].secondObject);
-        secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
+    if (level == 2) {
+      if (isUpdate) {// Need to update
+      } else {
+        for (var _i2 = 0; _i2 < connectionsData.length; _i2++) {
+          if (selection[0].class() == "MSArtboardGroup") {
+            firstObjectArtboard = document.getLayerWithID(connectionsData[_i2].firstObject);
+            firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
 
-        if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
-          if (firstObjectArtboard == selection[0].objectID()) {
-            if (secondObjectArtboard == selection[0].objectID()) {
-              Object(_updateArrow_js__WEBPACK_IMPORTED_MODULE_2__["updateArrow"])(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+            if (firstObjectArtboard == selection[0].objectID()) {
+              Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[_i2].line, document);
+              Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[_i2].condition, document);
             } else {
-              newConnectionsData.push(connectionsData[i]);
+              newConnectionsData.push(connectionsData[_i2]);
             }
           } else {
-            newConnectionsData.push(connectionsData[i]);
+            sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("Please select an artboard");
           }
         }
       }
-
-      sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀");
     }
 
-    var connection = Object(_createArrow_js__WEBPACK_IMPORTED_MODULE_1__["createArrow"])(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
-    connectionsData.push(connection);
-    context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+    if (level == 1) {
+      if (isUpdate) {// updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+        // sketch.UI.message("All arrows are updated");
+      } else {
+        for (var _i3 = 0; _i3 < connectionsData.length; _i3++) {
+          if (selection[0].objectID() == connectionsData[_i3].firstObject) {
+            log("here");
+            Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_5__["deleteLine"])(connectionsData[_i3].line, document);
+            Object(_utilities_conditions_js__WEBPACK_IMPORTED_MODULE_6__["deleteCondition"])(connectionsData[_i3].condition, document);
+          } else {
+            newConnectionsData.push(connectionsData[_i3]);
+          }
+        }
+
+        newConnectionsData = null;
+        sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are deleted");
+      }
+    }
+
+    sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("All arrows are updated 🚀"); // let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
+    // connectionsData.push(connection);
+
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
     sketch__WEBPACK_IMPORTED_MODULE_0___default.a.UI.message("There is no arrows");
   }
@@ -925,22 +945,25 @@ var currentParentGroup = docData.currentPage().currentArtboard() || docData.curr
 
 var connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["getConnectionsData"])(docData);
 function updateArrow(firstObjectID, secondObjectID, style, type, direction, lineID, conditionID, isCondition, connectionIndex) {
-  // Refactored
-  // Need to check if we have the layers with such IDs
-  // let firstObject = document.getLayerWithID(firstObjectID);
-  // let secondObject = document.getLayerWithID(secondObjectID);
-  // let conditionObject = document.getLayerWithID(conditionID);
-  // let result = false;
-  // Need to delete data first, because we will have a new line
-  // deleteLine(lineID);
-  // if(conditionID && !isCondition){
-  //   if(conditionObject){conditionObject.remove();}
-  // }
-  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["deleteConnectionFromData"])(connectionIndex); // if(firstObject && secondObject){
-  //   // If we have all the objects, we can recreate the line
-  //   result = true;
-  // }
-  // return result;
+  var firstObject = document.getLayerWithID(firstObjectID);
+  var secondObject = document.getLayerWithID(secondObjectID);
+  var conditionObject = document.getLayerWithID(conditionID);
+  var connection = [];
+  Object(_utilities_lines_js__WEBPACK_IMPORTED_MODULE_2__["deleteLine"])(lineID);
+
+  if (conditionID && !isCondition) {
+    if (conditionObject) {
+      conditionObject.remove();
+    }
+  }
+
+  connectionsData = Object(_utilities_data_js__WEBPACK_IMPORTED_MODULE_1__["deleteConnectionFromData"])(connectionIndex);
+
+  if (firstObject && secondObject) {
+    connection = createArrow(connectionsData[connectionIndex[x]].firstObject, connectionsData[connectionIndex[x]].secondObject, connectionsData[connectionIndex[x]].style, connectionsData[connectionIndex[x]].type, connectionsData[connectionIndex[x]].direction, connectionsData[connectionIndex[x]].condition, connectionsData[connectionIndex[x]].isCondition, document, docData);
+  }
+
+  return connection;
 }
 
 /***/ }),

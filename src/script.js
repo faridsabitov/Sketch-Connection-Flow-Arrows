@@ -17,8 +17,8 @@ const pluginKey = "flowArrows";
 
 let document = sketch.fromNative(context.document);
 let docData = context.document.documentData();
-let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
-let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
+// let pluginData = context.command.valueForKey_onLayer_forPluginIdentifier("arrowConnections", docData, pluginKey);
+// let currentParentGroup = docData.currentPage().currentArtboard() || docData.currentPage();
 let connectionsData = getConnectionsData(docData);
 
 
@@ -115,44 +115,67 @@ export function update(context, level, isUpdate) {
 
 
   if (connectionsData.length > 0) {
-      for (let i = 0; i < connectionsData.length; i++) {
-          
-          if (level == 3) {
-              if(isUpdate){
-                  updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
-                  sketch.UI.message("All arrows are updated");
-              } else {
-                  newConnectionsData = null
-                  sketch.UI.message("All arrows are deleted");
-              }
-          }
-          if (level == 2) {
-              firstObjectArtboard = document.getLayerWithID(connectionsData[i].firstObject);
-              firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
-              secondObjectArtboard = document.getLayerWithID(connectionsData[i].secondObject);
-              secondObjectArtboard = secondObjectArtboard.sketchObject.parentArtboard().objectID();
-
-              if (selection.count() == 1 && selection[0].class() == "MSArtboardGroup") {
-
-                  if (firstObjectArtboard == selection[0].objectID()) {
-                      if (secondObjectArtboard == selection[0].objectID()) {
-                          updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
-                      } else {
-                          newConnectionsData.push(connectionsData[i]);
-                      }
-                  } else {
-                      newConnectionsData.push(connectionsData[i]);
-                  }
-              }
-          }
-          sketch.UI.message("All arrows are updated 🚀");
-          
+  
+    if (level == 3) {
+      if(isUpdate){
+        newConnectionsData = updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+        sketch.UI.message("All arrows are updated");
+      } else {
+        for (let i = 0; i < connectionsData.length; i++) {
+          deleteLine(connectionsData[i].line, document);
+          deleteCondition(connectionsData[i].condition, document) 
+          newConnectionsData = null;
+        }
       }
-      let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
-      connectionsData.push(connection);
-      context.command.setValue_forKey_onLayer_forPluginIdentifier(connectionsData, "arrowConnections", docData, pluginKey);
+    }
+    if (level == 2) {
+
+
+      if(isUpdate){
+        // Need to update
+      } else {
+        for (let i = 0; i < connectionsData.length; i++) {
+          if(selection[0].class() == "MSArtboardGroup") {
+            firstObjectArtboard = document.getLayerWithID(connectionsData[i].firstObject);
+            firstObjectArtboard = firstObjectArtboard.sketchObject.parentArtboard().objectID();
+            if(firstObjectArtboard == selection[0].objectID()){
+              deleteLine(connectionsData[i].line, document);
+              deleteCondition(connectionsData[i].condition, document);
+            } else {
+              newConnectionsData.push(connectionsData[i]);
+            }
+          } else {
+            sketch.UI.message("Please select an artboard");
+          }
+        }
+      }
+    }
+    if (level == 1) {
+      if(isUpdate){
+        // updateArrow(connectionsData[i].firstObject, connectionsData[i].secondObject, connectionsData[i].style, connectionsData[i].type, connectionsData[i].direction, connectionsData[i].line, connectionsData[i].condition, i);
+        // sketch.UI.message("All arrows are updated");
+      } else {
+        for (let i = 0; i < connectionsData.length; i++) {
+          if(selection[0].objectID() == connectionsData[i].firstObject) {
+            log("here")
+            deleteLine(connectionsData[i].line, document);
+            deleteCondition(connectionsData[i].condition, document);
+          } else {
+            newConnectionsData.push(connectionsData[i]);
+          }
+        }
+        newConnectionsData = null
+        sketch.UI.message("All arrows are deleted");
+      }
+    }
+    sketch.UI.message("All arrows are updated 🚀");
+      
+    
+    // let connection = createArrow(sourceObjectID, selection[g].objectID(), null, null, direction, null, isCondition, document, docData);
+    // connectionsData.push(connection);
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(newConnectionsData, "arrowConnections", docData, pluginKey);
   } else {
-      sketch.UI.message("There is no arrows");
+    sketch.UI.message("There is no arrows");
   }
 }
 
