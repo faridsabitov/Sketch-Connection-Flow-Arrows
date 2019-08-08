@@ -109,12 +109,12 @@ function getConnectionPos(firstObject, secondObject, direction, currentParentGro
   
     if(direction == "Down"){
       // First Layer Position Start Point Position
-      connectionPos.firstLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX;
-      connectionPos.firstLayerPosY = firstObjectAbsPos.y+firstObjectAbsPos.height-diffY;
+      connectionPos.firstLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX;
+      connectionPos.firstLayerPosY = secondObjectAbsPos.y+secondObjectAbsPos.height-diffY;
   
       // Second Layer Position End Point Position
-      connectionPos.secondLayerPosX = secondObjectAbsPos.x+secondObjectAbsPos.width/2-diffX;
-      connectionPos.secondLayerPosY = secondObjectAbsPos.y-diffY;
+      connectionPos.secondLayerPosX = firstObjectAbsPos.x+firstObjectAbsPos.width/2-diffX;
+      connectionPos.secondLayerPosY = firstObjectAbsPos.y-diffY;
   
       // Middle Points
       connectionPos.middlePosX = (connectionPos.firstLayerPosX + connectionPos.secondLayerPosX)/2;

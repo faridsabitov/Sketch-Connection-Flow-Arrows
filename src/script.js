@@ -113,7 +113,6 @@ export function update(context, level, isUpdate) {
   let firstObjectArtboard;
   let secondObjectArtboard;
 
-
   if (connectionsData.length > 0) {
   
     if (level == 3) {
@@ -156,15 +155,17 @@ export function update(context, level, isUpdate) {
         // sketch.UI.message("All arrows are updated");
       } else {
         for (let i = 0; i < connectionsData.length; i++) {
-          if(selection[0].objectID() == connectionsData[i].firstObject) {
-            log("here")
-            deleteLine(connectionsData[i].line, document);
-            deleteCondition(connectionsData[i].condition, document);
+          if((selection[0].objectID() == String(connectionsData[i].firstObject)) || (selection[0].objectID() == String(connectionsData[i].secondObject))) {
+            if((selection[1].objectID() == String(connectionsData[i].firstObject)) || (selection[1].objectID() == String(connectionsData[i].secondObject))) {
+              deleteLine(connectionsData[i].line, document);
+              deleteCondition(connectionsData[i].condition, document);
+            } else {
+              newConnectionsData.push(connectionsData[i]);
+            }
           } else {
             newConnectionsData.push(connectionsData[i]);
           }
         }
-        newConnectionsData = null
         sketch.UI.message("All arrows are deleted");
       }
     }

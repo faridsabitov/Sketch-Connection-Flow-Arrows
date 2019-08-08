@@ -1,21 +1,445 @@
-var that=this;function __skpm_run(e,t){that.context=t;var r=function(e){var t={};function r(a){if(t[a])return t[a].exports;var i=t[a]={i:a,l:!1,exports:{}};return e[a].call(i.exports,i,i.exports,r),i.l=!0,i.exports}return r.m=e,r.c=t,r.d=function(e,t,a){r.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:a})},r.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.t=function(e,t){if(1&t&&(e=r(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var a=Object.create(null);if(r.r(a),Object.defineProperty(a,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var i in e)r.d(a,i,function(t){return e[t]}.bind(null,i));return a},r.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(t,"a",t),t},r.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},r.p="",r(r.s="./src/settings.js")}({"./src/settings.js":
+var that = this;
+function __skpm_run (key, context) {
+  that.context = context;
+
+var exports =
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/settings.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./src/settings.js":
 /*!*************************!*\
   !*** ./src/settings.js ***!
   \*************************/
-/*! exports provided: settings */function(e,r,a){"use strict";a.r(r),a.d(r,"settings",function(){return c});var i=a(/*! sketch */"sketch"),n=a.n(i),l=a(/*! ./utilities/styling.js */"./src/utilities/styling.js"),o=a(/*! sketch/ui */"sketch/ui"),s=a(/*! sketch/settings */"sketch/settings"),u="flowArrows",d=(n.a.fromNative(t.document),t.document.documentData());function c(e){var t=COSAlertWindow.new();t=function(e,t,r){return e.setMessageText("Arrow Plugin Settings"),e.addButtonWithTitle("Update Settings"),e.addButtonWithTitle("Cancel"),e}(t);var r=NSView.alloc().initWithFrame(NSMakeRect(0,0,300,500));t.addAccessoryView(r);var a=f("Arrow Style",!0,-1,460,280,40);r.addSubview(a);var i=NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2,460,300,20));S(i),r.addSubview(i);var n=f("Add layer style to your document that will contain $arrow name and you will be able to specify it here ",!1,-1,420,300,40);r.addSubview(n);var l=f("Arrow Type",!0,-1,370,280,40);r.addSubview(l);var c=NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2,370,300,20));!function(e){var t=s.settingForKey("arrowType");t?("Angled"==t&&(e.addItemWithTitle("Angled"),e.lastItem().setState(1),e.addItemWithTitle("Curved"),e.lastItem().setState(0),e.addItemWithTitle("Straight"),e.lastItem().setState(0)),"Curved"==t&&(e.addItemWithTitle("Curved"),e.lastItem().setState(1),e.addItemWithTitle("Straight"),e.lastItem().setState(0),e.addItemWithTitle("Angled"),e.lastItem().setState(0)),"Straight"==t&&(e.addItemWithTitle("Straight"),e.lastItem().setState(1),e.addItemWithTitle("Angled"),e.lastItem().setState(0),e.addItemWithTitle("Curved"),e.lastItem().setState(0))):(e.addItemWithTitle("Angled"),e.addItemWithTitle("Curved"),e.addItemWithTitle("Straight"))}(c),r.addSubview(c);var y=f("Select one of the arrow types. Angled is used by default",!1,-1,330,300,40);r.addSubview(y);var h=f("Arrow Spacing",!0,-1,300,330,20);r.addSubview(h);var m=f("px",!0,90,280,330,20);r.addSubview(m);var g=NSTextField.alloc().initWithFrame(NSMakeRect(-2,280,80,20)),w=NSNumberFormatter.alloc().init().autorelease();g.setStringValue(String(s.settingForKey("arrowSpacing"))),g.setFormatter(w),r.addSubview(g);var p=NSStepper.alloc().initWithFrame(NSMakeRect(70,280,20,20));p.setMaxValue(1e3),p.setMinValue(0),p.setValueWraps(!1),p.setAutorepeat(!0),p.setCOSJSTargetFunction(function(e){var t=0+e.integerValue();g.setStringValue(String(t))}),r.addSubview(p);var b=f("The second layer will be moved closer based on the value provided here. Keep it 0 if you don't want to have auto spacing feature ",!1,-1,215,300,60);r.addSubview(b);var T=f("Other Settings",!0,-1,170,280,40);r.addSubview(T);var I=v("Second layer auto-align","autoAlign",-1,160,260,40);r.addSubview(I);var W=f("Align the second layer for 5px misalignment with the first one",!1,-1,130,280,40);r.addSubview(W);var _=v("Redraw arrows after moving/resizing layers","autoDraw",-1,90,300,40);r.addSubview(_);var k=f("If you have performance issues, try to turn this option off",!1,-1,60,280,40);r.addSubview(k);var F=f("Made by @faridSabitov with the support of EPAM.com ❤️",!0,-1,10,280,40);r.addSubview(F),t.runModal()==NSAlertFirstButtonReturn&&(e.command.setValue_forKey_onLayer_forPluginIdentifier(t.views()[0].subviews()[1].title(),"arrowStyle",d,u),s.setSettingForKey("arrowType",t.views()[0].subviews()[4].title()),s.setSettingForKey("arrowSpacing",t.views()[0].subviews()[8].intValue()),s.setSettingForKey("autoAlign",t.views()[0].subviews()[12].state()),s.setSettingForKey("autoDraw",t.views()[0].subviews()[14].state()),o.message("Settings are updated 🚀"))}function S(e){var r=t.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle",d,u),a=Object(l.getLayerStyles)(null,d);if(r)if("Default Style"!=r){e.addItemWithTitle(r),e.addItemWithTitle("Default Style");for(var i=0;i<a.length;i++)a[i].name()!=r&&e.addItemWithTitle(a[i].name())}else{e.addItemWithTitle("Default Style");for(var n=0;n<a.length;n++)e.addItemWithTitle(a[n].name())}else{e.addItemWithTitle("Default Style");for(var o=0;o<a.length;o++)e.addItemWithTitle(a[o].name())}}function f(e,t,r,a,i,n){var l=NSTextField.alloc().initWithFrame(NSMakeRect(r,a,i,n));return l.setStringValue(e),l.setSelectable(!1),l.setDrawsBackground(!1),l.setBezeled(!1),0==t&&(l.textColor=NSColor.disabledControlTextColor()),l}function v(e,t,r,a,i,n){var l=NSButton.alloc().initWithFrame(NSMakeRect(r,a,i,n));l.setButtonType(NSSwitchButton),l.setBezelStyle(0),l.setTitle(e);var o=s.settingForKey(t);return l.setState(o),l}},"./src/utilities/styling.js":
+/*! exports provided: settings */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "settings", function() { return settings; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utilities/styling.js */ "./src/utilities/styling.js");
+
+
+
+var UI = __webpack_require__(/*! sketch/ui */ "sketch/ui");
+
+var Settings = __webpack_require__(/*! sketch/settings */ "sketch/settings");
+
+var pluginKey = "flowArrows";
+var document = sketch__WEBPACK_IMPORTED_MODULE_0___default.a.fromNative(context.document);
+var docData = context.document.documentData();
+function settings(context) {
+  var alert = COSAlertWindow.new();
+  var viewWidth = 300;
+  var viewHeight = 500; // Alert window settings
+
+  alert = alertSetup(alert, viewWidth, viewHeight);
+  var view = NSView.alloc().initWithFrame(NSMakeRect(0, 0, viewWidth, viewHeight));
+  alert.addAccessoryView(view); // Label: Arrow Style
+
+  var arrowStyleLabel = alertLabel("Arrow Style", true, -1, viewHeight - 40, 280, 40);
+  view.addSubview(arrowStyleLabel); // Select: Arrow Style
+
+  var arrowStylingField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 40, 300, 20));
+  setActiveStyleSetting(arrowStylingField);
+  view.addSubview(arrowStylingField); // Label: Arrow Style Info
+
+  var arrowStyleInfoLabel = alertLabel("Add layer style to your document that will contain $arrow name and you will be able to specify it here ", false, -1, viewHeight - 80, 300, 40);
+  view.addSubview(arrowStyleInfoLabel); // Label: Arrow Type
+
+  var arrowTypeLabel = alertLabel("Arrow Type", true, -1, viewHeight - 130, 280, 40);
+  view.addSubview(arrowTypeLabel); // Select: Arrow Type
+
+  var arrowTypeField = NSPopUpButton.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 130, 300, 20));
+  setActiveTypeSetting(arrowTypeField);
+  view.addSubview(arrowTypeField); // Label: Arrow Type Info
+
+  var arrowTypeInfoLabel = alertLabel("Select one of the arrow types. Angled is used by default", false, -1, viewHeight - 170, 300, 40);
+  view.addSubview(arrowTypeInfoLabel); // Label: Arrow Spacing
+
+  var arrowSpacingLabel = alertLabel("Arrow Spacing", true, -1, viewHeight - 200, 330, 20);
+  view.addSubview(arrowSpacingLabel); // Label: Arrow Spacing PX
+
+  var arrowSpacingPxLabel = alertLabel("px", true, 90, viewHeight - 220, 330, 20);
+  view.addSubview(arrowSpacingPxLabel); // Input: Arrow Spacing
+
+  var arrowSpacingField = NSTextField.alloc().initWithFrame(NSMakeRect(-2, viewHeight - 220, 80, 20));
+  var formatter = NSNumberFormatter.alloc().init().autorelease();
+  arrowSpacingField.setStringValue(String(Settings.settingForKey("arrowSpacing")));
+  arrowSpacingField.setFormatter(formatter);
+  view.addSubview(arrowSpacingField); // Stepper: Arrow Spacing
+
+  var arrowSpacingStepper = NSStepper.alloc().initWithFrame(NSMakeRect(70, viewHeight - 220, 20, 20));
+  arrowSpacingStepper.setMaxValue(1000);
+  arrowSpacingStepper.setMinValue(0);
+  arrowSpacingStepper.setValueWraps(false);
+  arrowSpacingStepper.setAutorepeat(true);
+  arrowSpacingStepper.setCOSJSTargetFunction(function (sender) {
+    var value = 0 + sender.integerValue();
+    arrowSpacingField.setStringValue(String(value));
+  });
+  view.addSubview(arrowSpacingStepper); // view.addSubview(formatter)
+  // Label: Auto Spacing Info
+
+  var arrowSpacingInfoLabel = alertLabel("The second layer will be moved closer based on the value provided here. Keep it 0 if you don't want to have auto spacing feature ", false, -1, viewHeight - 285, 300, 60);
+  view.addSubview(arrowSpacingInfoLabel); // Label: Other Settings
+
+  var otherSettingsLabel = alertLabel("Other Settings", true, -1, viewHeight - 330, 280, 40);
+  view.addSubview(otherSettingsLabel); // Checkbox: Auto-Align
+
+  var checkAutoAlign = alertCheckbox("Second layer auto-align", "autoAlign", -1, viewHeight - 340, 260, 40);
+  view.addSubview(checkAutoAlign); // Label: Auto-Align Info
+
+  var autoAlignInfoLabel = alertLabel("Align the second layer for 5px misalignment with the first one", false, -1, viewHeight - 370, 280, 40);
+  view.addSubview(autoAlignInfoLabel); // Checkbox: Auto-Draw
+
+  var checkAutoDraw = alertCheckbox("Redraw arrows after moving/resizing layers", "autoDraw", -1, viewHeight - 410, 300, 40);
+  view.addSubview(checkAutoDraw); // Label: Auto-Draw Info
+
+  var autoDrawInfoLabel = alertLabel("If you have performance issues, try to turn this option off", false, -1, viewHeight - 440, 280, 40);
+  view.addSubview(autoDrawInfoLabel); // Label: Plugin Info
+
+  var pluginInfoLabel = alertLabel("Made by @faridSabitov with the support of EPAM.com ❤️", true, -1, viewHeight - 490, 280, 40);
+  view.addSubview(pluginInfoLabel); // Need to check if style is still available
+  // Show modal and get the results
+
+  var modalResponse = alert.runModal();
+
+  if (modalResponse == NSAlertFirstButtonReturn) {
+    // When user clicks on "Update Settings"
+    // Need to save all this results into the Plugin Settings
+    context.command.setValue_forKey_onLayer_forPluginIdentifier(alert.views()[0].subviews()[1].title(), "arrowStyle", docData, pluginKey);
+    Settings.setSettingForKey("arrowType", alert.views()[0].subviews()[4].title());
+    Settings.setSettingForKey("arrowSpacing", alert.views()[0].subviews()[8].intValue());
+    Settings.setSettingForKey("autoAlign", alert.views()[0].subviews()[12].state());
+    Settings.setSettingForKey("autoDraw", alert.views()[0].subviews()[14].state());
+    UI.message("Settings are updated 🚀");
+  }
+} // Functions
+
+function setActiveStyleSetting(arrowStylingField) {
+  var docSettings = context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey);
+  var styles = Object(_utilities_styling_js__WEBPACK_IMPORTED_MODULE_1__["getLayerStyles"])(null, docData);
+
+  if (docSettings) {
+    // We have info about the settings in the current document
+    if (docSettings != "Default Style") {
+      // if user specified own option
+      arrowStylingField.addItemWithTitle(docSettings);
+      arrowStylingField.addItemWithTitle("Default Style");
+
+      for (var i = 0; i < styles.length; i++) {
+        if (styles[i].name() != docSettings) {
+          arrowStylingField.addItemWithTitle(styles[i].name());
+        }
+      }
+    } else {
+      // Need to show the default first
+      arrowStylingField.addItemWithTitle("Default Style");
+
+      for (var _i = 0; _i < styles.length; _i++) {
+        arrowStylingField.addItemWithTitle(styles[_i].name());
+      }
+    }
+  } else {
+    arrowStylingField.addItemWithTitle("Default Style");
+
+    for (var _i2 = 0; _i2 < styles.length; _i2++) {
+      arrowStylingField.addItemWithTitle(styles[_i2].name());
+    }
+  }
+}
+
+function setActiveTypeSetting(arrowTypeField) {
+  var docTypeSettings = Settings.settingForKey("arrowType");
+
+  if (docTypeSettings) {
+    // We have info about the settings in the current document
+    if (docTypeSettings == "Angled") {
+      arrowTypeField.addItemWithTitle("Angled");
+      arrowTypeField.lastItem().setState(1);
+      arrowTypeField.addItemWithTitle("Curved");
+      arrowTypeField.lastItem().setState(0);
+      arrowTypeField.addItemWithTitle("Straight");
+      arrowTypeField.lastItem().setState(0);
+    }
+
+    if (docTypeSettings == "Curved") {
+      arrowTypeField.addItemWithTitle("Curved");
+      arrowTypeField.lastItem().setState(1);
+      arrowTypeField.addItemWithTitle("Straight");
+      arrowTypeField.lastItem().setState(0);
+      arrowTypeField.addItemWithTitle("Angled");
+      arrowTypeField.lastItem().setState(0);
+    }
+
+    if (docTypeSettings == "Straight") {
+      arrowTypeField.addItemWithTitle("Straight");
+      arrowTypeField.lastItem().setState(1);
+      arrowTypeField.addItemWithTitle("Angled");
+      arrowTypeField.lastItem().setState(0);
+      arrowTypeField.addItemWithTitle("Curved");
+      arrowTypeField.lastItem().setState(0);
+    }
+  } else {
+    // Show default
+    arrowTypeField.addItemWithTitle("Angled");
+    arrowTypeField.addItemWithTitle("Curved");
+    arrowTypeField.addItemWithTitle("Straight");
+  }
+}
+
+function alertSetup(alert, viewWidth, viewHeight) {
+  // Title
+  alert.setMessageText("Arrow Plugin Settings"); // Creating dialog buttons
+
+  alert.addButtonWithTitle("Update Settings");
+  alert.addButtonWithTitle("Cancel");
+  return alert;
+}
+
+function alertLabel(message, state, x, y, width, height) {
+  var infoLabel = NSTextField.alloc().initWithFrame(NSMakeRect(x, y, width, height));
+  infoLabel.setStringValue(message);
+  infoLabel.setSelectable(false);
+  infoLabel.setDrawsBackground(false);
+  infoLabel.setBezeled(false);
+
+  if (state == false) {
+    infoLabel.textColor = NSColor.disabledControlTextColor();
+  }
+
+  return infoLabel;
+}
+
+function alertCheckbox(message, state, x, y, width, height) {
+  var checkbox = NSButton.alloc().initWithFrame(NSMakeRect(x, y, width, height));
+  checkbox.setButtonType(NSSwitchButton);
+  checkbox.setBezelStyle(0);
+  checkbox.setTitle(message);
+  var currentState = Settings.settingForKey(state);
+  checkbox.setState(currentState);
+  return checkbox;
+}
+
+/***/ }),
+
+/***/ "./src/utilities/styling.js":
 /*!**********************************!*\
   !*** ./src/utilities/styling.js ***!
   \**********************************/
-/*! exports provided: styleLine, getLayerStyles */function(e,r,a){"use strict";a.r(r),a.d(r,"styleLine",function(){return n}),a.d(r,"getLayerStyles",function(){return l});a(/*! sketch */"sketch");var i="flowArrows";function n(e,r,a){var n;if(null!=r)if(null!=l(r,a)&&"Default Style"!=r){n=r;var o=l(r,a);e.sharedStyle=o[0]}else{n="Default Style";var s=e.style().addStylePartOfType(1);s.color=MSColor.colorWithRGBADictionary({r:.89,g:.89,b:.89,a:1}),s.thickness=2,e.style().endMarkerType=2}else if(null!=t.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle",a,i)&&"Default Style"!=t.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle",a,i))n=l(t.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle",a,i),a),e.sharedStyle=n[0],n=n[0].name();else{n="Default Style";var u=e.style().addStylePartOfType(1);u.color=MSColor.colorWithRGBADictionary({r:.89,g:.89,b:.89,a:1}),u.thickness=2,e.style().endMarkerType=2}return n}function l(e,t){for(var r=t.allLayerStyles(),a=[],i=0;i<r.count();i++)null==e?r[i].name().includes("$arrow")&&a.push(r[i]):r[i].name()==e&&a.push(r[i]);return a}},sketch:
+/*! exports provided: styleLine, getLayerStyles */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "styleLine", function() { return styleLine; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getLayerStyles", function() { return getLayerStyles; });
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sketch */ "sketch");
+/* harmony import */ var sketch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sketch__WEBPACK_IMPORTED_MODULE_0__);
+
+var pluginKey = "flowArrows"; // let document = sketch.fromNative(context.document);
+// let docData = context.document.documentData();
+
+function styleLine(line, style, docData) {
+  // Refactored
+  var localStyle;
+
+  if (style != null) {
+    // For updates
+    if (getLayerStyles(style, docData) != null && style != "Default Style") {
+      // If style is specified
+      localStyle = style;
+      var ownStyle = getLayerStyles(style, docData);
+      line.sharedStyle = ownStyle[0];
+    } else {
+      // if there is no specific style
+      localStyle = "Default Style";
+      var border = line.style().addStylePartOfType(1);
+      border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  } else {
+    // For creating new
+    if (context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != null && context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey) != "Default Style") {
+      // we have settins almost all the time and it's not default
+      localStyle = getLayerStyles(context.command.valueForKey_onLayer_forPluginIdentifier("arrowStyle", docData, pluginKey), docData);
+      line.sharedStyle = localStyle[0];
+      localStyle = localStyle[0].name();
+    } else {
+      localStyle = "Default Style";
+
+      var _border = line.style().addStylePartOfType(1);
+
+      _border.color = MSColor.colorWithRGBADictionary({
+        r: 0.89,
+        g: 0.89,
+        b: 0.89,
+        a: 1
+      });
+      _border.thickness = 2;
+      line.style().endMarkerType = 2;
+    }
+  }
+
+  return localStyle;
+}
+function getLayerStyles(name, docData) {
+  // Refactored
+  var allStyles = docData.allLayerStyles();
+  var keyword = "$arrow";
+  var styles = [];
+
+  for (var i = 0; i < allStyles.count(); i++) {
+    if (name == null) {
+      if (allStyles[i].name().includes(keyword)) {
+        styles.push(allStyles[i]);
+      }
+    } else {
+      if (allStyles[i].name() == name) {
+        styles.push(allStyles[i]);
+      }
+    }
+  }
+
+  return styles;
+}
+
+/***/ }),
+
+/***/ "sketch":
 /*!*************************!*\
   !*** external "sketch" ***!
   \*************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch")},"sketch/settings":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch");
+
+/***/ }),
+
+/***/ "sketch/settings":
 /*!**********************************!*\
   !*** external "sketch/settings" ***!
   \**********************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/settings")},"sketch/ui":
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/settings");
+
+/***/ }),
+
+/***/ "sketch/ui":
 /*!****************************!*\
   !*** external "sketch/ui" ***!
   \****************************/
-/*! no static exports found */function(e,t){e.exports=require("sketch/ui")}});"default"===e&&"function"==typeof r?r(t):r[e](t)}that.settings=__skpm_run.bind(this,"settings"),that.onRun=__skpm_run.bind(this,"default");
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("sketch/ui");
+
+/***/ })
+
+/******/ });
+  if (key === 'default' && typeof exports === 'function') {
+    exports(context);
+  } else {
+    exports[key](context);
+  }
+}
+that['settings'] = __skpm_run.bind(this, 'settings');
+that['onRun'] = __skpm_run.bind(this, 'default')
+
+//# sourceMappingURL=settings.js.map

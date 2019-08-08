@@ -207,6 +207,14 @@
           "createUpArrowWithCondition"
         ]
       },
+      {
+        "title": "Delete Connection",
+        "items": [
+          "deleteSelectedArrows",
+          "deleteArtboardArrows",
+          "deleteAllArrows"
+        ]
+      },
       "settings",
       "-",
       "getLibrary",
